@@ -1,7 +1,7 @@
 /*
   spi.c - SPI support for SD card & Trinamic plugins
 
-  Part of grblHAL driver for STM32F7xx
+  Part of grblHAL driver for STM32H7xx
 
   Copyright (c) 2020 Terje Io
 

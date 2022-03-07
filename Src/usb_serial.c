@@ -1,6 +1,6 @@
 /*
 
-  usb_serial.c - USB serial port implementation for STM32F7xx ARM processors
+  usb_serial.c - USB serial port implementation for STM32H7xx ARM processors
 
   Part of grblHAL
 

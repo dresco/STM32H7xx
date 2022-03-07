@@ -1,5 +1,5 @@
 /*
-  enet.c - lwIP driver glue code for STM32F7xx processors
+  enet.c - lwIP driver glue code for STM32H7xx processors
 
   Part of grblHAL
 

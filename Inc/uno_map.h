@@ -1,5 +1,5 @@
 /*
-  uno_map.h - driver code for STM32F756 ARM processor on a Nucleo-F756ZG board
+  uno_map.h - driver code for STM32H7xx ARM processor on a Nucleo-H743ZI board
 
   Part of grblHAL
 

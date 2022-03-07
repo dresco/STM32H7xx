@@ -1,6 +1,6 @@
 /*
 
-  flash.h - driver code for STM32F7xx processors
+  flash.h - driver code for STM32H7xx processors
 
   Part of grblHAL
 

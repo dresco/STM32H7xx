@@ -1,6 +1,6 @@
 /*
 
-  driver.c - driver code for STM32F7xx ARM processors
+  driver.c - driver code for STM32H7xx ARM processors
 
   Part of grblHAL
 
@@ -1758,7 +1758,7 @@ bool driver_init (void)
     __HAL_RCC_GPIOF_CLK_ENABLE();
     __HAL_RCC_GPIOG_CLK_ENABLE();
 
-    hal.info = "STM32F756";
+    hal.info = "STM32H743";
     hal.driver_version = "211211";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;

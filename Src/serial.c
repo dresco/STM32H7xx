@@ -1,6 +1,6 @@
 /*
 
-  serial.c - serial port implementation for STM32F7xx ARM processors
+  serial.c - serial port implementation for STM32H7xx ARM processors
 
   Part of grblHAL
 

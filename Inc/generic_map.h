@@ -1,5 +1,5 @@
 /*
-  generic_map.h - driver code for STM32F7xx processors
+  generic_map.h - driver code for STM32H7xx processors
 
   Part of grblHAL
 

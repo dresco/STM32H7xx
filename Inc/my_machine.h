@@ -1,5 +1,5 @@
 /*
-  my_machine.h - configuration for STM32F7xx processors
+  my_machine.h - configuration for STM32H7xx processors
 
   Part of grblHAL
 
