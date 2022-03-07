@@ -63,8 +63,8 @@ bool memcpy_to_flash (uint8_t *source)
         uint32_t address = (uint32_t)&_EEPROM_Emul_Start, remaining = (uint32_t)hal.nvs.size;
 
         while(remaining && status == HAL_OK) {
-            status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, address, *data++);
-            status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_HALFWORD, address + 2, *data++);
+            status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, address, *data++);
+            status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, address + 2, *data++);
             address += 4;
             remaining -= 4;
         }

@@ -202,7 +202,7 @@
 #endif
 #endif
 
-#define DEBOUNCE_TIMER_N            9
+#define DEBOUNCE_TIMER_N            12
 #define DEBOUNCE_TIMER              timer(DEBOUNCE_TIMER_N)
 #define DEBOUNCE_TIMER_IRQn         TIM1_BRK_TIM9_IRQn       // !
 #define DEBOUNCE_TIMER_IRQHandler   TIM1_BRK_TIM9_IRQHandler // !

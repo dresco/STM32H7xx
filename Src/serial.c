@@ -174,7 +174,7 @@ static bool serialSetBaudRate (uint32_t baud_rate)
 {
     USART->CR1 = USART_CR1_RE|USART_CR1_TE;
     USART->CR3 = USART_CR3_OVRDIS;
-    USART->BRR = UART_DIV_SAMPLING16(HAL_RCC_GetPCLK1Freq(), baud_rate);
+    USART->BRR = UART_DIV_SAMPLING16(HAL_RCC_GetPCLK1Freq(), baud_rate, UART_PRESCALER_DIV1);
     USART->CR1 |= (USART_CR1_UE|USART_CR1_RXNEIE);
 
     rxbuf.tail = rxbuf.head;
@@ -314,7 +314,7 @@ const io_stream_t *serialInit (uint32_t baud_rate)
 
 void USART_IRQHandler (void)
 {
-    if(USART->ISR & USART_ISR_RXNE) {
+    if(USART->ISR & USART_ISR_RXNE_RXFNE) {
         char data = USART->RDR;
         if(!enqueue_realtime_command(data)) {                   // Check for and strip realtime commands,
             uint_fast16_t next_head = BUFNEXT(rxbuf.head, rxbuf);
@@ -327,7 +327,7 @@ void USART_IRQHandler (void)
         }
     }
 
-    if((USART->ISR & USART_ISR_TXE) && (USART->CR1 & USART_CR1_TXEIE)) {
+    if((USART->ISR & USART_ISR_TXE_TXFNF) && (USART->CR1 & USART_CR1_TXEIE)) {
         USART->TDR = txbuf.data[txbuf.tail];        // Send next character
         txbuf.tail = BUFNEXT(txbuf.tail, txbuf);    // and increment pointer
         if(txbuf.tail == txbuf.head)                // If buffer empty then

@@ -191,21 +191,21 @@ uint32_t spi_set_speed (uint32_t prescaler)
 
 uint8_t spi_get_byte (void)
 {
-    *((__IO uint8_t *)&SPIPORT->DR) = 0xFF; // Writing dummy data into Data register
+    *((__IO uint8_t *)&SPIPORT->TXDR) = 0xFF; // Writing dummy data into Data register
 
     while(!__HAL_SPI_GET_FLAG(&spi_port, SPI_FLAG_RXNE));
 
-    return (uint8_t)spi_port.Instance->DR;
+    return (uint8_t)spi_port.Instance->RXDR;
 }
 
 uint8_t spi_put_byte (uint8_t byte)
 {
-    *((__IO uint8_t *)&SPIPORT->DR) = byte;
+    *((__IO uint8_t *)&SPIPORT->TXDR) = byte;
 
     while(!__HAL_SPI_GET_FLAG(&spi_port, SPI_FLAG_TXE));
     while(!__HAL_SPI_GET_FLAG(&spi_port, SPI_FLAG_RXNE));
 
     __HAL_SPI_CLEAR_OVRFLAG(&spi_port);
 
-    return (uint8_t)spi_port.Instance->DR;
+    return (uint8_t)spi_port.Instance->RXDR;
 }

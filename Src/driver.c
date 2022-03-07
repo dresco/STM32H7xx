@@ -720,10 +720,10 @@ static void stepperPulseStartSynchronized (stepper_t *stepper)
 static void limitsEnable (bool on, bool homing)
 {
     if(on && settings.limits.flags.hard_enabled) {
-        EXTI->PR |= LIMIT_MASK;     // Clear any pending limit interrupts
-        EXTI->IMR |= LIMIT_MASK;    // and enable
+        EXTI->PR1 |= LIMIT_MASK;     // Clear any pending limit interrupts
+        EXTI->IMR1 |= LIMIT_MASK;    // and enable
     } else
-        EXTI->IMR &= ~LIMIT_MASK;
+        EXTI->IMR1 &= ~LIMIT_MASK;
 
 #if TRINAMIC_ENABLE
     trinamic_homing(homing);
@@ -1590,7 +1590,7 @@ static bool driver_setup (settings_t *settings)
     __HAL_RCC_TIM3_CLK_ENABLE();
     __HAL_RCC_TIM4_CLK_ENABLE();
     __HAL_RCC_TIM5_CLK_ENABLE();
-    __HAL_RCC_TIM9_CLK_ENABLE();
+    __HAL_RCC_TIM12_CLK_ENABLE();
 
     GPIO_InitTypeDef GPIO_Init = {
         .Speed = GPIO_SPEED_FREQ_HIGH,

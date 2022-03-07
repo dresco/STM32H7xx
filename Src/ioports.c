@@ -168,19 +168,19 @@ static void digital_out (uint8_t port, bool on)
 static void enable_irq (const input_signal_t *input, pin_irq_mode_t irq_mode)
 {
     if(irq_mode == IRQ_Mode_Rising) {
-        EXTI->RTSR |= input->bit;
-        EXTI->FTSR &= ~input->bit;
+        EXTI->RTSR1 |= input->bit;
+        EXTI->FTSR1 &= ~input->bit;
     } else if(irq_mode == IRQ_Mode_Falling) {
-        EXTI->RTSR &= ~input->bit;
-        EXTI->FTSR |= input->bit;
+        EXTI->RTSR1 &= ~input->bit;
+        EXTI->FTSR1 |= input->bit;
     } else if(irq_mode == IRQ_Mode_Change) {
-        EXTI->RTSR |= input->bit;
-        EXTI->FTSR |= input->bit;
+        EXTI->RTSR1 |= input->bit;
+        EXTI->FTSR1 |= input->bit;
     } else
-        EXTI->IMR &= ~input->bit;   // Disable pin interrupt
+        EXTI->IMR1 &= ~input->bit;   // Disable pin interrupt
 
     if(irq_mode != IRQ_Mode_None)
-        EXTI->IMR |= input->bit;    // Enable pin interrupt
+        EXTI->IMR1 |= input->bit;    // Enable pin interrupt
 }
 
 inline static __attribute__((always_inline)) int32_t get_input (const input_signal_t *input, bool invert, wait_mode_t wait_mode, float timeout)
@@ -313,7 +313,7 @@ static bool register_interrupt_handler (uint8_t port, pin_irq_mode_t irq_mode, i
 
         if(irq_mode == IRQ_Mode_None || !ok) {
             while(spin_lock);
-            EXTI->IMR &= ~input->bit;     // Disable pin interrupt
+            EXTI->IMR1 &= ~input->bit;     // Disable pin interrupt
             input->irq_mode = IRQ_Mode_None;
             input->interrupt_callback = NULL;
         }

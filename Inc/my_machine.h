@@ -26,7 +26,7 @@
 #define BOARD_REFERENCE       // grblHAL reference board map.
 //#define BOARD_MY_MACHINE      // Add my_machine_map.h before enabling this!
 
-#if defined(NUCLEO_F756)
+#if defined(NUCLEO_H743)
 #define IS_NUCLEO_DEVKIT 1
 #else
 #define IS_NUCLEO_DEVKIT 0
@@ -44,9 +44,9 @@
 //#define MODBUS_ENABLE        1 // Set to 1 for auto direction, 2 for direction signal on auxillary output pin.
 //#define WEBUI_ENABLE         1 // Enable ESP3D-WEBUI plugin along with networking and SD card plugins.
 //#define WEBUI_INFLASH        1 // Store WebUI files in flash instead of on SD card.
-#define ETHERNET_ENABLE      1 // Ethernet streaming. Uses networking plugin.
+//#define ETHERNET_ENABLE      1 // Ethernet streaming. Uses networking plugin.
 //#define BLUETOOTH_ENABLE     1 // Set to 1 for HC-05 module. Uses Bluetooth plugin.
-#define SDCARD_ENABLE        1 // Run gcode programs from SD card, uses sdcard plugin.
+//#define SDCARD_ENABLE        1 // Run gcode programs from SD card, uses sdcard plugin.
 //#define KEYPAD_ENABLE        1 // I2C keypad for jogging etc., uses keypad plugin.
 //#define ODOMETER_ENABLE      1 // Odometer plugin.
 //#define PPI_ENABLE           1 // Laser PPI plugin. To be completed.
