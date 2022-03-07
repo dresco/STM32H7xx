@@ -37,6 +37,8 @@ int main(void)
 
 void SystemClock_Config(void)
 {
+    // WeAct MiniSTM32H7xx, 25MHz clock source, 480MHZ system clock, 48MHz USB clock
+
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
     RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
@@ -58,7 +60,7 @@ void SystemClock_Config(void)
     RCC_OscInitStruct.PLL.PLLM = 5;
     RCC_OscInitStruct.PLL.PLLN = 192;
     RCC_OscInitStruct.PLL.PLLP = 2;
-    RCC_OscInitStruct.PLL.PLLQ = 16;
+    RCC_OscInitStruct.PLL.PLLQ = 20;
     RCC_OscInitStruct.PLL.PLLR = 2;
     RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_2;
     RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
