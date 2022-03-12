@@ -24,6 +24,17 @@
 #ifndef _flash_h_
 #define _flash_h_
 
+#ifdef STM32H743xx
+#define FLASH_WRITE_SIZE   32
+#endif
+
+#ifndef max
+#define max(a,b) (((a) > (b)) ? (a) : (b))
+#endif
+#ifndef min
+#define min(a,b) (((a) < (b)) ? (a) : (b))
+#endif
+
 bool memcpy_from_flash (uint8_t *dest);
 bool memcpy_to_flash (uint8_t *source);
 

@@ -1,6 +1,6 @@
 /*
 
-  flash.h - driver code for STM32H7xx ARM processors
+  flash.c - driver code for STM32H7xx ARM processors
 
   Part of grblHAL
 
@@ -24,6 +24,7 @@
 */
 
 #include "driver.h"
+#include "flash.h"
 
 #if FLASH_ENABLE
 
@@ -41,6 +42,15 @@ bool memcpy_from_flash (uint8_t *dest)
 
 bool memcpy_to_flash (uint8_t *source)
 {
+    // The STM32H7xx HAL_FLASH_Program implementation differs to other STM32 families.
+    //
+    // Writes are either 16 or 32 bytes long (dependent on processor model), instead of the byte,
+    // halfword, word or double word writes in other processor families. Erase operations are
+    // performed on 128-Kbyte sectors.
+    //
+    // Rather than using two sectors for boot & eeprom emulation, have chosen to store the NVS data
+    // at the end of the user accessible flash (the last 128KB sector in the second bank).
+
     if (!memcmp(source, &_EEPROM_Emul_Start, hal.nvs.size))
         return true;
 
@@ -49,24 +59,30 @@ bool memcpy_to_flash (uint8_t *source)
     if((status = HAL_FLASH_Unlock()) == HAL_OK) {
 
         static FLASH_EraseInitTypeDef erase = {
-            .Sector = (uint32_t)&_EEPROM_Emul_Sector,
+            .Sector = FLASH_SECTOR_TOTAL - 1,
+            .Banks = FLASH_BANK_2,
             .TypeErase = FLASH_TYPEERASE_SECTORS,
             .NbSectors = 1,
             .VoltageRange = FLASH_VOLTAGE_RANGE_3
         };
 
         uint32_t error;
-
         status = HAL_FLASHEx_Erase(&erase, &error);
 
-        uint16_t *data = (uint16_t *)source;
+        uint8_t buffer[FLASH_WRITE_SIZE];
+        uint8_t *data = source;
         uint32_t address = (uint32_t)&_EEPROM_Emul_Start, remaining = (uint32_t)hal.nvs.size;
 
         while(remaining && status == HAL_OK) {
-            status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, address, *data++);
-            status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, address + 2, *data++);
-            address += 4;
-            remaining -= 4;
+
+            //copy a buffers worth of nvs data, zero padded if less than the minimum flash write size...
+            memset(&buffer, 0, FLASH_WRITE_SIZE);
+            memcpy(&buffer, data, min(remaining, FLASH_WRITE_SIZE));
+
+            status = HAL_FLASH_Program(FLASH_TYPEPROGRAM_FLASHWORD, address, (uint32_t)buffer);
+            address += FLASH_WRITE_SIZE;
+            data += FLASH_WRITE_SIZE;
+            remaining -= min(remaining, FLASH_WRITE_SIZE);
         }
 
         HAL_FLASH_Lock();
