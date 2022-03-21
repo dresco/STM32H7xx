@@ -1758,13 +1758,18 @@ bool driver_init (void)
     __HAL_RCC_GPIOF_CLK_ENABLE();
     __HAL_RCC_GPIOG_CLK_ENABLE();
 
+    RCC_ClkInitTypeDef clock;
+    uint32_t latency;
+
+    HAL_RCC_GetClockConfig(&clock, &latency);
+
     hal.info = "STM32H743";
     hal.driver_version = "211211";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
 #endif
     hal.driver_setup = driver_setup;
-    hal.f_step_timer = HAL_RCC_GetPCLK2Freq();
+    hal.f_step_timer =  HAL_RCC_GetPCLK2Freq() * (clock.APB2CLKDivider == 0 ? 1 : 2);
     hal.rx_buffer_size = RX_BUFFER_SIZE;
     hal.delay_ms = &driver_delay;
     hal.settings_changed = settings_changed;
