@@ -4,7 +4,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2021 Terje Io
+  Copyright (c) 2021-2022 Terje Io
 
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -55,6 +55,9 @@ static io_stream_properties_t serial[] = {
       .flags.claimed = Off,
       .flags.connected = On,
       .flags.can_set_baud = On,
+#if !IS_NUCLEO_DEVKIT
+      .flags.modbus_ready = On,
+#endif
       .claim = serialInit
     },
 #ifdef SERIAL2_MOD
@@ -65,6 +68,7 @@ static io_stream_properties_t serial[] = {
       .flags.claimed = Off,
       .flags.connected = On,
       .flags.can_set_baud = On,
+      .flags.modbus_ready = On,
       .claim = serial2Init
     }
 #endif
@@ -88,6 +92,16 @@ static uint16_t serialRxFree (void)
     uint16_t tail = rxbuf.tail, head = rxbuf.head;
 
     return RX_BUFFER_SIZE - BUFCOUNT(head, tail, RX_BUFFER_SIZE);
+}
+
+//
+// Returns number of characters in serial input buffer
+//
+uint16_t serialRxCount (void)
+{
+    uint32_t tail = rxbuf.tail, head = rxbuf.head;
+
+    return BUFCOUNT(head, tail, RX_BUFFER_SIZE);
 }
 
 //
@@ -147,6 +161,25 @@ void serialWrite(const char *s, uint16_t length)
 
     while(length--)
         serialPutC(*ptr++);
+}
+
+//
+// Flushes the serial output buffer
+//
+void serialTxFlush (void)
+{
+    USART->CR1 &= ~USART_CR1_TXEIE;     // Disable TX interrupts
+    txbuf.tail = txbuf.head;
+}
+
+//
+// Returns number of characters pending transmission
+//
+uint16_t serialTxCount (void)
+{
+    uint32_t tail = txbuf.tail, head = txbuf.head;
+
+    return BUFCOUNT(head, tail, TX_BUFFER_SIZE) + (USART->ISR & USART_ISR_TC ? 0 : 1);
 }
 
 //
@@ -219,6 +252,9 @@ const io_stream_t *serialInit (uint32_t baud_rate)
         .write_char = serialPutC,
         .enqueue_rt_command = serialEnqueueRtCommand,
         .get_rx_buffer_free = serialRxFree,
+        .get_rx_buffer_count = serialRxCount,
+        .get_tx_buffer_count = serialTxCount,
+        .reset_write_buffer = serialTxFlush,
         .reset_read_buffer = serialRxFlush,
         .cancel_read_buffer = serialRxCancel,
         .suspend_read = serialSuspendInput,
@@ -633,7 +669,7 @@ void UART2_IRQHandler (void)
 
     if((UART2->ISR & USART_ISR_TXE) && (UART2->CR1 & USART_CR1_TXEIE)) {
         UART2->TDR = txbuf2.data[txbuf2.tail];                      // Send next character
-        txbuf.tail = BUFNEXT(txbuf2.tail, txbuf2);                  // and increment pointer
+        txbuf2.tail = BUFNEXT(txbuf2.tail, txbuf2);                 // and increment pointer
         if(txbuf2.tail == txbuf2.head)                              // If buffer empty then
             UART2->CR1 &= ~USART_CR1_TXEIE;                         // disable UART2 TX interrupt
     }

@@ -3,7 +3,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2021 Terje Io
+  Copyright (c) 2021-2022 Terje Io
 
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -106,8 +106,8 @@
 #endif
 
 // Define flood and mist coolant enable output pins.
-#define COOLANT_FLOOD_PORT      GPIOF
-#define COOLANT_FLOOD_PIN       3
+#define COOLANT_FLOOD_PORT      GPIOE
+#define COOLANT_FLOOD_PIN       0
 #define COOLANT_MIST_PORT       GPIOF
 #define COOLANT_MIST_PIN        5
 
@@ -129,18 +129,25 @@
 #define PROBE_PORT              GPIOF
 #define PROBE_PIN               10
 
-#define SD_CS_PORT              GPIOC
-#define SD_CS_PIN               8
+//#if SDCARD_ENABLE
+//#define SD_CS_PORT              GPIOC
+//#define SD_CS_PIN               8
+//#endif
 
 #define AUXINPUT0_PORT          GPIOE
 #define AUXINPUT0_PIN           15
-#define AUXINPUT1_PORT          GPIOB
-#define AUXINPUT1_PIN           10
-#define AUXINPUT2_PORT          GPIOE
+#define AUXINPUT1_PORT          GPIOD
+#define AUXINPUT1_PIN           1
+#define AUXINPUT2_PORT          GPIOF
 #define AUXINPUT2_PIN           2
-#define AUXINPUT_MASK           (1<<AUXINPUT0_PIN|1<<AUXINPUT1_PIN|1<<AUXINPUT2_PIN)
 
 #define AUXOUTPUT0_PORT         GPIOB
 #define AUXOUTPUT0_PIN          11
+#define AUXOUTPUT1_PORT         GPIOB
+#define AUXOUTPUT1_PIN          10
+#define AUXOUTPUT2_PORT         GPIOE
+#define AUXOUTPUT2_PIN          2
+#define AUXOUTPUT3_PORT         GPIOF
+#define AUXOUTPUT3_PIN          0
 
 /**/

@@ -3,7 +3,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2021 Terje Io
+  Copyright (c) 2021-2022 Terje Io
 
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -35,9 +35,9 @@
 // Configuration
 // Uncomment to enable.
 
-//#if !IS_NUCLEO_DEVKIT   // The Nucleo-F756ZG board has an off-chip UART to USB interface.
-//#define USB_SERIAL_CDC       1 // Serial communication via native USB.
-//#endif
+#if !IS_NUCLEO_DEVKIT   // The Nucleo-F756ZG board has an off-chip UART to USB interface.
+#define USB_SERIAL_CDC       1 // Serial communication via native USB.
+#endif
 //#define SAFETY_DOOR_ENABLE   1 // Enable safety door input.
 //#define VFD_ENABLE           1 // Set to 1 or 2 for Huanyang VFD spindle. More here https://github.com/grblHAL/Plugins_spindle
 //#define DUAL_SPINDLE         1 // Uncomment for switching between VFD spindle and PWM output with $32
@@ -53,6 +53,7 @@
 //#define LASER_COOLANT_ENABLE 1 // Laser coolant plugin. To be completed.
 //#define OPENPNP_ENABLE 1
 //#define FANS_ENABLE 1
+//#define PLASMA_ENABLE 1
 //#define TRINAMIC_ENABLE   2130 // Trinamic TMC2130 stepper driver support. NOTE: work in progress.
 //#define TRINAMIC_ENABLE   5160 // Trinamic TMC5160 stepper driver support. NOTE: work in progress.
 //#define TRINAMIC_I2C         1 // Trinamic I2C - SPI bridge interface.
