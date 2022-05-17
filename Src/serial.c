@@ -509,7 +509,7 @@ static bool serial2SetBaudRate (uint32_t baud_rate)
 {
     UART2->CR1 = USART_CR1_RE|USART_CR1_TE;
     UART2->CR3 = USART_CR3_OVRDIS;
-    UART2->BRR = UART_DIV_SAMPLING16(HAL_RCC_GetPCLK2Freq(), baud_rate);
+    UART2->BRR = UART_DIV_SAMPLING16(HAL_RCC_GetPCLK2Freq(), baud_rate, UART_PRESCALER_DIV1);
     UART2->CR1 |= (USART_CR1_UE|USART_CR1_RXNEIE);
 
     rxbuf.tail = rxbuf.head;
@@ -581,7 +581,7 @@ const io_stream_t *serial2Init (uint32_t baud_rate)
         .Pull      = GPIO_NOPULL,
         .Speed     = GPIO_SPEED_FREQ_VERY_HIGH,
         .Pin       = GPIO_PIN_6|GPIO_PIN_7,
-        .Alternate = GPIO_AF8_USART6
+        .Alternate = GPIO_AF7_USART6
     };
     HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
 
@@ -654,7 +654,7 @@ const io_stream_t *serial2Init (uint32_t baud_rate)
 
 void UART2_IRQHandler (void)
 {
-    if(UART2->ISR & USART_ISR_RXNE) {
+    if(UART2->ISR & USART_ISR_RXNE_RXFNE) {
         char data = UART2->RDR;
         if(!enqueue_realtime_command2(data)) {                      // Check for and strip realtime commands
             uint_fast16_t next_head = BUFNEXT(rxbuf2.head, rxbuf2);
@@ -667,7 +667,7 @@ void UART2_IRQHandler (void)
         }
     }
 
-    if((UART2->ISR & USART_ISR_TXE) && (UART2->CR1 & USART_CR1_TXEIE)) {
+    if((UART2->ISR & USART_ISR_TXE_TXFNF) && (UART2->CR1 & USART_CR1_TXEIE)) {
         UART2->TDR = txbuf2.data[txbuf2.tail];                      // Send next character
         txbuf2.tail = BUFNEXT(txbuf2.tail, txbuf2);                 // and increment pointer
         if(txbuf2.tail == txbuf2.head)                              // If buffer empty then
