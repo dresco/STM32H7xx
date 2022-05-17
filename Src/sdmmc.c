@@ -41,7 +41,7 @@ void sdmmc_init()
 	hsd1.Init.ClockPowerSave = SDMMC_CLOCK_POWER_SAVE_DISABLE;
 	hsd1.Init.BusWide = SDMMC_BUS_WIDE_4B;
 	hsd1.Init.HardwareFlowControl = SDMMC_HARDWARE_FLOW_CONTROL_DISABLE;
-	hsd1.Init.ClockDiv = 2;
+	hsd1.Init.ClockDiv = 0;
 
 	// FatFS init
 	MX_FATFS_Init();

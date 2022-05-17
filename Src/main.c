@@ -30,14 +30,14 @@ void MPU_Config(void);
 
 int main(void)
 {
-	/* Configure the MPU attributes as Device memory for ETH DMA descriptors */
-	MPU_Config();
+    /* Configure the MPU attributes as Device memory for ETH DMA descriptors */
+    MPU_Config();
 
-	/* Enable I-Cache */
-	SCB_EnableICache();
+    /* Enable I-Cache */
+    SCB_EnableICache();
 
-	/* Enable D-Cache */
-	SCB_EnableDCache();
+    /* Enable D-Cache */
+    SCB_EnableDCache();
 
     HAL_Init();
     SystemClock_Config();
