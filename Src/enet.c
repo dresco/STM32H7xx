@@ -30,9 +30,14 @@
 #include <lwipopts.h>
 #include <lwip/netif.h>
 #include "lwip/dhcp.h"
-#include "lwip.h"
 #include "lwip/init.h"
+#include "lwip/timeouts.h"
 #include "ethernetif.h"
+#include "ethernet.h"
+
+#if TCP_ECHOSERVER_ENABLE
+#include "tcp_echoserver.h"
+#endif
 
 #include "grbl/report.h"
 #include "grbl/nvs_buffer.h"
@@ -78,8 +83,6 @@ static void report_options (bool newopt)
 
 static void link_status_callback (struct netif *netif)
 {
-    ethernetif_update_config(netif);
-
     bool isLinkUp = netif_is_link_up(netif);
 
     if(isLinkUp != linkUp) {
@@ -118,17 +121,28 @@ static void netif_status_callback (struct netif *netif)
     }
 }
 
+void link_check_state(struct netif *netif)
+{
+  static uint32_t EthernetLinkTimer;
+
+  // Check Ethernet link state every 100ms
+  if (HAL_GetTick() - EthernetLinkTimer >= 100)
+  {
+    EthernetLinkTimer = HAL_GetTick();
+    ethernet_link_check_state(netif);
+  }
+}
+
 static void enet_poll (sys_state_t state)
 {
     static uint32_t last_ms0;
     uint32_t ms = hal.get_elapsed_ticks();
 
-    ethernetif_set_link(netif_default);
+    link_check_state(netif_default);
+    sys_check_timeouts();
+    ethernetif_input(netif_default);
 
     if(linkUp) {
-
-        ethernetif_input(netif_default);
-        sys_check_timeouts();
 
         if(ms - last_ms0 > 3) {
             last_ms0 = ms;
@@ -173,18 +187,21 @@ bool enet_start (void)
         netif_set_link_callback(netif_default, link_status_callback);
         netif_set_status_callback(netif_default, netif_status_callback);
 
-        if ((linkUp = netif_is_link_up(netif_default)))
-            netif_set_up(netif_default);
-        else
-            netif_set_down(netif_default);
-
-        ethernetif_update_config(netif_default);
+        // Invoke the link & interface callback functions once manually, as not necessarily triggered on startup
+        link_status_callback(netif_default);
+        netif_status_callback(netif_default);
 
     #if LWIP_NETIF_HOSTNAME
         netif_set_hostname(netif_default, network.hostname);
     #endif
+
         if(network.ip_mode == IpMode_DHCP)
             dhcp_start(netif_default);
+
+    #if TCP_ECHOSERVER_ENABLE
+        // Echos all input on TCP port 7, useful for diagnostics and performance checks
+        tcp_echoserver_init();
+    #endif
     }
 
     return nvs_address != 0;
