@@ -292,9 +292,9 @@
 #error Keypad plugin not supported!
 #endif
 
-#if SDCARD_ENABLE && !defined(SD_CS_PORT)
-#error SD card plugin not supported!
-#endif
+//#if SDCARD_ENABLE && !defined(SD_CS_PORT)
+//#error SD card plugin not supported!
+//#endif
 
 #ifndef STEP_PINMODE
 #define STEP_PINMODE PINMODE_OUTPUT

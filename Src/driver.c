@@ -43,6 +43,7 @@
 #include "sdcard/sdcard.h"
 #include "ff.h"
 #include "diskio.h"
+#include "sdmmc.h"
 #endif
 
 #if USB_SERIAL_CDC
@@ -1669,8 +1670,7 @@ static bool driver_setup (settings_t *settings)
 
 #if SDCARD_ENABLE
 
-    DIGITAL_OUT(SD_CS_PORT, SD_CS_PIN, 1);
-
+    sdmmc_init();
     sdcard_init();
 
 #endif
@@ -2267,7 +2267,7 @@ void Driver_IncTick (void)
 #if SDCARD_ENABLE
     static uint32_t fatfs_ticks = 10;
     if(!(--fatfs_ticks)) {
-        disk_timerproc();
+        //disk_timerproc();
         fatfs_ticks = 10;
     }
 #endif
