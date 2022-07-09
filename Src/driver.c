@@ -939,7 +939,7 @@ static void spindle_set_speed (uint_fast16_t pwm_value)
 {
     if (pwm_value == spindle_pwm.off_value) {
         pwmEnabled = false;
-        if(settings.spindle.flags.pwm_action == SpindleAction_DisableWithZeroSPeed)
+        if(settings.spindle.flags.enable_rpm_controlled)
             spindle_off();
         if(spindle_pwm.always_on) {
             SPINDLE_PWM_TIMER_CCR = spindle_pwm.off_value;
@@ -954,9 +954,10 @@ static void spindle_set_speed (uint_fast16_t pwm_value)
             SPINDLE_PWM_TIMER_CCR = 0;
 #endif
     } else {
-        if(!pwmEnabled)
+        if(!pwmEnabled) {
             spindle_on();
-        pwmEnabled = true;
+            pwmEnabled = true;
+        }
         SPINDLE_PWM_TIMER_CCR = pwm_value;
 #if SPINDLE_PWM_TIMER_N == 1
         SPINDLE_PWM_TIMER->BDTR |= TIM_BDTR_MOE;
@@ -972,13 +973,18 @@ static uint_fast16_t spindleGetPWM (float rpm)
 // Start or stop spindle
 static void spindleSetStateVariable (spindle_state_t state, float rpm)
 {
-    if (!state.on || rpm == 0.0f) {
-        spindle_set_speed(spindle_pwm.off_value);
-        spindle_off();
-    } else {
+#ifdef SPINDLE_DIRECTION_PIN
+    if(state.on)
         spindle_dir(state.ccw);
-        spindle_set_speed(spindle_compute_pwm_value(&spindle_pwm, rpm, false));
+#endif
+    if(!settings.spindle.flags.enable_rpm_controlled) {
+        if(state.on)
+            spindle_on();
+        else
+            spindle_off();
     }
+
+    spindle_set_speed(state.on ? spindle_compute_pwm_value(&spindle_pwm, rpm, false) : spindle_pwm.off_value);
 
 #if SPINDLE_SYNC_ENABLE
     if(settings.spindle.at_speed_tolerance > 0.0f) {
@@ -1026,26 +1032,25 @@ static void spindlePulseOn (uint_fast16_t pulse_length)
 
 #endif
 
+
 bool spindleConfig (void)
 {
 #ifdef SPINDLE_PWM_TIMER_N
 
-    if((hal.spindle.cap.variable = settings.spindle.rpm_min < settings.spindle.rpm_max)) {
+    RCC_ClkInitTypeDef clock;
+    uint32_t latency, prescaler = settings.spindle.pwm_freq > 4000.0f ? 1 : (settings.spindle.pwm_freq > 200.0f ? 12 : 25);
+
+    HAL_RCC_GetClockConfig(&clock, &latency);
+
+  #if SPINDLE_PWM_TIMER_N == 1
+    if((hal.spindle.cap.variable = !settings.spindle.flags.pwm_disable && spindle_precompute_pwm_values(&spindle_pwm, (HAL_RCC_GetPCLK2Freq() * (clock.APB2CLKDivider == 0 ? 1 : 2)) / prescaler))) {
+  #else
+    if((hal.spindle.cap.variable = !settings.spindle.flags.pwm_disable && spindle_precompute_pwm_values(&spindle_pwm, (HAL_RCC_GetPCLK1Freq() * (clock.APB1CLKDivider == 0 ? 1 : 2)) / prescaler))) {
+  #endif
 
         hal.spindle.set_state = spindleSetStateVariable;
 
         SPINDLE_PWM_TIMER->CR1 &= ~TIM_CR1_CEN;
-
-        RCC_ClkInitTypeDef clock;
-        uint32_t latency, prescaler = settings.spindle.pwm_freq > 4000.0f ? 1 : (settings.spindle.pwm_freq > 200.0f ? 12 : 25);
-
-        HAL_RCC_GetClockConfig(&clock, &latency);
-
-  #if SPINDLE_PWM_TIMER_N == 1
-        spindle_precompute_pwm_values(&spindle_pwm, (HAL_RCC_GetPCLK2Freq() * (clock.APB2CLKDivider == 0 ? 1 : 2)) / prescaler);
-  #else
-        spindle_precompute_pwm_values(&spindle_pwm, (HAL_RCC_GetPCLK1Freq() * (clock.APB1CLKDivider == 0 ? 1 : 2)) / prescaler);
-  #endif
 
         TIM_Base_InitTypeDef timerInitStructure = {
             .Prescaler = prescaler - 1,
@@ -1074,14 +1079,20 @@ bool spindleConfig (void)
         SPINDLE_PWM_TIMER->CCER |= SPINDLE_PWM_CCER_EN;
         SPINDLE_PWM_TIMER->CR1 |= TIM_CR1_CEN;
 
-    } else
+    } else {
+        if(pwmEnabled)
+            hal.spindle.set_state((spindle_state_t){0}, 0.0f);
 #endif // SPINDLE_PWM_TIMER_N
         hal.spindle.set_state = spindleSetState;
+    }
+
+    spindle_update_caps(hal.spindle.cap.variable);
 
     return true;
 }
 
 #endif // PWM_SPINDLE
+
 
 #if SPINDLE_SYNC_ENABLE
 
@@ -1168,6 +1179,7 @@ static void spindleDataReset (void)
 #endif // SPINDLE_SYNC_ENABLE
 
 // end spindle code
+
 
 // Start/stop coolant (and mist if enabled)
 static void coolantSetState (coolant_state_t mode)
@@ -1666,6 +1678,7 @@ static bool driver_setup (settings_t *settings)
     };
 
     hal.periph_port.register_pin(&pwm);
+
 #endif
 
 #if SDCARD_ENABLE
@@ -1745,7 +1758,7 @@ bool driver_init (void)
     HAL_RCC_GetClockConfig(&clock, &latency);
 
     hal.info = "STM32H743";
-    hal.driver_version = "220325";
+    hal.driver_version = "220703";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
 #endif
