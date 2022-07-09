@@ -239,7 +239,7 @@ static output_signal_t outputpin[] = {
 #ifdef C_AXIS
     { .id = Output_DirC,            .port = C_DIRECTION_PORT,       .pin = C_DIRECTION_PIN,         .group = PinGroup_StepperDir,    .mode = {DIRECTION_PINMODE} },
 #endif
-#if !TRINAMIC_ENABLE
+#if !TRINAMIC_MOTOR_ENABLE
 #ifdef STEPPERS_ENABLE_PORT
     { .id = Output_StepperEnable,   .port = STEPPERS_ENABLE_PORT,   .pin = STEPPERS_ENABLE_PIN,     .group = PinGroup_StepperEnable, .mode = {STEPPERS_ENABLE_PINMODE} },
 #endif
@@ -261,6 +261,48 @@ static output_signal_t outputpin[] = {
 #ifdef C_ENABLE_PORT
     { .id = Output_StepperEnableC,  .port = C_ENABLE_PORT,          .pin = C_ENABLE_PIN,            .group = PinGroup_StepperEnable, .mode = {STEPPERS_ENABLE_PINMODE} },
 #endif
+#endif // TRINAMIC_MOTOR_ENABLE
+#ifdef MOTOR_CS_PIN
+    { .id = Output_MotorChipSelect,     .port = MOTOR_CS_PORT,      .pin = MOTOR_CS_PIN,            .group = PinGroup_MotorChipSelect },
+#endif
+#ifdef MOTOR_CSX_PIN
+    { .id = Output_MotorChipSelectX,    .port = MOTOR_CSX_PORT,     .pin = MOTOR_CSX_PIN,           .group = PinGroup_MotorChipSelect },
+#endif
+#ifdef MOTOR_CSY_PIN
+    { .id = Output_MotorChipSelectY,    .port = MOTOR_CSY_PORT,     .pin = MOTOR_CSY_PIN,           .group = PinGroup_MotorChipSelect },
+#endif
+#ifdef MOTOR_CSZ_PIN
+    { .id = Output_MotorChipSelectZ,    .port = MOTOR_CSZ_PORT,     .pin = MOTOR_CSZ_PIN,           .group = PinGroup_MotorChipSelect },
+#endif
+#ifdef MOTOR_CSM3_PIN
+    { .id = Output_MotorChipSelectM3,   .port = MOTOR_CSM3_PORT,    .pin = MOTOR_CSM3_PIN,          .group = PinGroup_MotorChipSelect },
+#endif
+#ifdef MOTOR_CSM4_PIN
+    { .id = Output_MotorChipSelectM4,   .port = MOTOR_CSM4_PORT,    .pin = MOTOR_CSM4_PIN,          .group = PinGroup_MotorChipSelect },
+#endif
+#ifdef MOTOR_CSM5_PIN
+    { .id = Output_MotorChipSelectM5,   .port = MOTOR_CSM5_PORT,    .pin = MOTOR_CSM5_PIN,          .group = PinGroup_MotorChipSelect },
+#endif
+#ifdef MOTOR_CS_PIN
+    { .id = Output_MotorChipSelect,     .port = MOTOR_CS_PORT,      .pin = MOTOR_CS_PIN,            .group = PinGroup_MotorChipSelect },
+#endif
+#ifdef MOTOR_UARTX_PIN
+    { .id = Bidirectional_MotorUARTX,   .port = MOTOR_UARTX_PORT,   .pin = MOTOR_UARTX_PIN,         .group = PinGroup_MotorUART },
+#endif
+#ifdef MOTOR_UARTY_PIN
+    { .id = Bidirectional_MotorUARTY,   .port = MOTOR_UARTY_PORT,   .pin = MOTOR_UARTY_PIN,         .group = PinGroup_MotorUART },
+#endif
+#ifdef MOTOR_UARTZ_PIN
+    { .id = Bidirectional_MotorUARTZ,   .port = MOTOR_UARTZ_PORT,   .pin = MOTOR_UARTZ_PIN,         .group = PinGroup_MotorUART },
+#endif
+#ifdef MOTOR_UARTM3_PIN
+    { .id = Bidirectional_MotorUARTM3,  .port = MOTOR_UARTM3_PORT,  .pin = MOTOR_UARTM3_PIN,        .group = PinGroup_MotorUART },
+#endif
+#ifdef MOTOR_UARTM4_PIN
+    { .id = Bidirectional_MotorUARTM4,  .port = MOTOR_UARTM4_PORT,  .pin = MOTOR_UARTM4_PIN,        .group = PinGroup_MotorUART },
+#endif
+#ifdef MOTOR_UARTM5_PIN
+    { .id = Bidirectional_MotorUARTM5,  .port = MOTOR_UARTM5_PORT,  .pin = MOTOR_UARTM5_PIN,        .group = PinGroup_MotorUART },
 #endif
 #ifdef PWM_SPINDLE
 #ifdef SPINDLE_ENABLE_PIN
@@ -734,9 +776,9 @@ static void limitsEnable (bool on, bool homing)
     } else
         EXTI->IMR1 &= ~LIMIT_MASK;
 
-#if TRINAMIC_ENABLE
-    trinamic_homing(homing);
-#endif
+//#if TRINAMIC_ENABLE
+//    trinamic_homing(homing);
+//#endif
 }
 
 // Returns limit state as an axes_signals_t variable.
