@@ -1909,6 +1909,10 @@ bool driver_init (void)
     enet_init();
 #endif
 
+#ifdef HAS_BOARD_INIT
+    board_init();
+#endif
+
 #include "grbl/plugins_init.h"
 
     // No need to move version check before init.

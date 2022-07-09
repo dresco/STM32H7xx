@@ -23,7 +23,9 @@
 // If none is enabled pin mappings from generic_map.h will be used.
 //#define BOARD_PROTONEER_3XX   // For use with a Nucleo-F756ZG board.
 //#define BOARD_GENERIC_UNO     // For use with a Nucleo-F756ZG board.
-#define BOARD_REFERENCE       // grblHAL reference board map.
+//#define BOARD_BTT_SKR_30      // BTT SKR V3 board.
+//#define BOARD_WEACT_MINI_H743 // WeAct MiniSTM32H743 board.
+//#define BOARD_REFERENCE       // grblHAL reference board map.
 //#define BOARD_MY_MACHINE      // Add my_machine_map.h before enabling this!
 
 #if defined(NUCLEO_H743)
@@ -35,9 +37,7 @@
 // Configuration
 // Uncomment to enable.
 
-#if !IS_NUCLEO_DEVKIT   // The Nucleo-F756ZG board has an off-chip UART to USB interface.
-#define USB_SERIAL_CDC       1 // Serial communication via native USB.
-#endif
+//#define USB_SERIAL_CDC       1 // Serial communication via native USB.
 //#define SAFETY_DOOR_ENABLE   1 // Enable safety door input.
 //#define VFD_ENABLE           1 // Set to 1 or 2 for Huanyang VFD spindle. More here https://github.com/grblHAL/Plugins_spindle
 //#define DUAL_SPINDLE         1 // Uncomment for switching between VFD spindle and PWM output with $32
@@ -55,6 +55,7 @@
 //#define FANS_ENABLE 1
 //#define PLASMA_ENABLE 1
 //#define TRINAMIC_ENABLE   2130 // Trinamic TMC2130 stepper driver support. NOTE: work in progress.
+//#define TRINAMIC_ENABLE   2209   // Trinamic TMC2209 stepper driver support. NOTE: work in progress.
 //#define TRINAMIC_ENABLE   5160 // Trinamic TMC5160 stepper driver support. NOTE: work in progress.
 //#define TRINAMIC_I2C         1 // Trinamic I2C - SPI bridge interface.
 //#define TRINAMIC_DEV         1 // Development mode, adds a few M-codes to aid debugging. Do not enable in production code.

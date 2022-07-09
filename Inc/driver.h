@@ -65,6 +65,8 @@
 #define timercr2ois(c, n) TIM_CR2_OIS ## c ## n
 #define timerAF(t, f) timeraf(t, f)
 #define timeraf(t, f) GPIO_AF ## f ## _TIM ## t
+#define timerCLKENA(t) timercken(t)
+#define timercken(t) __HAL_RCC_TIM ## t ## _CLK_ENABLE
 
 // Define GPIO output mode options
 
@@ -97,6 +99,10 @@
   #include "protoneer_3.xx_map.h"
 #elif defined(BOARD_GENERIC_UNO)
   #include "uno_map.h"
+#elif defined(BOARD_BTT_SKR_30)
+  #include "btt_skr_v3.0_map.h"
+#elif defined(BOARD_WEACT_MINI_H743)
+  #include "weact_mini_h743_map.h"
 #elif defined(BOARD_REFERENCE)
   #include "reference_map.h"
 #elif defined(BOARD_MY_MACHINE)
@@ -342,6 +348,9 @@ typedef struct {
 
 bool driver_init (void);
 void Driver_IncTick (void);
+#ifdef HAS_BOARD_INIT
+void board_init (void);
+#endif
 #ifdef HAS_IOPORTS
 void ioports_init(pin_group_pins_t *aux_inputs, pin_group_pins_t *aux_outputs);
 void ioports_event (uint32_t bit);
