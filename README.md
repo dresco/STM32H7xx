@@ -1,13 +1,17 @@
-## grblHAL driver for STM32H7xx processors (Nucleo-144, WeAct MiniSTM32H7xx)
+## grblHAL driver for STM32H7xx processors
 
-See the Wiki-page for [compiling grblHAL](https://github.com/grblHAL/core/wiki/Compiling-GrblHAL) for instructions for how to import the project, configure the driver and compile.
+This is a port of [grblHAL](https://www.github.com/grblhAL) for the STM32H7xx series of processors, originally based on the F7 driver from the official repository.
 
-__NOTE:__ This is an initial version, currently only lightly tested with [Nucleo-H743ZI2](https://www.st.com/en/evaluation-tools/nucleo-h743zi.html) and [WeAct MiniSTM32H7xx](https://github.com/WeActTC/MiniSTM32H7xx) development boards.
+__NOTE:__ This is an initial version, currently only lightly tested with [BTT SKR 3 (EZ)](https://www.biqu.equipment/products/bigtreetech-btt-skr-3-ez-control-board-mainboard-for-3d-printer), [Nucleo-H743ZI2](https://www.st.com/en/evaluation-tools/nucleo-h743zi.html), and [WeAct MiniSTM32H743](https://github.com/WeActTC/MiniSTM32H7xx) boards.
 
-- The STMCubeIDE builds enable Ethernet support for the Nucleo board, and SDCard support for the WeAct board.
-- PlatformIO builds are currently broken, pending an updated **framework-stm32cubeh7** release.
+Builds should be supported from both STMCubeIDE and PlatformIO. Board specific settings have been included in the IDE configurations where possible - to avoid the need for code changes when building for different boards. (Please see the upstream Wiki-page [compiling grblHAL](https://github.com/grblHAL/core/wiki/Compiling-GrblHAL) for further instructions for how to import the project, configure the driver and compile).
+
+The current build configurations include;
+- WeAct MiniSTM32H743 with SDCard and USB serial support.
+- Nucleo H743ZI with Ethernet support. (Note that Ethernet is not currently included in PlatformIO builds, pending an update to the **framework-stm32cubeh7** version included in platformio).
+- BTT SKR 3 (including EZ) with SDCard, USB serial, and TMC 2209 driver support. (Note that settings are currently stored in FLASH, as the onboard EEPROM will need a software I2C implementation).
 
 Available driver options can be found [here](Inc/my_machine.h).
 
 ---
-2022-05-17
+2022-07-17

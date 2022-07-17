@@ -34,6 +34,8 @@
 
  /* This file was modified by ST */
 
+#if TCP_ECHOSERVER_ENABLE
+
 #include "tcp_echoserver.h"
 #include "lwip/debug.h"
 #include "lwip/stats.h"
@@ -440,3 +442,5 @@ static void tcp_echoserver_connection_close(struct tcp_pcb *tpcb, struct tcp_ech
 }
 
 #endif /* LWIP_TCP */
+
+#endif /* TCP_ECHOSERVER_ENABLE */

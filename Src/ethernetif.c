@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * @file    LwIP/LwIP_TCP_Echo_Server/Src/ethernetif.c
+  * @file    ethernetif.c
   * @author  MCD Application Team
   * @brief   This file implements Ethernet network interface drivers for lwIP
   ******************************************************************************
@@ -15,6 +15,8 @@
   *
   ******************************************************************************
   */
+
+#if ETHERNET_ENABLE
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm32h7xx_hal.h"
@@ -612,3 +614,4 @@ void HAL_ETH_TxFreeCallback(uint32_t * buff)
   pbuf_free((struct pbuf *)buff);
 }
 
+#endif // ETHERNET_ENABLE
