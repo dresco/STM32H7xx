@@ -39,7 +39,8 @@ static SPI_HandleTypeDef spi_port = {
     .Init.FirstBit = SPI_FIRSTBIT_MSB,
     .Init.TIMode = SPI_TIMODE_DISABLE,
     .Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE,
-    .Init.CRCPolynomial = 10
+    .Init.CRCPolynomial = 10,
+    .Init.MasterKeepIOState = SPI_MASTER_KEEP_IO_STATE_ENABLE
 };
 
 void spi_init (void)
@@ -172,25 +173,25 @@ void spi_init (void)
     }
 }
 
-// set the SSI speed to the max setting
+// set the SPI speed to the max setting
 void spi_set_max_speed (void)
 {
-    spi_port.Instance->CR1 &= ~SPI_BAUDRATEPRESCALER_256;
-    spi_port.Instance->CR1 |= SPI_BAUDRATEPRESCALER_16; // should be able to go to 12Mhz...
+    __HAL_SPI_DISABLE(&spi_port);
+    MODIFY_REG(spi_port.Instance->CFG1, SPI_CFG1_MBR, SPI_BAUDRATEPRESCALER_2); // should be able to go to 24Mhz...
+    __HAL_SPI_ENABLE(&spi_port);
 }
 
 uint32_t spi_set_speed (uint32_t prescaler)
 {
-    uint32_t cur = spi_port.Instance->CR1 & SPI_BAUDRATEPRESCALER_256;
-
-    spi_port.Instance->CR1 &= ~SPI_BAUDRATEPRESCALER_256;
-    spi_port.Instance->CR1 |= prescaler;
-
-    return cur;
+    __HAL_SPI_DISABLE(&spi_port);
+    MODIFY_REG(spi_port.Instance->CFG1, SPI_CFG1_MBR, prescaler);
+    __HAL_SPI_ENABLE(&spi_port);
+    return prescaler;
 }
 
 uint8_t spi_get_byte (void)
 {
+    spi_port.Instance->CR1 |= SPI_CR1_CSTART;
     *((__IO uint8_t *)&SPIPORT->TXDR) = 0xFF; // Writing dummy data into Data register
 
     while(!__HAL_SPI_GET_FLAG(&spi_port, SPI_FLAG_RXNE));
@@ -200,6 +201,7 @@ uint8_t spi_get_byte (void)
 
 uint8_t spi_put_byte (uint8_t byte)
 {
+    spi_port.Instance->CR1 |= SPI_CR1_CSTART;
     *((__IO uint8_t *)&SPIPORT->TXDR) = byte;
 
     while(!__HAL_SPI_GET_FLAG(&spi_port, SPI_FLAG_TXE));
