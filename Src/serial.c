@@ -39,12 +39,25 @@ static stream_tx_buffer_t txbuf2 = {0};
 static enqueue_realtime_command_ptr enqueue_realtime_command2 = stream_buffer_all;
 #endif
 
+#ifndef SERIAL_MOD
 #if IS_NUCLEO_DEVKIT
-  #define USART USART3
-  #define USART_IRQHandler USART3_IRQHandler
+#define SERIAL_MOD 3
 #else
-  #define USART USART1
-  #define USART_IRQHandler USART1_IRQHandler
+#define SERIAL_MOD 1
+#endif
+#endif
+
+#define USART usart(SERIAL_MOD)
+#define USART_IRQ usartINT(SERIAL_MOD)
+#define USART_IRQHandler usartHANDLER(SERIAL_MOD)
+
+#ifdef SERIAL2_MOD
+#if SERIAL_MOD == SERIAL_MOD2
+#error Conflicting use of USART ports!
+#endif
+#define UART2 usart(SERIAL2_MOD)
+#define UART2_IRQ usartINT(SERIAL2_MOD)
+#define UART2_IRQHandler usartHANDLER(SERIAL2_MOD)
 #endif
 
 static io_stream_properties_t serial[] = {
@@ -268,45 +281,10 @@ const io_stream_t *serialInit (uint32_t baud_rate)
 
     serial[0].flags.claimed = On;
 
-#if IS_NUCLEO_DEVKIT
-
-    __HAL_RCC_USART3_CLK_ENABLE();
-    __HAL_RCC_GPIOD_CLK_ENABLE();
-
-    GPIO_InitTypeDef GPIO_InitStructure = {
-        .Mode      = GPIO_MODE_AF_PP,
-        .Pull      = GPIO_NOPULL,
-        .Speed     = GPIO_SPEED_FREQ_VERY_HIGH,
-        .Pin       = GPIO_PIN_8|GPIO_PIN_9, // TX|RX
-        .Alternate = GPIO_AF7_USART3
-    };
-    HAL_GPIO_Init(GPIOD, &GPIO_InitStructure);
-
-    serialSetBaudRate(baud_rate);
-
-    HAL_NVIC_SetPriority(USART3_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(USART3_IRQn);
-
-    static const periph_pin_t tx = {
-        .function = Output_TX,
-        .group = PinGroup_UART,
-        .port  = GPIOD,
-        .pin   = 8,
-        .mode  = { .mask = PINMODE_OUTPUT },
-        .description = "UART1"
-    };
-    static const periph_pin_t rx = {
-        .function = Input_RX,
-        .group = PinGroup_UART,
-        .port = GPIOD,
-        .pin = 9,
-        .mode = { .mask = PINMODE_NONE },
-        .description = "UART1"
-    };
-
-#else
+#if SERIAL_MOD == 1
 
     __HAL_RCC_USART1_CLK_ENABLE();
+    __HAL_RCC_GPIOA_CLK_ENABLE();
 
     GPIO_InitTypeDef GPIO_InitStructure = {
         .Mode      = GPIO_MODE_AF_PP,
@@ -316,11 +294,6 @@ const io_stream_t *serialInit (uint32_t baud_rate)
         .Alternate = GPIO_AF7_USART1
     };
     HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-    serialSetBaudRate(baud_rate);
-
-    HAL_NVIC_SetPriority(USART1_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(USART1_IRQn);
 
     static const periph_pin_t tx = {
         .function = Output_TX,
@@ -340,7 +313,108 @@ const io_stream_t *serialInit (uint32_t baud_rate)
         .description = "UART1"
     };
 
+#elif SERIAL_MOD == 2
+
+    __HAL_RCC_USART2_CLK_ENABLE();
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+
+    GPIO_InitTypeDef GPIO_InitStructure = {
+        .Mode      = GPIO_MODE_AF_PP,
+        .Pull      = GPIO_NOPULL,
+        .Speed     = GPIO_SPEED_FREQ_VERY_HIGH,
+        .Pin       = GPIO_PIN_2|GPIO_PIN_3,
+        .Alternate = GPIO_AF7_USART2
+    };
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    serialSetBaudRate(baud_rate);
+
+    static const periph_pin_t tx = {
+        .function = Output_TX,
+        .group = PinGroup_UART,
+        .port  = GPIOA,
+        .pin   = 2,
+        .mode  = { .mask = PINMODE_OUTPUT },
+        .description = "UART1"
+    };
+    static const periph_pin_t rx = {
+        .function = Input_RX,
+        .group = PinGroup_UART,
+        .port = GPIOA,
+        .pin = 3,
+        .mode = { .mask = PINMODE_NONE },
+        .description = "UART1"
+    };
+
+#elif SERIAL_MOD == 3
+
+    __HAL_RCC_USART3_CLK_ENABLE();
+    __HAL_RCC_GPIOD_CLK_ENABLE();
+
+    GPIO_InitTypeDef GPIO_InitStructure = {
+        .Mode      = GPIO_MODE_AF_PP,
+        .Pull      = GPIO_NOPULL,
+        .Speed     = GPIO_SPEED_FREQ_VERY_HIGH,
+        .Pin       = GPIO_PIN_8|GPIO_PIN_9, // TX|RX
+        .Alternate = GPIO_AF7_USART3
+    };
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+    static const periph_pin_t tx = {
+        .function = Output_TX,
+        .group = PinGroup_UART,
+        .port  = GPIOD,
+        .pin   = 8,
+        .mode  = { .mask = PINMODE_OUTPUT },
+        .description = "UART1"
+    };
+    static const periph_pin_t rx = {
+        .function = Input_RX,
+        .group = PinGroup_UART,
+        .port = GPIOD,
+        .pin = 9,
+        .mode = { .mask = PINMODE_NONE },
+        .description = "UART1"
+    };
+
+#elif SERIAL_MOD == 6
+
+    __HAL_RCC_USART6_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
+
+    GPIO_InitTypeDef GPIO_InitStructure = {
+        .Mode      = GPIO_MODE_AF_PP,
+        .Pull      = GPIO_NOPULL,
+        .Speed     = GPIO_SPEED_FREQ_VERY_HIGH,
+        .Pin       = GPIO_PIN_6|GPIO_PIN_7,
+        .Alternate = GPIO_AF8_USART6
+    };
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
+
+    static const periph_pin_t tx = {
+        .function = Output_TX,
+        .group = PinGroup_UART,
+        .port = GPIOC,
+        .pin = 6,
+        .mode = { .mask = PINMODE_OUTPUT },
+        .description = "UART1"
+    };
+
+    static const periph_pin_t rx = {
+        .function = Input_RX,
+        .group = PinGroup_UART,
+        .port = GPIOC,
+        .pin = 7,
+        .mode = { .mask = PINMODE_NONE },
+        .description = "UART1"
+    };
+
 #endif
+
+    serialSetBaudRate(baud_rate);
+
+    HAL_NVIC_SetPriority(USART_IRQ, 0, 0);
+    HAL_NVIC_EnableIRQ(USART_IRQ);
 
     hal.periph_port.register_pin(&rx);
     hal.periph_port.register_pin(&tx);
@@ -375,13 +449,6 @@ void USART_IRQHandler (void)
 }
 
 #ifdef SERIAL2_MOD
-#if IS_NUCLEO_DEVKIT
-#define UART2 USART6
-#define UART2_IRQHandler USART6_IRQHandler
-#else
-#define UART2 USART2
-#define UART2_IRQHandler USART2_IRQHandler
-#endif
 
 //
 // Returns number of free characters in serial input buffer
@@ -571,24 +638,117 @@ const io_stream_t *serial2Init (uint32_t baud_rate)
 
     serial[1].flags.claimed = On;
 
-#if IS_NUCLEO_DEVKIT
+#if SERIAL2_MOD == 1
+
+    __HAL_RCC_USART1_CLK_ENABLE();
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+
+    GPIO_InitTypeDef GPIO_InitStructure = {
+        .Mode      = GPIO_MODE_AF_PP,
+        .Pull      = GPIO_NOPULL,
+        .Speed     = GPIO_SPEED_FREQ_VERY_HIGH,
+        .Pin       = GPIO_PIN_9|GPIO_PIN_10,
+        .Alternate = GPIO_AF7_USART1
+    };
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    static const periph_pin_t tx = {
+        .function = Output_TX,
+        .group = PinGroup_UART2,
+        .port = GPIOA,
+        .pin = 9,
+        .mode = { .mask = PINMODE_OUTPUT },
+        .description = "UART2"
+    };
+
+    static const periph_pin_t rx = {
+        .function = Input_RX,
+        .group = PinGroup_UART2,
+        .port = GPIOA,
+        .pin = 10,
+        .mode = { .mask = PINMODE_NONE },
+        .description = "UART2"
+    };
+
+#elif SERIAL2_MOD == 2
+
+    __HAL_RCC_USART2_CLK_ENABLE();
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+
+    GPIO_InitTypeDef GPIO_InitStructure = {
+        .Mode      = GPIO_MODE_AF_PP,
+        .Pull      = GPIO_NOPULL,
+        .Speed     = GPIO_SPEED_FREQ_VERY_HIGH,
+        .Pin       = GPIO_PIN_2|GPIO_PIN_3,
+        .Alternate = GPIO_AF7_USART2
+    };
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
+
+    serialSetBaudRate(baud_rate);
+
+    static const periph_pin_t tx = {
+        .function = Output_TX,
+        .group = PinGroup_UART2,
+        .port  = GPIOA,
+        .pin   = 2,
+        .mode  = { .mask = PINMODE_OUTPUT },
+        .description = "UART2"
+    };
+    static const periph_pin_t rx = {
+        .function = Input_RX,
+        .group = PinGroup_UART2,
+        .port = GPIOA,
+        .pin = 3,
+        .mode = { .mask = PINMODE_NONE },
+        .description = "UART2"
+    };
+
+#elif SERIAL2_MOD == 3
+
+    __HAL_RCC_USART3_CLK_ENABLE();
+    __HAL_RCC_GPIOD_CLK_ENABLE();
+
+    GPIO_InitTypeDef GPIO_InitStructure = {
+        .Mode      = GPIO_MODE_AF_PP,
+        .Pull      = GPIO_NOPULL,
+        .Speed     = GPIO_SPEED_FREQ_VERY_HIGH,
+        .Pin       = GPIO_PIN_8|GPIO_PIN_9, // TX|RX
+        .Alternate = GPIO_AF7_USART3
+    };
+    HAL_GPIO_Init(GPIOD, &GPIO_InitStructure);
+
+    serialSetBaudRate(baud_rate);
+
+    static const periph_pin_t tx = {
+        .function = Output_TX,
+        .group = PinGroup_UART2,
+        .port  = GPIOD,
+        .pin   = 8,
+        .mode  = { .mask = PINMODE_OUTPUT },
+        .description = "UART2"
+    };
+    static const periph_pin_t rx = {
+        .function = Input_RX,
+        .group = PinGroup_UART2,
+        .port = GPIOD,
+        .pin = 9,
+        .mode = { .mask = PINMODE_NONE },
+        .description = "UART2"
+    };
+
+#elif SERIAL2_MOD == 6
 
     __HAL_RCC_USART6_CLK_ENABLE();
-    __HAL_RCC_GPIOE_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
 
     GPIO_InitTypeDef GPIO_InitStructure = {
         .Mode      = GPIO_MODE_AF_PP,
         .Pull      = GPIO_NOPULL,
         .Speed     = GPIO_SPEED_FREQ_VERY_HIGH,
         .Pin       = GPIO_PIN_6|GPIO_PIN_7,
-        .Alternate = GPIO_AF7_USART6
+        .Alternate = GPIO_AF8_USART6
     };
     HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-    serial2SetBaudRate(baud_rate);
-
-    HAL_NVIC_SetPriority(USART6_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(USART6_IRQn);
 
     static const periph_pin_t tx = {
         .function = Output_TX,
@@ -608,43 +768,12 @@ const io_stream_t *serial2Init (uint32_t baud_rate)
         .description = "UART2"
     };
 
-#else
-
-    __HAL_RCC_USART2_CLK_ENABLE();
-
-    GPIO_InitTypeDef GPIO_InitStructure = {
-      .Mode      = GPIO_MODE_AF_PP,
-      .Pull      = GPIO_NOPULL,
-      .Speed     = GPIO_SPEED_FREQ_VERY_HIGH,
-      .Pin       = GPIO_PIN_2|GPIO_PIN_3,
-      .Alternate = GPIO_AF7_USART2
-    };
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStructure);
+#endif
 
     serial2SetBaudRate(baud_rate);
 
-    HAL_NVIC_SetPriority(USART2_IRQn, 0, 0);
-    HAL_NVIC_EnableIRQ(USART2_IRQn);
-
-    static const periph_pin_t tx = {
-        .function = Output_TX,
-        .group = PinGroup_UART2,
-        .port = GPIOA,
-        .pin = 2,
-        .mode = { .mask = PINMODE_OUTPUT },
-        .description = "UART2"
-    };
-
-    static const periph_pin_t rx = {
-        .function = Input_RX,
-        .group = PinGroup_UART2,
-        .port = GPIOA,
-        .pin = 3,
-        .mode = { .mask = PINMODE_NONE },
-        .description = "UART2"
-    };
-
-#endif
+    HAL_NVIC_SetPriority(UART2_IRQ, 0, 0);
+    HAL_NVIC_EnableIRQ(UART2_IRQ);
 
     hal.periph_port.register_pin(&rx);
     hal.periph_port.register_pin(&tx);
@@ -679,4 +808,5 @@ void UART2_IRQHandler (void)
 
     UART2->ICR = UART2->ISR;
 }
-#endif
+
+#endif // SERIAL2_MOD

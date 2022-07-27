@@ -3,7 +3,7 @@
 
   Part of grblHAL driver for STM32H7xx
 
-  Copyright (c) 2020-2021 Terje Io
+  Copyright (c) 2020-2022 Terje Io
 
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ void spi_init (void)
         };
 
         static const periph_pin_t sdo = {
-            .function = Output_MOSI,
+            .function = Input_MISO,
             .group = PinGroup_SPI,
             .port = GPIOA,
             .pin = 6,
@@ -79,7 +79,7 @@ void spi_init (void)
         };
 
         static const periph_pin_t sdi = {
-            .function = Input_MISO,
+            .function = Output_MOSI,
             .group = PinGroup_SPI,
             .port = GPIOA,
             .pin = 7,
@@ -107,7 +107,7 @@ void spi_init (void)
         };
 
         static const periph_pin_t sdo = {
-            .function = Output_MOSI,
+            .function = Input_MISO,
             .group = PinGroup_SPI,
             .port = GPIOB,
             .pin = 14,
@@ -115,7 +115,7 @@ void spi_init (void)
         };
 
         static const periph_pin_t sdi = {
-            .function = Input_MISO,
+            .function = Output_MOSI,
             .group = PinGroup_SPI,
             .port = GPIOB,
             .pin = 15,
@@ -143,7 +143,7 @@ void spi_init (void)
         };
 
         static const periph_pin_t sdo = {
-            .function = Output_MOSI,
+            .function = Input_MISO,
             .group = PinGroup_SPI,
             .port = GPIOC,
             .pin = 11,
@@ -151,7 +151,7 @@ void spi_init (void)
         };
 
         static const periph_pin_t sdi = {
-            .function = Input_MISO,
+            .function = Output_MOSI,
             .group = PinGroup_SPI,
             .port = GPIOC,
             .pin = 12,
