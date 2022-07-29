@@ -74,9 +74,11 @@
 /* Private variables ---------------------------------------------------------*/
 #if defined(ENABLE_SCRATCH_BUFFER)
 #if defined (ENABLE_SD_DMA_CACHE_MAINTENANCE)
+#define SCRATCH_BUFFER_ALIGNMENT_MASK 0x1F
 ALIGN_32BYTES(static uint8_t scratch[BLOCKSIZE]); // 32-Byte aligned for cache maintenance
 #else
-__ALIGN_BEGIN static uint8_t scratch[BLOCKSIZE] __ALIGN_END;
+#define SCRATCH_BUFFER_ALIGNMENT_MASK 0x03
+__ALIGN_BEGIN static uint8_t scratch[BLOCKSIZE] __ALIGN_END;  // 4-Byte aligned for DMA access
 #endif
 #endif
 /* Disk status */
@@ -88,25 +90,20 @@ static DSTATUS SD_CheckStatus(BYTE lun);
 DSTATUS SD_initialize (BYTE);
 DSTATUS SD_status (BYTE);
 DRESULT SD_read (BYTE, BYTE*, DWORD, UINT);
-#if _USE_WRITE == 1
+#if FF_FS_READONLY == 0
 DRESULT SD_write (BYTE, const BYTE*, DWORD, UINT);
-#endif /* _USE_WRITE == 1 */
-#if _USE_IOCTL == 1
+#endif /* FF_FS_READONLY == 0 */
 DRESULT SD_ioctl (BYTE, BYTE, void*);
-#endif  /* _USE_IOCTL == 1 */
 
 const Diskio_drvTypeDef  SD_Driver =
 {
   SD_initialize,
   SD_status,
   SD_read,
-#if  _USE_WRITE == 1
+#if  FF_FS_READONLY == 0
   SD_write,
-#endif /* _USE_WRITE == 1 */
-
-#if  _USE_IOCTL == 1
+#endif /* FF_FS_READONLY == 0 */
   SD_ioctl,
-#endif /* _USE_IOCTL == 1 */
 };
 
 /* USER CODE BEGIN beforeFunctionSection */
@@ -207,7 +204,7 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
   }
 
 #if defined(ENABLE_SCRATCH_BUFFER)
-  if (!((uint32_t)buff & 0x3))
+  if (!((uint32_t)buff & SCRATCH_BUFFER_ALIGNMENT_MASK))
   {
 #endif
     if(BSP_SD_ReadBlocks_DMA((uint32_t*)buff,
@@ -306,7 +303,7 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
   * @param  count: Number of sectors to write (1..128)
   * @retval DRESULT: Operation result
   */
-#if _USE_WRITE == 1
+#if FF_FS_READONLY == 0
 
 DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
 {
@@ -328,7 +325,7 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
   }
 
 #if defined(ENABLE_SCRATCH_BUFFER)
-  if (!((uint32_t)buff & 0x3))
+  if (!((uint32_t)buff & SCRATCH_BUFFER_ALIGNMENT_MASK))
   {
 #endif
 #if (ENABLE_SD_DMA_CACHE_MAINTENANCE == 1)
@@ -414,7 +411,7 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
 #endif
   return res;
 }
-#endif /* _USE_WRITE == 1 */
+#endif /* FF_FS_READONLY == 0 */
 
 /* USER CODE BEGIN beforeIoctlSection */
 /* can be used to modify previous code / undefine following code / add new code */
@@ -426,7 +423,6 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
   * @param  *buff: Buffer to send/receive control data
   * @retval DRESULT: Operation result
   */
-#if _USE_IOCTL == 1
 DRESULT SD_ioctl(BYTE lun, BYTE cmd, void *buff)
 {
   DRESULT res = RES_ERROR;
@@ -468,7 +464,6 @@ DRESULT SD_ioctl(BYTE lun, BYTE cmd, void *buff)
 
   return res;
 }
-#endif /* _USE_IOCTL == 1 */
 
 /* USER CODE BEGIN afterIoctlSection */
 /* can be used to modify previous code / undefine following code / add new code */
