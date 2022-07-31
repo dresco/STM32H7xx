@@ -23,6 +23,7 @@
 
 */
 
+#include "driver.h"
 
 #if SDCARD_ENABLE
 
