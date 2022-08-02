@@ -5,6 +5,7 @@
   Part of grblHAL
 
   Copyright (c) 2021 Terje Io
+  Copyright (c) 2022 Jon Escombe
   Some parts (C) COPYRIGHT STMicroelectronics - code created by IDE
 
   Grbl is free software: you can redistribute it and/or modify
@@ -24,6 +25,21 @@
 
 #include "main.h"
 #include "grbl/grbllib.h"
+
+#ifdef DEBUG
+#include "stdio.h"
+// redirect printf to SWO
+int _write(int file, char *ptr, int len)
+{
+    int i;
+
+    for (i = 0; i < len; i++)
+    {
+        ITM_SendChar(*ptr++);
+    }
+    return len;
+}
+#endif
 
 void SystemClock_Config(void);
 void MPU_Config(void);
