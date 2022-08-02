@@ -190,6 +190,36 @@ The STM32H7xx allows computing and verifying the IP, UDP, TCP and ICMP checksums
  */
 #define LWIP_SOCKET                     0
 
+/*
+   ---------------------------------------
+   ------------ HTTPD options ------------
+   ---------------------------------------
+*/
+#define LWIP_HTTPD_CUSTOM_FILES         1
+#define LWIP_HTTPD_DYNAMIC_HEADERS      1
+#define LWIP_HTTPD_DYNAMIC_FILE_READ    1
+#define LWIP_HTTPD_SUPPORT_V09          0
+#define LWIP_HTTPD_SUPPORT_11_KEEPALIVE 1
+//#define LWIP_HTTPD_CGI_ADV              1
+//#define LWIP_HTTPD_SUPPORT_POST         1
+//#define LWIP_HTTPD_SSI                  1
+
+/*
+   ---------------------------------------
+   ------------ Debug options ------------
+   ---------------------------------------
+*/
+
+//#define LWIP_DEBUG                      1
+
+#define ETHARP_DEBUG                    LWIP_DBG_ON
+#define IP_DEBUG                        LWIP_DBG_ON
+#define TCP_DEBUG                       LWIP_DBG_ON
+#define TCP_OUTPUT_DEBUG                LWIP_DBG_ON
+#define HTTPD_DEBUG                     LWIP_DBG_ON
+#define TCP_QLEN_DEBUG                  LWIP_DBG_ON
+#define LWIP_DBG_TYPES_ON               (LWIP_DBG_ON | LWIP_DBG_TRACE)
+
 #endif /* __LWIPOPTS_H__ */
 
 
