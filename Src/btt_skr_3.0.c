@@ -28,12 +28,14 @@
 void board_init (void)
 {
 #if TRINAMIC_SPI_ENABLE
-  static trinamic_driver_if_t driver_if = {.on_drivers_init = if_init};
+  extern void if_init (uint8_t motors, axes_signals_t enabled);
+  trinamic_driver_if_t driver_if = {.on_drivers_init = if_init};
   trinamic_if_init(&driver_if);
 #elif TRINAMIC_UART_ENABLE
     extern void tmc_uart_init (void);
     tmc_uart_init();
 #endif
 }
+
 
 #endif //BOARD_BTT_SKR_30

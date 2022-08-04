@@ -8,10 +8,12 @@ Builds should be supported from both STMCubeIDE and PlatformIO. Board specific s
 
 The current build configurations include;
 - WeAct MiniSTM32H743 with SDCard and USB serial support.
-- Nucleo H743ZI with Ethernet support. (Note that Ethernet is not currently included in PlatformIO builds, pending an update to the **framework-stm32cubeh7** version included in platformio).
-- BTT SKR 3 (including EZ) with SDCard, USB serial, and TMC 2209 driver support. (Note that settings are currently stored in FLASH, as the onboard EEPROM will need a software I2C implementation).
+- BTT SKR 3 (including EZ) with SDCard, USB serial, and TMC 2209/5160 driver support. (Note that settings are currently stored in FLASH, as the onboard EEPROM will need a software I2C implementation).
+- Nucleo H743ZI with Ethernet support. (WebUI support has also been added to the Nucleo build, however this requires an SDCard breakout).
+
+PlatformIO builds are currently missing Ethernet support, pending an update to the **framework-stm32cubeh7** version included in platformio.
 
 Available driver options can be found [here](Inc/my_machine.h).
 
 ---
-2022-07-17
+2022-08-05

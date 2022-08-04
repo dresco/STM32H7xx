@@ -153,6 +153,8 @@
 #elif TRINAMIC_SPI_ENABLE
 
 // The BTT SKR-3 uses software SPI
+#define TRINAIC_SOFT_SPI
+
 #define TRINAMIC_MOSI_PORT          GPIOE
 #define TRINAMIC_MOSI_PIN           13
 #define TRINAMIC_SCK_PORT           GPIOE
