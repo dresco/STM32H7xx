@@ -204,7 +204,19 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
   }
 
 #if defined(ENABLE_SCRATCH_BUFFER)
-  if (!((uint32_t)buff & SCRATCH_BUFFER_ALIGNMENT_MASK))
+  //
+  // Check that passed in buffer is suitable for SDMMC DMA access, else use scratch buffer.
+  //
+  // Ensure buffer address is within AXI SRAM in the D1 domain, as SDMMC1 has no DMA access to
+  // AHB SRAM in the D2 domain. This is an issue for file access from (for instance) the LwIP
+  // HTTP server, as the buffer is allocated from the LwIP heap in AHB SRAM1. Note that SDMMC2
+  // should be able to access D2 RAM, so may be a better choice for Ethernet enabled boards?
+  //
+  // Ensure the buffer is correctly aligned (4-byte alignment required for DMA, but 32-byte alignment
+  // is needed for cache maintenance, else cache invalidation may corrupt surrounding memory).
+  //
+  if ((((uint32_t)buff > D1_AXISRAM_BASE) & ((uint32_t)buff < D2_AHBSRAM_BASE)) &
+     (!((uint32_t)buff & SCRATCH_BUFFER_ALIGNMENT_MASK)))
   {
 #endif
     if(BSP_SD_ReadBlocks_DMA((uint32_t*)buff,
@@ -325,7 +337,9 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
   }
 
 #if defined(ENABLE_SCRATCH_BUFFER)
-  if (!((uint32_t)buff & SCRATCH_BUFFER_ALIGNMENT_MASK))
+  // Check that passed in buffer is suitable for SDMMC DMA access, else use scratch buffer.
+  if ((((uint32_t)buff > D1_AXISRAM_BASE) & ((uint32_t)buff < D2_AHBSRAM_BASE)) &
+     (!((uint32_t)buff & SCRATCH_BUFFER_ALIGNMENT_MASK)))
   {
 #endif
 #if (ENABLE_SD_DMA_CACHE_MAINTENANCE == 1)
