@@ -43,6 +43,7 @@
 //#define DUAL_SPINDLE         1 // Uncomment for switching between VFD spindle and PWM output with $32
 //#define MODBUS_ENABLE        1 // Set to 1 for auto direction, 2 for direction signal on auxillary output pin.
 //#define WEBUI_ENABLE         1 // Enable ESP3D-WEBUI plugin along with networking and SD card plugins.
+//#define WEBUI_AUTH_ENABLE    1 // Enable ESP3D-WEBUI authentication.
 //#define WEBUI_INFLASH        1 // Store WebUI files in flash instead of on SD card.
 //#define ETHERNET_ENABLE      1 // Ethernet streaming. Uses networking plugin.
 //#define BLUETOOTH_ENABLE     1 // Set to 1 for HC-05 module. Uses Bluetooth plugin.
@@ -51,9 +52,9 @@
 //#define ODOMETER_ENABLE      1 // Odometer plugin.
 //#define PPI_ENABLE           1 // Laser PPI plugin. To be completed.
 //#define LASER_COOLANT_ENABLE 1 // Laser coolant plugin. To be completed.
-//#define OPENPNP_ENABLE 1
-//#define FANS_ENABLE 1
-//#define PLASMA_ENABLE 1
+//#define OPENPNP_ENABLE       1 // OpenPNP plugin. To be completed.
+//#define FANS_ENABLE          1 // Enable fan control via M106/M107. Enables fans plugin.
+//#define PLASMA_ENABLE        1 // Plasma (THC) plugin. To be completed.
 //#define TRINAMIC_ENABLE   2130 // Trinamic TMC2130 stepper driver support. NOTE: work in progress.
 //#define TRINAMIC_ENABLE   2209   // Trinamic TMC2209 stepper driver support. NOTE: work in progress.
 //#define TRINAMIC_ENABLE   5160 // Trinamic TMC5160 stepper driver support. NOTE: work in progress.
@@ -83,6 +84,7 @@
 #ifdef SDCARD_ENABLE
 #define FTP_ENABLE              1 // Ftp daemon - requires SD card enabled.
 //#define HTTP_ENABLE             1 // http daemon - requires SD card enabled.
+//#define WEBDAV_ENABLE           1 // webdav protocol - requires http daemon and SD card enabled.
 #endif
 // The following symbols have the default values as shown, uncomment and change as needed.
 //#define NETWORK_HOSTNAME        "GRBL"

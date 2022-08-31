@@ -195,13 +195,14 @@ The STM32H7xx allows computing and verifying the IP, UDP, TCP and ICMP checksums
    ------------ HTTPD options ------------
    ---------------------------------------
 */
-#define LWIP_HTTPD_CUSTOM_FILES         1
+#define LWIP_HTTPD_CUSTOM_FILES         0
 #define LWIP_HTTPD_DYNAMIC_HEADERS      1
 #define LWIP_HTTPD_DYNAMIC_FILE_READ    1
 #define LWIP_HTTPD_SUPPORT_V09          0
 #define LWIP_HTTPD_SUPPORT_11_KEEPALIVE 1
+#define LWIP_HTTPD_SUPPORT_POST         1
+
 //#define LWIP_HTTPD_CGI_ADV              1
-//#define LWIP_HTTPD_SUPPORT_POST         1
 //#define LWIP_HTTPD_SSI                  1
 
 /*

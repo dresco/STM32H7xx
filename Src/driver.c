@@ -399,7 +399,7 @@ static void driver_delay (uint32_t ms, delay_callback_ptr callback)
 static void stepperEnable (axes_signals_t enable)
 {
     enable.mask ^= settings.steppers.enable_invert.mask;
-#if TRINAMIC_ENABLE && TRINAMIC_I2C
+#if TRINAMIC_MOTOR_ENABLE && TRINAMIC_I2C
     axes_signals_t tmc_enable = trinamic_stepper_enable(enable);
 #else
  #ifdef STEPPERS_ENABLE_PORT
@@ -1824,11 +1824,12 @@ bool driver_init (void)
     HAL_RCC_GetClockConfig(&clock, &latency);
 
     hal.info = "STM32H743";
-    hal.driver_version = "220724";
+    hal.driver_version = "220801";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
 #endif
     hal.driver_setup = driver_setup;
+    hal.f_mcu = HAL_RCC_GetHCLKFreq() / 1000000UL;
     hal.f_step_timer =  HAL_RCC_GetPCLK2Freq() * (clock.APB2CLKDivider == 0 ? 1 : 2);
     hal.rx_buffer_size = RX_BUFFER_SIZE;
     hal.delay_ms = &driver_delay;

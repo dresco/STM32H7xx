@@ -36,7 +36,7 @@ static enqueue_realtime_command_ptr enqueue_realtime_command = protocol_enqueue_
 #ifdef SERIAL2_MOD
 static stream_rx_buffer_t rxbuf2 = {0};
 static stream_tx_buffer_t txbuf2 = {0};
-static enqueue_realtime_command_ptr enqueue_realtime_command2 = stream_buffer_all;
+static enqueue_realtime_command_ptr enqueue_realtime_command2 = protocol_enqueue_realtime_command;
 #endif
 
 #ifndef SERIAL_MOD
