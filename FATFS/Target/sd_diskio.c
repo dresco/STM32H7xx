@@ -59,7 +59,9 @@
  * Notice: This is applicable only for cortex M7 based platform.
  */
 /* USER CODE BEGIN enableSDDmaCacheMaintenance */
+#if L1_CACHE_ENABLE
 #define ENABLE_SD_DMA_CACHE_MAINTENANCE  1
+#endif
 /* USER CODE END enableSDDmaCacheMaintenance */
 
 /*

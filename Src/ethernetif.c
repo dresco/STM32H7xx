@@ -606,7 +606,9 @@ void HAL_ETH_RxLinkCallback(void **pStart, void **pEnd, uint8_t *buff, uint16_t 
   }
 
   /* Invalidate data cache because Rx DMA's writing to physical memory makes it stale. */
+#if L1_CACHE_ENABLE
   SCB_InvalidateDCache_by_Addr((uint32_t *)buff, Length);
+#endif
 }
 
 void HAL_ETH_TxFreeCallback(uint32_t * buff)

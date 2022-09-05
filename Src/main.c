@@ -35,11 +35,13 @@ int main(void)
     /* Configure the MPU attributes as Device memory for ETH DMA descriptors */
     MPU_Config();
 
+#if L1_CACHE_ENABLE
     /* Enable I-Cache */
     SCB_EnableICache();
 
     /* Enable D-Cache */
     SCB_EnableDCache();
+#endif
 
     HAL_Init();
     SystemClock_Config();
