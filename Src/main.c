@@ -26,26 +26,12 @@
 #include "main.h"
 #include "grbl/grbllib.h"
 
-#ifdef DEBUG
-#include "stdio.h"
-// redirect printf to SWO
-int _write(int file, char *ptr, int len)
-{
-    int i;
-
-    for (i = 0; i < len; i++)
-    {
-        ITM_SendChar(*ptr++);
-    }
-    return len;
-}
-#endif
-
 void SystemClock_Config(void);
 void MPU_Config(void);
 
 int main(void)
 {
+
     /* Configure the MPU attributes as Device memory for ETH DMA descriptors */
     MPU_Config();
 
