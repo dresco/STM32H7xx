@@ -1829,7 +1829,7 @@ bool driver_init (void)
     hal.board = BOARD_NAME;
 #endif
     hal.driver_setup = driver_setup;
-    hal.f_mcu = HAL_RCC_GetHCLKFreq() / 1000000UL;
+    hal.f_mcu = HAL_RCC_GetHCLKFreq() / 1000000UL * (clock.AHBCLKDivider == 0 ? 1 : 2);
     hal.f_step_timer =  HAL_RCC_GetPCLK2Freq() * (clock.APB2CLKDivider == 0 ? 1 : 2);
     hal.rx_buffer_size = RX_BUFFER_SIZE;
     hal.delay_ms = &driver_delay;
