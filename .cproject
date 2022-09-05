@@ -275,6 +275,7 @@
 									<listOptionValue builtIn="false" value="SDCARD_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="NUCLEO_SLOW_SDMMC_CLOCK"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
+									<listOptionValue builtIn="false" value="WEBDAV_ENABLE=1"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1052135300" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -393,6 +394,7 @@
 									<listOptionValue builtIn="false" value="SDCARD_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="NUCLEO_SLOW_SDMMC_CLOCK"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
+									<listOptionValue builtIn="false" value="WEBDAV_ENABLE=1"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1560536375" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
