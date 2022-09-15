@@ -4,7 +4,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2021 Terje Io
+  Copyright (c) 2021-2022 Terje Io
   Copyright (c) 2022 Jon Escombe
   Some parts (C) COPYRIGHT STMicroelectronics - code created by IDE
 
@@ -125,8 +125,14 @@ void MPU_Config(void)
 
 void SystemClock_Config(void)
 {
-    // Clock config for 480MHZ system clock, 48MHz USB clock
-    // WeAct MiniSTM32H7xx using 25MHz crsytal, Nucleo using 8MHz clock source (STLink MCO)
+    // Clock configuration
+	//
+	// - 480MHZ system clock
+	// - 48MHz USB clock
+	// - 48MHz SDMMC clock
+	//
+    // WeAct MiniSTM32H7xx & BTT SKR3 using 25MHz crystal
+	// Nucleo dev board using 8MHz clock source (STLink MCO)
 
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
     RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
@@ -140,10 +146,20 @@ void SystemClock_Config(void)
 
     while(!__HAL_PWR_GET_FLAG(PWR_FLAG_VOSRDY)) {}
 
+#if RTC_ENABLE
+    /** Configure LSE Drive Capability */
+    HAL_PWR_EnableBkUpAccess();
+    __HAL_RCC_LSEDRIVE_CONFIG(RCC_LSEDRIVE_LOW);
+#endif
 
 #ifdef NUCLEO_H743
 
+#if RTC_ENABLE
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
+    RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+#else
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+#endif
     RCC_OscInitStruct.HSEState = RCC_HSE_ON;
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
     RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
@@ -156,9 +172,14 @@ void SystemClock_Config(void)
     RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
     RCC_OscInitStruct.PLL.PLLFRACN = 0;
 
-#else // WeAct MiniSTM32H7xx
+#else // WeAct MiniSTM32H7xx and BTT SKR3
 
+#if RTC_ENABLE
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE|RCC_OSCILLATORTYPE_LSE;
+    RCC_OscInitStruct.LSEState = RCC_LSE_ON;
+#else
     RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+#endif
     RCC_OscInitStruct.HSEState = RCC_HSE_ON;
     RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
     RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
@@ -197,6 +218,16 @@ void SystemClock_Config(void)
     {
       Error_Handler();
     }
+
+#if RTC_ENABLE
+    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
+    PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
+    {
+      Error_Handler();
+    }
+#endif
 }
 
 /**

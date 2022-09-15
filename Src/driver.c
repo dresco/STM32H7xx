@@ -5,6 +5,7 @@
   Part of grblHAL
 
   Copyright (c) 2019-2022 Terje Io
+  Copyright (c) 2022 Jon Escombe
 
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -24,16 +25,17 @@
 #include <math.h>
 #include <string.h>
 #include <stdlib.h>
+#include <malloc.h>
 
 #include "main.h"
 #include "driver.h"
 #include "serial.h"
 
-#include "grbl/limits.h"
 #include "grbl/protocol.h"
 #include "grbl/motor_pins.h"
 #include "grbl/pin_bits_masks.h"
 #include "grbl/state_machine.h"
+#include "grbl/machine_limits.h"
 
 #if I2C_ENABLE
 #include "i2c.h"
@@ -347,7 +349,7 @@ static const output_signal_t peripin[] = {
 */
 extern __IO uint32_t uwTick;
 static uint32_t pulse_length, pulse_delay, aux_irq = 0;
-static bool IOInitDone = false;
+static bool IOInitDone = false, rtc_started = false;
 static axes_signals_t next_step_outbits;
 static delay_t delay = { .ms = 1, .callback = NULL }; // NOTE: initial ms set to 1 for "resetting" systick timer on startup
 static debounce_t debounce;
@@ -1559,7 +1561,7 @@ static char *port2char (GPIO_TypeDef *port)
     return name;
 }
 
-static void enumeratePins (bool low_level, pin_info_ptr pin_info)
+static void enumeratePins (bool low_level, pin_info_ptr pin_info, void *data)
 {
     static xbar_t pin = {0};
     uint32_t i = sizeof(inputpin) / sizeof(input_signal_t);
@@ -1574,7 +1576,7 @@ static void enumeratePins (bool low_level, pin_info_ptr pin_info)
         pin.mode.pwm = pin.group == PinGroup_SpindlePWM;
         pin.description = inputpin[i].description;
 
-        pin_info(&pin);
+        pin_info(&pin, data);
     };
 
     pin.mode.mask = 0;
@@ -1587,7 +1589,7 @@ static void enumeratePins (bool low_level, pin_info_ptr pin_info)
         pin.port = low_level ? (void *)outputpin[i].port : (void *)port2char(outputpin[i].port);
         pin.description = outputpin[i].description;
 
-        pin_info(&pin);
+        pin_info(&pin, data);
     };
 
     periph_signal_t *ppin = periph_pins;
@@ -1600,7 +1602,7 @@ static void enumeratePins (bool low_level, pin_info_ptr pin_info)
         pin.mode = ppin->pin.mode;
         pin.description = ppin->pin.description;
 
-        pin_info(&pin);
+        pin_info(&pin, data);
 
         ppin = ppin->next;
     } while(ppin);
@@ -1805,6 +1807,81 @@ static bool driver_setup (settings_t *settings)
     return IOInitDone;
 }
 
+#if RTC_ENABLE
+
+static RTC_HandleTypeDef hrtc = {
+    .Instance = RTC,
+    .Init.HourFormat = RTC_HOURFORMAT_24,
+    .Init.AsynchPrediv = 127,
+    .Init.SynchPrediv = 255,
+    .Init.OutPut = RTC_OUTPUT_DISABLE,
+    .Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH,
+    .Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN
+};
+
+static bool set_rtc_time (struct tm *time)
+{
+    RTC_TimeTypeDef sTime = {0};
+    RTC_DateTypeDef sDate = {0};
+
+    if(!rtc_started)
+        rtc_started = HAL_RTC_Init(&hrtc) == HAL_OK;
+
+    if(rtc_started) {
+
+        sTime.Hours = time->tm_hour;
+        sTime.Minutes = time->tm_min;
+        sTime.Seconds = time->tm_sec;
+        sTime.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+        sTime.StoreOperation = RTC_STOREOPERATION_RESET;
+        if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BIN) == HAL_OK) {
+            sDate.WeekDay = RTC_WEEKDAY_MONDAY;
+            sDate.Month = time->tm_mon + 1;
+            sDate.Date = time->tm_mday;
+            sDate.Year = time->tm_year - 100;
+            HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BIN);
+        }
+    }
+
+    return rtc_started;
+}
+
+static bool get_rtc_time (struct tm *time)
+{
+    bool ok = false;
+
+    if(rtc_started) {
+
+        RTC_TimeTypeDef sTime = {0};
+        RTC_DateTypeDef sDate = {0};
+
+        if((ok = HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN) == HAL_OK &&
+                  HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN) == HAL_OK)) {
+
+            time->tm_hour = sTime.Hours;
+            time->tm_min = sTime.Minutes;
+            time->tm_sec = sTime.Seconds;
+            time->tm_mon = sDate.Month - 1;
+            time->tm_mday = sDate.Date;
+            time->tm_year = sDate.Year + 100;
+        }
+    }
+
+    return ok;
+}
+
+#endif
+
+uint32_t get_free_mem (void)
+{
+    extern uint8_t _end; /* Symbol defined in the linker script */
+    extern uint8_t _estack; /* Symbol defined in the linker script */
+    extern uint32_t _Min_Stack_Size; /* Symbol defined in the linker script */
+    const uint32_t stack_limit = (uint32_t)&_estack - (uint32_t)&_Min_Stack_Size;
+
+    return stack_limit - (uint32_t)&_end - mallinfo().uordblks;
+}
+
 // Initialize HAL pointers, setup serial comms and enable EEPROM
 // NOTE: grblHAL is not yet configured (from EEPROM data), driver_setup() will be called when done
 
@@ -1824,7 +1901,7 @@ bool driver_init (void)
     HAL_RCC_GetClockConfig(&clock, &latency);
 
     hal.info = "STM32H743";
-    hal.driver_version = "220801";
+    hal.driver_version = "220914";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
 #endif
@@ -1832,6 +1909,7 @@ bool driver_init (void)
     hal.f_mcu = HAL_RCC_GetHCLKFreq() / 1000000UL * (clock.AHBCLKDivider == 0 ? 1 : 2);
     hal.f_step_timer =  HAL_RCC_GetPCLK2Freq() * (clock.APB2CLKDivider == 0 ? 1 : 2);
     hal.rx_buffer_size = RX_BUFFER_SIZE;
+    hal.get_free_mem = get_free_mem;
     hal.delay_ms = &driver_delay;
     hal.settings_changed = settings_changed;
 
@@ -1871,6 +1949,11 @@ bool driver_init (void)
     hal.periph_port.register_pin = registerPeriphPin;
     hal.periph_port.set_pin_description = setPeriphPinDescription;
 
+#if RTC_ENABLE
+    hal.rtc.get_datetime = get_rtc_time;
+    hal.rtc.set_datetime = set_rtc_time;
+#endif
+
 #if USB_SERIAL_CDC
     stream_connect(usbInit());
 #else
@@ -1904,7 +1987,7 @@ bool driver_init (void)
         .get_pwm = spindleGetPWM,
         .update_pwm = spindle_set_speed,
   #if PPI_ENABLE
-        .pulse_on = spindlePulseOn;
+        .pulse_on = spindlePulseOn,
   #endif
  #endif
         .config = spindleConfig,
@@ -1984,7 +2067,7 @@ bool driver_init (void)
 
     // No need to move version check before init.
     // Compiler will fail any signature mismatch for existing entries.
-    return hal.version == 9;
+    return hal.version == 10;
 }
 
 /* interrupt handlers */
