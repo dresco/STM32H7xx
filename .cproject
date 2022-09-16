@@ -517,7 +517,6 @@
 									<listOptionValue builtIn="false" value="BOARD_BTT_SKR_30"/>
 									<listOptionValue builtIn="false" value="TRINAMIC_ENABLE=2209"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="RTC_ENABLE=1"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.604672498" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -629,7 +628,6 @@
 									<listOptionValue builtIn="false" value="BOARD_BTT_SKR_30"/>
 									<listOptionValue builtIn="false" value="TRINAMIC_ENABLE=2209"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="RTC_ENABLE=1"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.881169788" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>

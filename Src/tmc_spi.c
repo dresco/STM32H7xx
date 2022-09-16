@@ -73,7 +73,7 @@ static uint8_t sw_spi_xfer (uint8_t byte)
 
 #endif // TRINAMIC_SOFT_SPI
 
-static void add_cs_pin (xbar_t *gpio)
+static void add_cs_pin (xbar_t *gpio, void *data)
 {
     if (gpio->group == PinGroup_MotorChipSelect)
       switch (gpio->function) {
@@ -193,7 +193,7 @@ void if_init(uint8_t motors, axes_signals_t enabled)
     spi_set_speed(SPI_BAUDRATEPRESCALER_32); // 48 MHz SPI clock / 32 = 1.5MHz
 #endif //TRINAMIC_SOFT_SPI
 
-    hal.enumerate_pins(true, add_cs_pin);
+    hal.enumerate_pins(true, add_cs_pin, NULL);
   }
 }
 
