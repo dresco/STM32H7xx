@@ -51,14 +51,18 @@
 /* MEM_ALIGNMENT: should be set to the alignment of the CPU for which
    lwIP is compiled. 4 byte alignment -> define MEM_ALIGNMENT to 4, 2
    byte alignment -> define MEM_ALIGNMENT to 2. */
+#if L1_CACHE_ENABLE
+#define MEM_ALIGNMENT           32
+#else
 #define MEM_ALIGNMENT           4
+#endif
 
 /* MEM_SIZE: the size of the heap memory. If the application will send
 a lot of data that needs to be copied, this should be set high. */
-#define MEM_SIZE                (14*1024)
+#define MEM_SIZE                (28*1024)
 
 /* Relocate the LwIP RAM heap pointer */
-#define LWIP_RAM_HEAP_POINTER    (0x30004000)
+#define LWIP_RAM_HEAP_POINTER    (0x24074000)
 
 
 /* MEMP_NUM_TCP_PCB: the number of simulatenously active TCP
@@ -201,6 +205,7 @@ The STM32H7xx allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define LWIP_HTTPD_SUPPORT_V09          0
 #define LWIP_HTTPD_SUPPORT_11_KEEPALIVE 1
 #define LWIP_HTTPD_SUPPORT_POST         1
+#define HTTPD_LIMIT_SENDING_TO_2MSS     0
 
 //#define LWIP_HTTPD_CGI_ADV              1
 //#define LWIP_HTTPD_SSI                  1

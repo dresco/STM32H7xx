@@ -74,7 +74,7 @@ void MPU_Config(void)
   /* Configure the MPU attributes as Device not cacheable
      for ETH DMA descriptors */
   MPU_InitStruct.Enable = MPU_REGION_ENABLE;
-  MPU_InitStruct.BaseAddress = 0x30000000;
+  MPU_InitStruct.BaseAddress = 0x2407C000;
   MPU_InitStruct.Size = MPU_REGION_SIZE_1KB;
   MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
   MPU_InitStruct.IsBufferable = MPU_ACCESS_BUFFERABLE;
@@ -90,7 +90,7 @@ void MPU_Config(void)
   /* Configure the MPU attributes as Normal Write through
      for LwIP Rx pool */
   MPU_InitStruct.Enable = MPU_REGION_ENABLE;
-  MPU_InitStruct.BaseAddress = 0x30000400;
+  MPU_InitStruct.BaseAddress = 0x24070000;
   MPU_InitStruct.Size = MPU_REGION_SIZE_16KB;
   MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
   MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
@@ -106,8 +106,8 @@ void MPU_Config(void)
   /* Configure the MPU attributes as Normal Non Cacheable
      for LwIP RAM heap which contains the Tx buffers */
   MPU_InitStruct.Enable = MPU_REGION_ENABLE;
-  MPU_InitStruct.BaseAddress = 0x30004000;
-  MPU_InitStruct.Size = MPU_REGION_SIZE_16KB;
+  MPU_InitStruct.BaseAddress = 0x24074000;
+  MPU_InitStruct.Size = MPU_REGION_SIZE_32KB;
   MPU_InitStruct.AccessPermission = MPU_REGION_FULL_ACCESS;
   MPU_InitStruct.IsBufferable = MPU_ACCESS_NOT_BUFFERABLE;
   MPU_InitStruct.IsCacheable = MPU_ACCESS_NOT_CACHEABLE;

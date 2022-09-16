@@ -47,7 +47,8 @@ MEMORY
   FLASH (rx)        : ORIGIN = 0x08000000, LENGTH = 2048K - 128K
   EEPROM_EMUL (xrw) : ORIGIN = 0x081E0000, LENGTH = 128K
   DTCMRAM (xrw)  : ORIGIN = 0x20000000, LENGTH = 128K
-  RAM_D1 (xrw)   : ORIGIN = 0x24000000, LENGTH = 512K
+  RAM_D1 (xrw)      : ORIGIN = 0x24000000, LENGTH = 512K - 64K
+  RAM_D1_DMA (xrw)  : ORIGIN = 0x24070000, LENGTH = 64K
   RAM_D2 (xrw)   : ORIGIN = 0x30000000, LENGTH = 288K
   RAM_D3 (xrw)   : ORIGIN = 0x38000000, LENGTH = 64K
   ITCMRAM (xrw)  : ORIGIN = 0x00000000, LENGTH = 64K
@@ -166,16 +167,26 @@ SECTIONS
     . = ALIGN(8);
   } >RAM_D1
 
-  .lwip_sec (NOLOAD) : {
-    . = ABSOLUTE(0x30000000);
-    *(.RxDecripSection)
+  /* 64KB section at the end of D1 RAM (AXI SRAM), being used for DMA buffers as we need fixed addresses for MPU configuration */
+  .dma_buffers (NOLOAD) : {
 
-    . = ABSOLUTE(0x30000200);
+    /* 16KB for LwIP Rx Pool */
+    . = ABSOLUTE(0x24070000);
+    *(.Rx_PoolSection)
+
+    /* 32KB for LwIP Tx Heap */
+    . = ABSOLUTE(0x24074000);
+    *(.Tx_HeapSection)
+
+    /* 1KB for LwIP DMA Descriptors */
+    . = ABSOLUTE(0x2407C000);
+    *(.RxDecripSection)
+    . = ABSOLUTE(0x2407C200);
     *(.TxDecripSection)
 
-    . = ABSOLUTE(0x30000400);
-    *(.Rx_PoolSection)
-  } >RAM_D2 AT> FLASH
+    /* 15KB currently unused from 0x2407C400 */
+
+  } >RAM_D1_DMA AT> FLASH
 
   /* Remove information from the standard libraries */
   /DISCARD/ :
