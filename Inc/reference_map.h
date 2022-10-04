@@ -19,9 +19,6 @@
   along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if N_ABC_MOTORS > 1
-#error "Axis configuration is not supported!"
-#endif
 
 #if TRINAMIC_ENABLE
 #error "Trinamic plugin not supported!"
@@ -32,14 +29,13 @@
 #define BOARD_NAME "grblHAL reference map"
 #define HAS_IOPORTS
 #define I2C_PORT 1
-#define SPI_PORT 3
+#define SPI_PORT 3 // SCK - C10, MISO - C11, MOSI - C12
 #define IS_NUCLEO_BOB
 #define VARIABLE_SPINDLE // Comment out to disable variable spindle
 
 // Define stepper driver enable/disable output pin.
 #define STEPPERS_ENABLE_PORT   GPIOF
 #define STEPPERS_ENABLE_PIN    12
-#define STEPPERS_ENABLE_BIT    (1<<STEPPERS_ENABLE_PIN)
 
 // Define step pulse output pins.
 #define X_STEP_PORT         GPIOE
@@ -74,7 +70,7 @@
 #endif
 #define LIMIT_INMODE        GPIO_SINGLE
 
-#if N_ABC_MOTORS == 1
+#if N_ABC_MOTORS
 #define M3_AVAILABLE
 #define M3_STEP_PORT            GPIOE
 #define M3_STEP_PIN             0
@@ -85,6 +81,62 @@
 #ifndef STEPPERS_ENABLE_PORT
 #define M3_ENABLE_PORT          GPIOE
 #define M3_ENABLE_PIN           14
+#endif
+#endif
+
+#if N_ABC_MOTORS > 1
+#define M4_AVAILABLE
+#define M4_STEP_PORT            GPIOE
+#define M4_STEP_PIN             2
+#define M4_DIRECTION_PORT       GPIOE
+#define M4_DIRECTION_PIN        4
+#define M4_LIMIT_PORT           GPIOE
+#define M4_LIMIT_PIN            5
+#ifndef STEPPERS_ENABLE_PORT
+#define M4_ENABLE_PORT          GPIOE
+#define M4_ENABLE_PIN           6
+#endif
+#endif
+
+#if N_ABC_MOTORS > 2
+#define M5_AVAILABLE
+#define M5_STEP_PORT            GPIOE
+#define M5_STEP_PIN             3
+#define M5_DIRECTION_PORT       GPIOE
+#define M5_DIRECTION_PIN        8
+#define M5_LIMIT_PORT           GPIOF
+#define M5_LIMIT_PIN            7
+#ifndef STEPPERS_ENABLE_PORT
+#define M5_ENABLE_PORT          GPIOF
+#define M5_ENABLE_PIN           9
+#endif
+#endif
+
+#if N_ABC_MOTORS > 3
+#define M6_AVAILABLE
+#define M6_STEP_PORT            GPIOG
+#define M6_STEP_PIN             1
+#define M6_DIRECTION_PORT       GPIOD
+#define M6_DIRECTION_PIN        0
+#define M6_LIMIT_PORT           GPIOD
+#define M6_LIMIT_PIN            1
+#ifndef STEPPERS_ENABLE_PORT
+#define M6_ENABLE_PORT          GPIOG
+#define M6_ENABLE_PIN           0
+#endif
+#endif
+
+#if N_ABC_MOTORS == 5
+#define M7_AVAILABLE
+#define M7_STEP_PORT            GPIOA
+#define M7_STEP_PIN             7
+#define M7_DIRECTION_PORT       GPIOF
+#define M7_DIRECTION_PIN        2
+#define M7_LIMIT_PORT           GPIOF
+#define M7_LIMIT_PIN            1
+#ifndef STEPPERS_ENABLE_PORT
+#define M7_ENABLE_PORT          GPIOF
+#define M7_ENABLE_PIN           0
 #endif
 #endif
 
