@@ -75,13 +75,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 #if defined(ENABLE_SCRATCH_BUFFER)
-#if defined (ENABLE_SD_DMA_CACHE_MAINTENANCE)
-#define SCRATCH_BUFFER_ALIGNMENT_MASK 0x1F
-ALIGN_32BYTES(static uint8_t scratch[BLOCKSIZE]); // 32-Byte aligned for cache maintenance
-#else
-#define SCRATCH_BUFFER_ALIGNMENT_MASK 0x03
-__ALIGN_BEGIN static uint8_t scratch[BLOCKSIZE] __ALIGN_END;  // 4-Byte aligned for DMA access
-#endif
+/* Scratch buffer is 32-Byte aligned for cache maintenance */
+ALIGN_32BYTES(static uint8_t scratch[BLOCKSIZE]);
 #endif
 /* Disk status */
 static volatile DSTATUS Stat = STA_NOINIT;
@@ -190,10 +185,11 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
   DRESULT res = RES_ERROR;
   uint32_t timeout;
 #if defined(ENABLE_SCRATCH_BUFFER)
-  uint8_t ret;
+  uint8_t ret = MSD_OK;
 #endif
 #if (ENABLE_SD_DMA_CACHE_MAINTENANCE == 1)
-  uint32_t alignedAddr;
+  uint32_t alignedAddr = (uint32_t)buff & ~0x1F;
+  uint32_t alignedLength = count*BLOCKSIZE + ((uint32_t)buff - alignedAddr);
 #endif
 
   /*
@@ -205,22 +201,41 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
     return res;
   }
 
+  /*
+   * Sanity checks on passed buffer
+   *  - 4 byte alignment for DMA transfers
+   *  - 32 byte alignment for safe L1 cache operations
+   *  - within suitable RAM region for SDMMC1 access
+   */
+  uint8_t buffAlignedDMA = !((uint32_t)buff & 0x03);
+  uint8_t buffAlignedCache = !((uint32_t)buff & 0x1F);
+  uint8_t buffRegionDMA = ((uint32_t)buff > D1_AXISRAM_BASE) & ((uint32_t)buff < D2_AHBSRAM_BASE);
+
 #if defined(ENABLE_SCRATCH_BUFFER)
-  //
-  // Check that passed in buffer is suitable for SDMMC DMA access, else use scratch buffer.
-  //
-  // Ensure buffer address is within AXI SRAM in the D1 domain, as SDMMC1 has no DMA access to
-  // AHB SRAM in the D2 domain. This is an issue for file access from (for instance) the LwIP
-  // HTTP server, as the buffer is allocated from the LwIP heap in AHB SRAM1. Note that SDMMC2
-  // should be able to access D2 RAM, so may be a better choice for Ethernet enabled boards?
-  //
-  // Ensure the buffer is correctly aligned (4-byte alignment required for DMA, but 32-byte alignment
-  // is needed for cache maintenance, else cache invalidation may corrupt surrounding memory).
-  //
-  if ((((uint32_t)buff > D1_AXISRAM_BASE) & ((uint32_t)buff < D2_AHBSRAM_BASE)) &
-     (!((uint32_t)buff & SCRATCH_BUFFER_ALIGNMENT_MASK)))
+  /*
+   * Check that passed in buffer is suitable for SDMMC DMA access, else use a scratch buffer.
+   *
+   * Buffer needs to be 4 byte aligned for DMA, and within the AXI SRAM in the D1 domain - as
+   * SDMMC1 has no DMA access to AHB SRAM in the D2 domain.
+   *
+   */
+  if (buffAlignedDMA && buffRegionDMA)
   {
 #endif
+#if (ENABLE_SD_DMA_CACHE_MAINTENANCE == 1)
+
+    if (!buffAlignedCache) {
+      /*
+       * Buffer is not 32byte aligned for L1 cache operations, therefore may be subject to
+       * cache boundary corruption. Clean the aligned buffer before DMA read (will flush any
+       * cached data to RAM, this should take care of any cached data surrounding the actual
+       * buffer).
+       */
+
+      SCB_CleanDCache_by_Addr((uint32_t*)alignedAddr, alignedLength);
+    }
+#endif
+
     if(BSP_SD_ReadBlocks_DMA((uint32_t*)buff,
                              (uint32_t) (sector),
                              count) == MSD_OK)
@@ -248,11 +263,18 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
             res = RES_OK;
 #if (ENABLE_SD_DMA_CACHE_MAINTENANCE == 1)
             /*
-            the SCB_InvalidateDCache_by_Addr() requires a 32-Byte aligned address,
-            adjust the address and the D-Cache size to invalidate accordingly.
-            */
-            alignedAddr = (uint32_t)buff & ~0x1F;
-            SCB_InvalidateDCache_by_Addr((uint32_t*)alignedAddr, count*BLOCKSIZE + ((uint32_t)buff - alignedAddr));
+             * If buffer is 32 byte aligned, can safely invalidate the buffer region, clearing the cached data. This
+             * ensures subsequent reads access the real RAM (as written by DMA), instead of any cached data.
+             *
+             * If the buffer is not 32 byte aligned, clean before invalidating. This ensures that any cached data
+             * outside of the buffer gets written to RAM before the cache is cleared.
+             */
+            if (buffAlignedCache) {
+              SCB_InvalidateDCache_by_Addr((uint32_t*)alignedAddr, alignedLength);
+            } else {
+              SCB_CleanInvalidateDCache_by_Addr((uint32_t*)alignedAddr, alignedLength);
+            }
+
 #endif
             break;
           }
@@ -268,6 +290,7 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
 
       for (i = 0; i < count; i++) {
         ret = BSP_SD_ReadBlocks_DMA((uint32_t*)scratch, (uint32_t)sector++, 1);
+
         if (ret == MSD_OK) {
           /* wait until the read is successful or a timeout occurs */
 
@@ -285,7 +308,7 @@ DRESULT SD_read(BYTE lun, BYTE *buff, DWORD sector, UINT count)
 #if (ENABLE_SD_DMA_CACHE_MAINTENANCE == 1)
           /*
           *
-          * invalidate the scratch buffer before the next read to get the actual data instead of the cached one
+          * SCratch buffer is always 32 byte aligned, so safe to invalidate without cleaning first
           */
           SCB_InvalidateDCache_by_Addr((uint32_t*)scratch, BLOCKSIZE);
 #endif
@@ -324,13 +347,14 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
   DRESULT res = RES_ERROR;
   uint32_t timeout;
 #if defined(ENABLE_SCRATCH_BUFFER)
-  uint8_t ret;
+  uint8_t ret = MSD_OK;
   int i;
 #endif
 
-   WriteStatus = 0;
+  WriteStatus = 0;
 #if (ENABLE_SD_DMA_CACHE_MAINTENANCE == 1)
-  uint32_t alignedAddr;
+  uint32_t alignedAddr = (uint32_t)buff & ~0x1F;
+  uint32_t alignedLength = count*BLOCKSIZE + ((uint32_t)buff - alignedAddr);
 #endif
 
   if (SD_CheckStatusWithTimeout(SD_TIMEOUT) < 0)
@@ -338,20 +362,24 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
     return res;
   }
 
+  /*
+   * Sanity checks on passed buffer
+   *  - 4 byte alignment for DMA transfers
+   *  - within suitable RAM region for SDMMC1 access
+   */
+  uint8_t buffAlignedDMA = !((uint32_t)buff & 0x03);
+  uint8_t buffRegionDMA = ((uint32_t)buff > D1_AXISRAM_BASE) & ((uint32_t)buff < D2_AHBSRAM_BASE);
+
 #if defined(ENABLE_SCRATCH_BUFFER)
-  // Check that passed in buffer is suitable for SDMMC DMA access, else use scratch buffer.
-  if ((((uint32_t)buff > D1_AXISRAM_BASE) & ((uint32_t)buff < D2_AHBSRAM_BASE)) &
-     (!((uint32_t)buff & SCRATCH_BUFFER_ALIGNMENT_MASK)))
+  /*
+   * Check that passed in buffer is suitable for SDMMC DMA access, else use scratch buffer.
+   */
+  if (buffAlignedDMA && buffRegionDMA)
   {
 #endif
 #if (ENABLE_SD_DMA_CACHE_MAINTENANCE == 1)
-
-    /*
-    the SCB_CleanDCache_by_Addr() requires a 32-Byte aligned address
-    adjust the address and the D-Cache size to clean accordingly.
-    */
-    alignedAddr = (uint32_t)buff &  ~0x1F;
-    SCB_CleanDCache_by_Addr((uint32_t*)alignedAddr, count*BLOCKSIZE + ((uint32_t)buff - alignedAddr));
+    /* Clean the aligned buffer before DMA write (will flush any cached data to RAM) */
+    SCB_CleanDCache_by_Addr((uint32_t*)alignedAddr, alignedLength);
 #endif
 
     if(BSP_SD_WriteBlocks_DMA((uint32_t*)buff,
@@ -389,6 +417,7 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
     else
     {
       /* Slow path, fetch each sector a part and memcpy to destination buffer */
+
       for (i = 0; i < count; i++)
       {
         WriteStatus = 0;
@@ -397,6 +426,7 @@ DRESULT SD_write(BYTE lun, const BYTE *buff, DWORD sector, UINT count)
         buff += BLOCKSIZE;
 
 #if (ENABLE_SD_DMA_CACHE_MAINTENANCE == 1)
+        /* Clean the scratch buffer before DMA write (will flush any cached data to RAM) */
         SCB_CleanDCache_by_Addr((uint32_t*)scratch, BLOCKSIZE);
 #endif
         ret = BSP_SD_WriteBlocks_DMA((uint32_t*)scratch, (uint32_t)sector++, 1);
