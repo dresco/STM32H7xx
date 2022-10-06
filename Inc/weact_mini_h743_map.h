@@ -68,6 +68,16 @@
 #define Z_LIMIT_PIN                 5                           // Z- Limit
 #define LIMIT_INMODE                GPIO_SINGLE
 
+// Define spindle enable and spindle direction output pins.
+#define SPINDLE_ENABLE_PORT         GPIOB
+#define SPINDLE_ENABLE_PIN          7                           //
+#define SPINDLE_DIRECTION_PORT      GPIOB
+#define SPINDLE_DIRECTION_PIN       5                           //
+
+// Define spindle PWM output pin.
+#define SPINDLE_PWM_PORT_BASE       GPIOB_BASE
+#define SPINDLE_PWM_PIN             0                           //
+
 // Define flood and mist coolant enable output pins.
 #define COOLANT_FLOOD_PORT          GPIOD
 #define COOLANT_FLOOD_PIN           14
