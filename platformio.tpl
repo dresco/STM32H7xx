@@ -14,19 +14,10 @@ build_flags =
   -I FATFS/Target
   -I FATFS/App
   -I Middlewares/Third_Party/FatFs/src
-  -I LWIP/App
-  -I LWIP/Target
-  -I Middlewares/Third_Party/LwIP/src/include
-  -I Middlewares/Third_Party/LwIP/system
-  -I Middlewares/Third_Party/LwIP/src/include/lwip
-  -I Middlewares/Third_Party/LwIP/src/include/netif
-  -I Drivers/BSP/Components/lan8742
   -I Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
   -I Middlewares/ST/STM32_USB_Device_Library/Core/Inc
   -I USB_DEVICE/Target
   -I USB_DEVICE/App
-# Floating point support for printf, required for WebUI v3
-  -Wl,-u,_printf_float
 lib_deps =
   bluetooth
   grbl
@@ -35,9 +26,9 @@ lib_deps =
   keypad
   laser
   motors
+  trinamic
   odometer
   openpnp
-  networking
   sdcard
   spindle
   webui
@@ -48,10 +39,26 @@ lib_deps =
   USB_DEVICE/Target
   Middlewares/ST/STM32_USB_Device_Library/Class
   Middlewares/ST/STM32_USB_Device_Library/Core
-  Middlewares/Third_Party/LwIP
-  Drivers/BSP/Components/lan8742
 lib_extra_dirs =
   .
+
+[eth_networking]
+build_flags =
+  -I LWIP/App
+  -I LWIP/Target
+  -I Middlewares/Third_Party/LwIP/src/include
+  -I Middlewares/Third_Party/LwIP/system
+  -I Middlewares/Third_Party/LwIP/src/include/netif
+  -I Middlewares/Third_Party/LwIP/src/include/lwip
+  -I Drivers/BSP/Components/lan8742
+  # Floating point support for printf, required for WebUI v3
+  -Wl,-u,_printf_float
+lib_deps =
+   networking
+   webui
+   Middlewares/Third_Party/LwIP
+   Drivers/BSP/Components/lan8742
+lib_extra_dirs =
 
 # Note: The platformio package registry does not yet include framework-stm32cubeh7@v1.10, which introduced
 #       the rewritten ST ethernet driver. We are therefore using a custom location for the framework, cloned
@@ -71,4 +78,5 @@ board_build.ldscript = %ldscript%
 build_flags = ${common.build_flags}
 %build_flags%
 lib_deps = ${common.lib_deps}
+%lib_deps%
 lib_extra_dirs = ${common.lib_extra_dirs}
