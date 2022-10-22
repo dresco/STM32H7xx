@@ -14,11 +14,10 @@
     "estop": 1,
     "mpg_mode": 1,
     "sdcard": 1,
-    "pio_board": "nucleo_f756zg",
-    "ldscript": "STM32F756ZGTX_FLASH.ld",
     "plugins": [
       { "id": "spindle" },
       { "id": "modbus" },
+      { "id": "motors" },
       { "id": "eeprom" },
       { "id": "sdcard" },
       { "id": "webui" },
@@ -35,10 +34,7 @@
   },
   "symbols": {
     "USE_HAL_DRIVER": "",
-    "STM32F756xx": "",
-    "NUCLEO_F756": "",
-    "HSE_VALUE": 8000000,
-    "RTC_ENABLE": 1,
+    "STM32H743xx": "",
     "BLOCK_BUFFER_DYNAMIC": ""
   },
   "symbols_networking": {
@@ -69,7 +65,53 @@
       "caps": {
         "axes": 8,
         "digital_in": 3,
-        "digital_out": 4
+        "digital_out": 4,
+        "pio_board": "nucleo_h743zi",
+        "ldscript": "STM32H743ZITX_FLASH.ld"
+      },
+      "symbols" : {
+        "NUCLEO_H743": "",
+        "HSE_VALUE": 8000000,
+        "RTC_ENABLE": 1
+      }
+    },
+    {
+      "name": "WeAct Mini H743",
+      "symbol": "BOARD_WEACT_MINI_H743",
+      "URL": "",
+      "caps": {
+        "axes": 3,
+        "digital_in": 0,
+        "digital_out": 0,
+        "eeprom": 0,
+        "fram": 0,
+        "i2c": 0,
+        "safety_door": 0,
+        "pio_board": "weact_mini_h743vitx",
+        "ldscript": "STM32H743ZITX_FLASH.ld"
+      },
+      "symbols" : {
+        "HSE_VALUE": 25000000,
+        "RTC_ENABLE": 1
+      }
+    },
+    {
+      "name": "BTT SKR 3",
+      "symbol": "BOARD_BTT_SKR_30",
+      "URL": "",
+      "caps": {
+        "axes": 5,
+        "digital_in": 0,
+        "digital_out": 0,
+        "eeprom": 0,
+        "fram": 0,
+        "i2c": 0,
+        "safety_door": 0,
+        "pio_board": "btt_skr_30",
+        "ldscript": "STM32H743ZITX_FLASH.ld"
+      },
+      "symbols" : {
+        "HSE_VALUE": 25000000
       }
     }
   ]
