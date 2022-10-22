@@ -34,19 +34,15 @@
   },
   "symbols": {
     "USE_HAL_DRIVER": "",
-    "STM32H743xx": "",
-    "BLOCK_BUFFER_DYNAMIC": ""
+    "STM32H743xx": ""
   },
   "symbols_networking": {
     "ETH_TX_DESC_CNT": 12,
-    "TCP_MSS": 1460,
-    "TCP_SND_BUF": 5840,
+    "TCP_ECHOSERVER_ENABLE": 1,
     "MEMP_NUM_PBUF": 48,
-    "MEMP_NUM_TCP_PCB": 16,
     "PBUF_POOL_SIZE": 48,
     "LWIP_NUM_NETIF_CLIENT_DATA": 2,
     "LWIP_HTTPD_CUSTOM_FILES": 0,
-    "MEM_SIZE": 32768,
     "LWIP_IGMP": 1,
     "LWIP_NETIF_STATUS_CALLBACK": 1,
     "LWIP_HTTPD_DYNAMIC_HEADERS": 1,
@@ -71,8 +67,10 @@
       },
       "symbols" : {
         "NUCLEO_H743": "",
+        "IS_NUCLEO_DEVKIT": 1,
         "HSE_VALUE": 8000000,
-        "RTC_ENABLE": 1
+        "RTC_ENABLE": 1,
+        "NUCLEO_SLOW_SDMMC_CLOCK": ""
       }
     },
     {
