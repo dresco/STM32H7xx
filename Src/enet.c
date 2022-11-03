@@ -307,13 +307,13 @@ bool enet_start (void)
 
         ETH_MACFilterConfigTypeDef filters;
 
-        HAL_ETH_GetMACFilterConfig(&EthHandle, &filters);
+        HAL_ETH_GetMACFilterConfig(&heth, &filters);
 
         // TODO: add filters for SSDP and mDNS
         filters.PassAllMulticast = On;
     //    filters.PromiscuousMode = On;
 
-        HAL_ETH_SetMACFilterConfig(&EthHandle, &filters);
+        HAL_ETH_SetMACFilterConfig(&heth, &filters);
 
         netif_default->flags |= NETIF_FLAG_IGMP;
     }

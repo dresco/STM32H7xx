@@ -51,12 +51,12 @@
  * transport. IGMP is needed for IPv4 multicast.
  */
 #ifndef LWIP_MDNS_RESPONDER
-#define LWIP_MDNS_RESPONDER             1
+#define LWIP_MDNS_RESPONDER             0
 #endif /* LWIP_MDNS_RESPONDER */
 
 /** The maximum number of services per netif */
 #ifndef MDNS_MAX_SERVICES
-#define MDNS_MAX_SERVICES               8
+#define MDNS_MAX_SERVICES               1
 #endif
 
 /** MDNS_RESP_USENETIF_EXTCALLBACK==1: register an ext_callback on the netif

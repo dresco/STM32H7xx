@@ -1,214 +1,159 @@
+/* USER CODE BEGIN Header */
 /**
- * Copyright (C) 2019, STMicroelectronics, all right reserved. 
- * Copyright (c) 2001-2004 Swedish Institute of Computer Science.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright notice,
- *    this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- *    this list of conditions and the following disclaimer in the documentation
- *    and/or other materials provided with the distribution.
- * 3. The name of the author may not be used to endorse or promote products
- *    derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR IMPLIED
- * WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT
- * SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT
- * OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
- * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY
- * OF SUCH DAMAGE.
- *
- * This file is part of the lwIP TCP/IP stack.
- *
- * Author: Adam Dunkels <adam@sics.se>
- ******************************************************************************
- */
+  ******************************************************************************
+  * File Name          : Target/lwipopts.h
+  * Description        : This file overrides LwIP stack default configuration
+  *                      done in opt.h file.
+  ******************************************************************************
+  * @attention
+  *
+  * Copyright (c) 2022 STMicroelectronics.
+  * All rights reserved.
+  *
+  * This software is licensed under terms that can be found in the LICENSE file
+  * in the root directory of this software component.
+  * If no LICENSE file comes with this software, it is provided AS-IS.
+  *
+  ******************************************************************************
+  */
+/* USER CODE END Header */
 
-#ifndef __LWIPOPTS_H__
-#define __LWIPOPTS_H__
+/* Define to prevent recursive inclusion --------------------------------------*/
+#ifndef __LWIPOPTS__H__
+#define __LWIPOPTS__H__
 
-/**
- * SYS_LIGHTWEIGHT_PROT==1: if you want inter-task protection for certain
- * critical regions during buffer allocation, deallocation and memory
- * allocation and deallocation.
- */
-#define SYS_LIGHTWEIGHT_PROT    0
+#include "main.h"
 
-/**
- * NO_SYS==1: Provides VERY minimal functionality. Otherwise,
- * use lwIP facilities.
- */
-#define NO_SYS                  1
+/*-----------------------------------------------------------------------------*/
+/* Current version of LwIP supported by CubeMx: 2.1.2 -*/
+/*-----------------------------------------------------------------------------*/
 
-/* ---------- Memory options ---------- */
-/* MEM_ALIGNMENT: should be set to the alignment of the CPU for which
-   lwIP is compiled. 4 byte alignment -> define MEM_ALIGNMENT to 4, 2
-   byte alignment -> define MEM_ALIGNMENT to 2. */
-#if L1_CACHE_ENABLE
-#define MEM_ALIGNMENT           32
-#else
-#define MEM_ALIGNMENT           4
+/* Within 'USER CODE' section, code will be kept by default at each generation */
+/* USER CODE BEGIN 0 */
+
+/* USER CODE END 0 */
+
+#ifdef __cplusplus
+ extern "C" {
 #endif
 
-/* MEM_SIZE: the size of the heap memory. If the application will send
-a lot of data that needs to be copied, this should be set high. */
-#define MEM_SIZE                (28*1024)
+/* STM32CubeMX Specific Parameters (not defined in opt.h) ---------------------*/
+/* Parameters set in STM32CubeMX LwIP Configuration GUI -*/
+/*----- WITH_RTOS disabled (Since FREERTOS is not set) -----*/
+#define WITH_RTOS 0
+/*----- CHECKSUM_BY_HARDWARE enabled -----*/
+#define CHECKSUM_BY_HARDWARE 1
+/*-----------------------------------------------------------------------------*/
 
-/* Relocate the LwIP RAM heap pointer */
-#define LWIP_RAM_HEAP_POINTER    (0x24074000)
+/* LwIP Stack Parameters (modified compared to initialization value in opt.h) -*/
+/* Parameters set in STM32CubeMX LwIP Configuration GUI -*/
+/*----- Value in opt.h for LWIP_DHCP: 0 -----*/
+#define LWIP_DHCP 1
+/*----- Default value in ETH configuration GUI in CubeMx: 1524 -----*/
+#define ETH_RX_BUFFER_SIZE 1536
+/*----- Default Value for LWIP_IGMP: 0 ---*/
+#define LWIP_IGMP 1
+/*----- Value in opt.h for NO_SYS: 0 -----*/
+#define NO_SYS 1
+/*----- Value in opt.h for SYS_LIGHTWEIGHT_PROT: 1 -----*/
+#define SYS_LIGHTWEIGHT_PROT 0
 
+/*----- Value in opt.h for MEM_ALIGNMENT: 1 -----*/
+/*
+ * todo: benchmark.
+ * Intent is to avoid unnecessary cache maintenance at buffer boundaries (in fatfs code
+ * using buffers passed from lwip), but is this even noticeable?
+ */
+#if L1_CACHE_ENABLE
+#define MEM_ALIGNMENT 32
+#else
+#define MEM_ALIGNMENT 4
+#endif
 
-/* MEMP_NUM_TCP_PCB: the number of simulatenously active TCP
-   connections. */
-#define MEMP_NUM_TCP_PCB        10
+/*----- Default Value for MEM_SIZE: 1600 ---*/
+#define MEM_SIZE (28*1024)
 
-/* MEMP_NUM_TCP_SEG: the number of simultaneously queued TCP
-   segments. */
-#define MEMP_NUM_TCP_SEG        TCP_SND_QUEUELEN
+/*----- Default Value for H7 devices: 0x30044000 -----*/
+#define LWIP_RAM_HEAP_POINTER 0x24074000
 
+/*----- Value supported for H7 devices: 1 -----*/
+#define LWIP_SUPPORT_CUSTOM_PBUF 1
 
-/* ---------- Pbuf options ---------- */
-
-/* PBUF_POOL_BUFSIZE: the size of each pbuf in the pbuf pool */
-#define PBUF_POOL_BUFSIZE       1536
-
-/* LWIP_SUPPORT_CUSTOM_PBUF == 1: to pass directly MAC Rx buffers to the stack 
-   no copy is needed */
-#define LWIP_SUPPORT_CUSTOM_PBUF      1
+/*----- Value in opt.h for LWIP_ETHERNET: LWIP_ARP || PPPOE_SUPPORT -*/
+#define LWIP_ETHERNET 1
+/*----- Value in opt.h for LWIP_DNS_SECURE: (LWIP_DNS_SECURE_RAND_XID | LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING | LWIP_DNS_SECURE_RAND_SRC_PORT) -*/
+#define LWIP_DNS_SECURE 7
+/*----- Value in opt.h for TCP_SND_QUEUELEN: (4*TCP_SND_BUF + (TCP_MSS - 1))/TCP_MSS -----*/
+#define TCP_SND_QUEUELEN 9
+/*----- Value in opt.h for TCP_SNDLOWAT: LWIP_MIN(LWIP_MAX(((TCP_SND_BUF)/2), (2 * TCP_MSS) + 1), (TCP_SND_BUF) - 1) -*/
+#define TCP_SNDLOWAT 1071
+/*----- Value in opt.h for TCP_SNDQUEUELOWAT: LWIP_MAX(TCP_SND_QUEUELEN)/2, 5) -*/
+#define TCP_SNDQUEUELOWAT 5
+/*----- Value in opt.h for TCP_WND_UPDATE_THRESHOLD: LWIP_MIN(TCP_WND/4, TCP_MSS*4) -----*/
+#define TCP_WND_UPDATE_THRESHOLD 536
+/*----- Default Value for LWIP_NETIF_STATUS_CALLBACK: 0 ---*/
+#define LWIP_NETIF_STATUS_CALLBACK 1
+/*----- Value in opt.h for LWIP_NETIF_LINK_CALLBACK: 0 -----*/
+#define LWIP_NETIF_LINK_CALLBACK 1
+/*----- Value in opt.h for LWIP_NETCONN: 1 -----*/
+/*----- Default Value for LWIP_NUM_NETIF_CLIENT_DATA: 0 ---*/
+#define LWIP_NUM_NETIF_CLIENT_DATA 2
+#define LWIP_NETCONN 0
+/*----- Value in opt.h for LWIP_SOCKET: 1 -----*/
+#define LWIP_SOCKET 0
+/*----- Value in opt.h for RECV_BUFSIZE_DEFAULT: INT_MAX -----*/
+#define RECV_BUFSIZE_DEFAULT 2000000000
+/*----- Default Value for LWIP_MDNS: 0 ---*/
+#define LWIP_MDNS 1
+/*----- Default Value for LWIP_MDNS_RESPONDER: 0 ---*/
+#define LWIP_MDNS_RESPONDER 1
+/*----- Default Value for MDNS_MAX_SERVICES: 0 ---*/
+#define MDNS_MAX_SERVICES 8
+/*----- Value in opt.h for LWIP_STATS: 1 -----*/
+#define LWIP_STATS 0
+/*----- Value in opt.h for CHECKSUM_GEN_IP: 1 -----*/
+#define CHECKSUM_GEN_IP 0
+/*----- Value in opt.h for CHECKSUM_GEN_UDP: 1 -----*/
+#define CHECKSUM_GEN_UDP 0
+/*----- Value in opt.h for CHECKSUM_GEN_TCP: 1 -----*/
+#define CHECKSUM_GEN_TCP 0
+/*----- Value in opt.h for CHECKSUM_GEN_ICMP: 1 -----*/
+#define CHECKSUM_GEN_ICMP 0
+/*----- Value in opt.h for CHECKSUM_GEN_ICMP6: 1 -----*/
+#define CHECKSUM_GEN_ICMP6 0
+/*----- Value in opt.h for CHECKSUM_CHECK_IP: 1 -----*/
+#define CHECKSUM_CHECK_IP 0
+/*----- Value in opt.h for CHECKSUM_CHECK_UDP: 1 -----*/
+#define CHECKSUM_CHECK_UDP 0
+/*----- Value in opt.h for CHECKSUM_CHECK_TCP: 1 -----*/
+#define CHECKSUM_CHECK_TCP 0
+/*----- Value in opt.h for CHECKSUM_CHECK_ICMP: 1 -----*/
+#define CHECKSUM_CHECK_ICMP 0
+/*----- Value in opt.h for CHECKSUM_CHECK_ICMP6: 1 -----*/
+#define CHECKSUM_CHECK_ICMP6 0
+/*-----------------------------------------------------------------------------*/
+/* USER CODE BEGIN 1 */
 
 /*
-   ------------------------------------------------
-   ---------- Network Interfaces options ----------
-   ------------------------------------------------
+   ----------------------------------------
+   ---------- TCP tuning options ----------
+   ----------------------------------------
 */
-#define LWIP_NETIF_LINK_CALLBACK        1
-#define LWIP_NETIF_STATUS_CALLBACK      1
-
-/* ---------- TCP options ---------- */
-#define LWIP_TCP                1
-#define TCP_TTL                 255
-
-
-/* TCP Maximum segment size. */
-#define TCP_MSS                 (1500 - 40)	  /* TCP_MSS = (Ethernet MTU - IP header size - TCP header size) */
-
-/* TCP sender buffer space (bytes). */
 #define TCP_SND_BUF             (4*TCP_MSS)
 
-
-/* TCP receive window. */
-#define TCP_WND                (4*TCP_MSS)
-
-/* ---------- ICMP options ---------- */
-#define LWIP_ICMP                       1
-
-
-/* ---------- DHCP options ---------- */
-#define LWIP_DHCP               1
-
-
-/* ---------- UDP options ---------- */
-#define LWIP_UDP                1
-#define UDP_TTL                 255
-
-
-/* ---------- Statistics options ---------- */
-#define LWIP_STATS 0
-
-/*
-   --------------------------------------
-   ---------- Checksum options ----------
-   --------------------------------------
-*/
-
-/* 
-The STM32H7xx allows computing and verifying the IP, UDP, TCP and ICMP checksums by hardware:
- - To use this feature let the following define uncommented.
- - To disable it and process by CPU comment the  the checksum.
-*/
-#define CHECKSUM_BY_HARDWARE 
-
-
-#ifdef CHECKSUM_BY_HARDWARE
-  /* CHECKSUM_GEN_IP==0: Generate checksums by hardware for outgoing IP packets.*/
-  #define CHECKSUM_GEN_IP                 0
-  /* CHECKSUM_GEN_UDP==0: Generate checksums by hardware for outgoing UDP packets.*/
-  #define CHECKSUM_GEN_UDP                0
-  /* CHECKSUM_GEN_TCP==0: Generate checksums by hardware for outgoing TCP packets.*/
-  #define CHECKSUM_GEN_TCP                0 
-  /* CHECKSUM_CHECK_IP==0: Check checksums by hardware for incoming IP packets.*/
-  #define CHECKSUM_CHECK_IP               0
-  /* CHECKSUM_CHECK_UDP==0: Check checksums by hardware for incoming UDP packets.*/
-  #define CHECKSUM_CHECK_UDP              0
-  /* CHECKSUM_CHECK_TCP==0: Check checksums by hardware for incoming TCP packets.*/
-  #define CHECKSUM_CHECK_TCP              0
-  /* CHECKSUM_GEN_ICMP==1: Check checksums by hardware for outgoing ICMP packets.*/
-  /* Hardware TCP/UDP checksum insertion not supported when packet is an IPv4 fragment*/
-  #define CHECKSUM_GEN_ICMP               1
-  /* CHECKSUM_CHECK_ICMP==0: Check checksums by hardware for incoming ICMP packets.*/
-  #define CHECKSUM_CHECK_ICMP             0
-#else
-  /* CHECKSUM_GEN_IP==1: Generate checksums in software for outgoing IP packets.*/
-  #define CHECKSUM_GEN_IP                 1
-  /* CHECKSUM_GEN_UDP==1: Generate checksums in software for outgoing UDP packets.*/
-  #define CHECKSUM_GEN_UDP                1
-  /* CHECKSUM_GEN_TCP==1: Generate checksums in software for outgoing TCP packets.*/
-  #define CHECKSUM_GEN_TCP                1
-  /* CHECKSUM_CHECK_IP==1: Check checksums in software for incoming IP packets.*/
-  #define CHECKSUM_CHECK_IP               1
-  /* CHECKSUM_CHECK_UDP==1: Check checksums in software for incoming UDP packets.*/
-  #define CHECKSUM_CHECK_UDP              1
-  /* CHECKSUM_CHECK_TCP==1: Check checksums in software for incoming TCP packets.*/
-  #define CHECKSUM_CHECK_TCP              1
-  /* CHECKSUM_GEN_ICMP==1: Check checksums by hardware for outgoing ICMP packets.*/
-  #define CHECKSUM_GEN_ICMP               1
-  /* CHECKSUM_CHECK_ICMP==1: Check checksums by hardware for incoming ICMP packets.*/
-  #define CHECKSUM_CHECK_ICMP             1
-#endif
-
-
-/*
-   ----------------------------------------------
-   ---------- Sequential layer options ----------
-   ----------------------------------------------
-*/
-/**
- * LWIP_NETCONN==1: Enable Netconn API (require to use api_lib.c)
- */
-#define LWIP_NETCONN                    0
-
-/*
-   ------------------------------------
-   ---------- Socket options ----------
-   ------------------------------------
-*/
-/**
- * LWIP_SOCKET==1: Enable Socket API (require to use sockets.c)
- */
-#define LWIP_SOCKET                     0
 
 /*
    ---------------------------------------
    ------------ HTTPD options ------------
    ---------------------------------------
 */
-#define LWIP_HTTPD_CUSTOM_FILES         0
-#define LWIP_HTTPD_DYNAMIC_HEADERS      1
-#define LWIP_HTTPD_DYNAMIC_FILE_READ    1
-#define LWIP_HTTPD_SUPPORT_V09          0
-#define LWIP_HTTPD_SUPPORT_11_KEEPALIVE 1
-#define LWIP_HTTPD_SUPPORT_POST         1
-#define HTTPD_LIMIT_SENDING_TO_2MSS     0
-
-//#define LWIP_HTTPD_CGI_ADV              1
-//#define LWIP_HTTPD_SSI                  1
+ #define LWIP_HTTPD_CUSTOM_FILES         0
+ #define LWIP_HTTPD_DYNAMIC_HEADERS      1
+ #define LWIP_HTTPD_DYNAMIC_FILE_READ    1
+ #define LWIP_HTTPD_SUPPORT_V09          0
+ #define LWIP_HTTPD_SUPPORT_11_KEEPALIVE 1
+ #define LWIP_HTTPD_SUPPORT_POST         1
+ #define HTTPD_LIMIT_SENDING_TO_2MSS     0
 
 /*
    ---------------------------------------
@@ -216,24 +161,19 @@ The STM32H7xx allows computing and verifying the IP, UDP, TCP and ICMP checksums
    ---------------------------------------
 */
 
-//#define LWIP_DEBUG                      1
+ //#define LWIP_DEBUG                      1
 
-#define ETHARP_DEBUG                    LWIP_DBG_ON
-#define IP_DEBUG                        LWIP_DBG_ON
-#define TCP_DEBUG                       LWIP_DBG_ON
-#define TCP_OUTPUT_DEBUG                LWIP_DBG_ON
-#define HTTPD_DEBUG                     LWIP_DBG_ON
-#define TCP_QLEN_DEBUG                  LWIP_DBG_ON
-#define LWIP_DBG_TYPES_ON               (LWIP_DBG_ON | LWIP_DBG_TRACE)
+ #define ETHARP_DEBUG                    LWIP_DBG_ON
+ #define IP_DEBUG                        LWIP_DBG_ON
+ #define TCP_DEBUG                       LWIP_DBG_ON
+ #define TCP_OUTPUT_DEBUG                LWIP_DBG_ON
+ #define HTTPD_DEBUG                     LWIP_DBG_ON
+ #define TCP_QLEN_DEBUG                  LWIP_DBG_ON
+ #define LWIP_DBG_TYPES_ON               (LWIP_DBG_ON | LWIP_DBG_TRACE)
 
-/*
-   ---------------------------------------
-   --------- MDNS / SSDP options ---------
-   ---------------------------------------
-*/
-#define LWIP_IGMP                   1
-#define LWIP_NUM_NETIF_CLIENT_DATA  1
+/* USER CODE END 1 */
 
-#endif /* __LWIPOPTS_H__ */
-
-
+#ifdef __cplusplus
+}
+#endif
+#endif /*__LWIPOPTS__H__ */
