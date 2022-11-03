@@ -30,10 +30,9 @@
 #include <lwipopts.h>
 #include <lwip/netif.h>
 #include "lwip/dhcp.h"
+#include "lwip.h"
 #include "lwip/init.h"
-#include "lwip/timeouts.h"
 #include "ethernetif.h"
-#include "ethernet.h"
 
 #if TCP_ECHOSERVER_ENABLE
 #include "tcp_echoserver.h"
@@ -43,9 +42,8 @@
 #include "grbl/nvs_buffer.h"
 
 #include "networking/networking.h"
-#if HTTP_ENABLE
-#include "networking/httpd.h"
-#endif
+
+#define MDNS_TTL 32
 
 static volatile bool linkUp = false;
 static char IPAddress[IP4ADDR_STRLEN_MAX];
@@ -71,6 +69,14 @@ static void report_options (bool newopt)
 #if WEBDAV_ENABLE
         if(services.webdav)
             hal.stream.write(",WebDAV");
+#endif
+#if MDNS_ENABLE
+        if(services.mdns)
+            hal.stream.write(",mDNS");
+#endif
+#if SSDP_ENABLE
+        if(services.ssdp)
+            hal.stream.write(",SSDP");
 #endif
     } else {
         hal.stream.write("[IP:");
@@ -130,57 +136,103 @@ static void link_status_callback (struct netif *netif)
     }
 }
 
+#if MDNS_ENABLE
+
+static void mdns_device_info (struct mdns_service *service, void *txt_userdata)
+{
+    char build[20] = "build=";
+
+    strcat(build, uitoa(GRBL_BUILD));
+    mdns_resp_add_service_txtitem(service, "model=grblHAL", 13);
+    mdns_resp_add_service_txtitem(service, (char *)txt_userdata, strlen((char *)txt_userdata));
+    mdns_resp_add_service_txtitem(service, build, strlen(build));
+}
+
+static void mdns_service_info (struct mdns_service *service, void *txt_userdata)
+{
+    if(txt_userdata)
+        mdns_resp_add_service_txtitem(service, (char *)txt_userdata, strlen((char *)txt_userdata));
+}
+
+#endif
+
 static void netif_status_callback (struct netif *netif)
 {
+#if IP_V6
+    if(netif->ip_addr.u_addr.ip4.addr == 0)
+        return;
+#else
+    if(netif->ip_addr.addr == 0)
+        return;
+#endif
+
     ip4addr_ntoa_r(netif_ip_addr4(netif), IPAddress, IP4ADDR_STRLEN_MAX);
 
-    if(netif->ip_addr.addr != 0) {
-
 #if TELNET_ENABLE
-        if(network.services.telnet && !services.telnet)
-            services.telnet =  telnetd_init(network.telnet_port == 0 ? NETWORK_TELNET_PORT : network.telnet_port);
+    if(network.services.telnet && !services.telnet)
+        services.telnet =  telnetd_init(network.telnet_port);
 #endif
 
 #if FTP_ENABLE
-        if(network.services.ftp && !services.ftp)
-            services.ftp = ftpd_init(network.ftp_port == 0 ? NETWORK_FTP_PORT : network.ftp_port);;
+    if(network.services.ftp && !services.ftp)
+        services.ftp = ftpd_init(network.ftp_port);
 #endif
 
 #if HTTP_ENABLE
-        if(network.services.http && !services.http) {
-            services.http = httpd_init(network.http_port == 0 ? NETWORK_HTTP_PORT : network.http_port);
+    if(network.services.http && !services.http) {
+        services.http = httpd_init(network.http_port);
   #if WEBDAV_ENABLE
-            if(network.services.webdav && !services.webdav)
-                services.webdav = webdav_init();
+        if(network.services.webdav && !services.webdav)
+            services.webdav = webdav_init();
   #endif
-        }
+  #if SSDP_ENABLE
+        if(network.services.ssdp && !services.ssdp)
+            services.ssdp = ssdp_init(network.http_port);
+  #endif
+    }
 #endif
 
 #if WEBSOCKET_ENABLE
-        if(network.services.websocket && !services.websocket)
-            services.websocket = websocketd_init(network.websocket_port == 0 ? NETWORK_WEBSOCKET_PORT : network.websocket_port);
+    if(network.services.websocket && !services.websocket)
+        services.websocket = websocketd_init(network.websocket_port);
 #endif
+
+#if MDNS_ENABLE
+    if(*network.hostname && network.services.mdns && !services.mdns) {
+
+        mdns_resp_init();
+
+        if((services.mdns = mdns_resp_add_netif(netif_default, network.hostname, MDNS_TTL) == ERR_OK)) {
+
+            mdns_resp_add_service(netif_default, network.hostname, "_device-info", DNSSD_PROTO_TCP, 0, MDNS_TTL, mdns_device_info, "version=" GRBL_VERSION);
+
+            if(services.http)
+                mdns_resp_add_service(netif_default, network.hostname, "_http", DNSSD_PROTO_TCP, network.http_port, MDNS_TTL, mdns_service_info, "path=/");
+            if(services.webdav)
+                mdns_resp_add_service(netif_default, network.hostname, "_webdav", DNSSD_PROTO_TCP, network.http_port, MDNS_TTL, mdns_service_info, "path=/");
+            if(services.websocket)
+                mdns_resp_add_service(netif_default, network.hostname, "_websocket", DNSSD_PROTO_TCP, network.websocket_port, MDNS_TTL, mdns_service_info, NULL);
+            if(services.telnet)
+                mdns_resp_add_service(netif_default, network.hostname, "_telnet", DNSSD_PROTO_TCP, network.telnet_port, MDNS_TTL, mdns_service_info, NULL);
+            if(services.ftp)
+                mdns_resp_add_service(netif_default, network.hostname, "_ftp", DNSSD_PROTO_TCP, network.ftp_port, MDNS_TTL, mdns_service_info, "path=/");
+
+//            mdns_resp_announce(netif_default);
+        }
     }
-}
-
-void link_check_state(struct netif *netif)
-{
-  static uint32_t EthernetLinkTimer;
-
-  // Check Ethernet link state every 100ms
-  if (HAL_GetTick() - EthernetLinkTimer >= 100)
-  {
-    EthernetLinkTimer = HAL_GetTick();
-    ethernet_link_check_state(netif);
-  }
+#endif
 }
 
 static void enet_poll (sys_state_t state)
 {
-    static uint32_t last_ms0;
+    static uint32_t last_ms0, last_link_check;
     uint32_t ms = hal.get_elapsed_ticks();
 
-    link_check_state(netif_default);
+    if(ms - last_link_check >= 100) {
+        last_link_check = ms;
+        ethernet_link_check_state(netif_default);
+    }
+
     sys_check_timeouts();
     ethernetif_input(netif_default);
 
@@ -218,6 +270,15 @@ bool enet_start (void)
 
         memcpy(&network, &ethernet, sizeof(network_settings_t));
 
+        if(network.telnet_port == 0)
+            network.telnet_port = NETWORK_TELNET_PORT;
+        if(network.websocket_port == 0)
+            network.websocket_port = NETWORK_WEBSOCKET_PORT;
+        if(network.http_port == 0)
+            network.http_port = NETWORK_HTTP_PORT;
+        if(network.ftp_port == 0)
+            network.ftp_port = NETWORK_FTP_PORT;
+
         lwip_init();
 
         if(network.ip_mode == IpMode_Static)
@@ -236,15 +297,33 @@ bool enet_start (void)
     #if LWIP_NETIF_HOSTNAME
         netif_set_hostname(netif_default, network.hostname);
     #endif
-
         if(network.ip_mode == IpMode_DHCP)
             dhcp_start(netif_default);
+    }
 
-    #if TCP_ECHOSERVER_ENABLE
+#if MDNS_ENABLE || SSDP_ENABLE || LWIP_IGMP
+
+    if(network.services.mdns || network.services.ssdp) {
+
+        ETH_MACFilterConfigTypeDef filters;
+
+        HAL_ETH_GetMACFilterConfig(&EthHandle, &filters);
+
+        // TODO: add filters for SSDP and mDNS
+        filters.PassAllMulticast = On;
+    //    filters.PromiscuousMode = On;
+
+        HAL_ETH_SetMACFilterConfig(&EthHandle, &filters);
+
+        netif_default->flags |= NETIF_FLAG_IGMP;
+    }
+
+#endif
+
+#if TCP_ECHOSERVER_ENABLE
         // Echos all input on TCP port 7, useful for diagnostics and performance checks
         tcp_echoserver_init();
-    #endif
-    }
+#endif
 
     return nvs_address != 0;
 }
@@ -285,7 +364,7 @@ static const setting_detail_t ethernet_settings[] = {
 #ifndef NO_SETTINGS_DESCRIPTIONS
 
 static const setting_descr_t ethernet_settings_descr[] = {
-    { Setting_NetworkServices, "Network services to enable. Consult driver documentation for availability." },
+    { Setting_NetworkServices, "Network services/protocols to enable." },
     { Setting_Hostname, "Network hostname." },
     { Setting_IpMode, "IP Mode." },
     { Setting_IpAddress, "Static IP address." },

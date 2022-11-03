@@ -67,6 +67,8 @@
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FatFs/src"/>
 									<listOptionValue builtIn="false" value="../FATFS/App"/>
 									<listOptionValue builtIn="false" value="../FATFS/Target"/>
+									<listOptionValue builtIn="false" value="../LWIP/App"/>
+									<listOptionValue builtIn="false" value="../LWIP/Target"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.654157600" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -95,6 +97,7 @@
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="FATFS"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="LWIP"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup"/>
@@ -178,6 +181,8 @@
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FatFs/src"/>
 									<listOptionValue builtIn="false" value="../FATFS/App"/>
 									<listOptionValue builtIn="false" value="../FATFS/Target"/>
+									<listOptionValue builtIn="false" value="../LWIP/App"/>
+									<listOptionValue builtIn="false" value="../LWIP/Target"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1672869878" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -206,6 +211,7 @@
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="FATFS"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="LWIP"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup"/>
@@ -299,6 +305,8 @@
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FatFs/src"/>
 									<listOptionValue builtIn="false" value="../FATFS/App"/>
 									<listOptionValue builtIn="false" value="../FATFS/Target"/>
+									<listOptionValue builtIn="false" value="../LWIP/App"/>
+									<listOptionValue builtIn="false" value="../LWIP/Target"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1469265318" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -330,6 +338,7 @@
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="FATFS"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="LWIP"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup"/>
@@ -419,6 +428,8 @@
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FatFs/src"/>
 									<listOptionValue builtIn="false" value="../FATFS/App"/>
 									<listOptionValue builtIn="false" value="../FATFS/Target"/>
+									<listOptionValue builtIn="false" value="../LWIP/App"/>
+									<listOptionValue builtIn="false" value="../LWIP/Target"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1859037662" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -450,6 +461,7 @@
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="FATFS"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="LWIP"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup"/>
@@ -537,6 +549,8 @@
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FatFs/src"/>
 									<listOptionValue builtIn="false" value="../FATFS/App"/>
 									<listOptionValue builtIn="false" value="../FATFS/Target"/>
+									<listOptionValue builtIn="false" value="../LWIP/App"/>
+									<listOptionValue builtIn="false" value="../LWIP/Target"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1045276549" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -565,6 +579,7 @@
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="FATFS"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="LWIP"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup"/>
@@ -648,6 +663,8 @@
 									<listOptionValue builtIn="false" value="../Middlewares/Third_Party/FatFs/src"/>
 									<listOptionValue builtIn="false" value="../FATFS/App"/>
 									<listOptionValue builtIn="false" value="../FATFS/Target"/>
+									<listOptionValue builtIn="false" value="../LWIP/App"/>
+									<listOptionValue builtIn="false" value="../LWIP/Target"/>
 								</option>
 								<inputType id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c.1469671125" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.input.c"/>
 							</tool>
@@ -676,6 +693,7 @@
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Drivers"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="FATFS"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="LWIP"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="Middlewares"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Src"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup"/>

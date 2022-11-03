@@ -226,6 +226,14 @@ The STM32H7xx allows computing and verifying the IP, UDP, TCP and ICMP checksums
 #define TCP_QLEN_DEBUG                  LWIP_DBG_ON
 #define LWIP_DBG_TYPES_ON               (LWIP_DBG_ON | LWIP_DBG_TRACE)
 
+/*
+   ---------------------------------------
+   --------- MDNS / SSDP options ---------
+   ---------------------------------------
+*/
+#define LWIP_IGMP                   1
+#define LWIP_NUM_NETIF_CLIENT_DATA  1
+
 #endif /* __LWIPOPTS_H__ */
 
 
