@@ -3,7 +3,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2020-2021 Terje Io
+  Copyright (c) 2020-2022 Terje Io
 
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -186,7 +186,7 @@ static void enable_irq (const input_signal_t *input, pin_irq_mode_t irq_mode)
 inline static __attribute__((always_inline)) int32_t get_input (const input_signal_t *input, bool invert, wait_mode_t wait_mode, float timeout)
 {
     if(wait_mode == WaitMode_Immediate)
-        return DIGITAL_IN(input->port, input->pin) ^ invert;
+        return DIGITAL_IN(input->port, input->bit) ^ invert;
 
     int32_t value = -1;
     uint_fast16_t delay = (uint_fast16_t)ceilf((1000.0f / 50.0f) * timeout) + 1;
@@ -202,7 +202,7 @@ inline static __attribute__((always_inline)) int32_t get_input (const input_sign
 
             do {
                 if(event_bits & input->bit) {
-                    value = DIGITAL_IN(input->port, input->pin) ^ invert;
+                    value = DIGITAL_IN(input->port, input->bit) ^ invert;
                     break;
                 }
                 if(delay) {
@@ -220,8 +220,8 @@ inline static __attribute__((always_inline)) int32_t get_input (const input_sign
         bool wait_for = wait_mode != WaitMode_Low;
 
         do {
-            if((DIGITAL_IN(input->port, input->pin) ^ invert) == wait_for) {
-                value = DIGITAL_IN(input->port, input->pin) ^ invert;
+            if((DIGITAL_IN(input->port, input->bit) ^ invert) == wait_for) {
+                value = DIGITAL_IN(input->port, input->bit) ^ invert;
                 break;
             }
             if(delay) {
