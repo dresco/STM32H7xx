@@ -54,6 +54,7 @@ build_flags =
   # Floating point support for printf, required for WebUI v3
   -Wl,-u,_printf_float
 lib_deps =
+   LWIP/Target
    networking
    webui
    Middlewares/Third_Party/LwIP
