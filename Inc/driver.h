@@ -216,8 +216,8 @@
 
 #define DEBOUNCE_TIMER_N            12
 #define DEBOUNCE_TIMER              timer(DEBOUNCE_TIMER_N)
-#define DEBOUNCE_TIMER_IRQn         TIM1_BRK_TIM9_IRQn       // !
-#define DEBOUNCE_TIMER_IRQHandler   TIM1_BRK_TIM9_IRQHandler // !
+#define DEBOUNCE_TIMER_IRQn         TIM8_BRK_TIM12_IRQn       // !
+#define DEBOUNCE_TIMER_IRQHandler   TIM8_BRK_TIM12_IRQHandler // !
 
 #define RPM_COUNTER_N               3
 #define RPM_COUNTER                 timer(RPM_COUNTER_N)
