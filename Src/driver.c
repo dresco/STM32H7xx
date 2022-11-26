@@ -435,15 +435,15 @@ static void stepperEnable (axes_signals_t enable)
  #else
     DIGITAL_OUT(X_ENABLE_PORT, X_ENABLE_BIT, enable.x);
   #ifdef X2_ENABLE_PORT
-    DIGITAL_OUT(X2_ENABLE_PORT, X2_ENABLE_BIT, enable.x;)
+    DIGITAL_OUT(X2_ENABLE_PORT, X2_ENABLE_BIT, enable.x);
   #endif
     DIGITAL_OUT(Y_ENABLE_PORT, Y_ENABLE_BIT, enable.y);
   #ifdef Y2_ENABLE_PORT
-    DIGITAL_OUT(Y2_ENABLE_PORT, Y2_ENABLE_BIT, enable.y;)
+    DIGITAL_OUT(Y2_ENABLE_PORT, Y2_ENABLE_BIT, enable.y);
   #endif
     DIGITAL_OUT(Z_ENABLE_PORT, Z_ENABLE_BIT, enable.z);
-  #ifdef Y2_ENABLE_PORT
-    DIGITAL_OUT(Z2_ENABLE_PORT, Z2_ENABLE_BIT, enable.z;)
+  #ifdef Z2_ENABLE_PORT
+    DIGITAL_OUT(Z2_ENABLE_PORT, Z2_ENABLE_BIT, enable.z);
   #endif
   #ifdef A_ENABLE_PORT
     DIGITAL_OUT(A_ENABLE_PORT, A_ENABLE_BIT, enable.a);
