@@ -615,7 +615,7 @@ inline static __attribute__((always_inline)) void stepperSetDirOutputs (axes_sig
     dir_outbits.mask ^= settings.steppers.dir_invert.mask;
     DIGITAL_OUT(X_DIRECTION_PORT, X_DIRECTION_BIT, dir_outbits.x);
     DIGITAL_OUT(Y_DIRECTION_PORT, Y_DIRECTION_BIT, dir_outbits.y);
-    DIGITAL_OUT(Y_DIRECTION_PORT, Z_DIRECTION_BIT, dir_outbits.z);
+    DIGITAL_OUT(Z_DIRECTION_PORT, Z_DIRECTION_BIT, dir_outbits.z);
  #ifdef GANGING_ENABLED
     dir_outbits.mask ^= settings.steppers.ganged_dir_invert.mask;
   #ifdef X2_DIRECTION_PIN
