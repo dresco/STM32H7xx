@@ -37,12 +37,13 @@
 // Configuration
 // Uncomment to enable.
 
+#if !IS_NUCLEO_DEVKIT && !defined(USB_SERIAL_CDC)   // The Nucleo-F756ZG board has an off-chip UART to USB interface.
 //#define USB_SERIAL_CDC       1 // Serial communication via native USB.
+#endif
 //#define SAFETY_DOOR_ENABLE   1 // Enable safety door input.
 //#define VFD_ENABLE           1 // Set to 1 or 2 for Huanyang VFD spindle. More here https://github.com/grblHAL/Plugins_spindle
-//#define DUAL_SPINDLE         1 // Uncomment for switching between VFD spindle and PWM output with $32
 //#define MODBUS_ENABLE        1 // Set to 1 for auto direction, 2 for direction signal on auxillary output pin.
-//#define WEBUI_ENABLE         1 // Enable ESP3D-WEBUI plugin along with networking and SD card plugins.
+//#define WEBUI_ENABLE         3 // Enable ESP3D-WEBUI plugin along with networking and SD card plugins.
 //#define WEBUI_AUTH_ENABLE    1 // Enable ESP3D-WEBUI authentication.
 //#define WEBUI_INFLASH        1 // Store WebUI files in flash instead of on SD card.
 //#define ETHERNET_ENABLE      1 // Ethernet streaming. Uses networking plugin.
@@ -52,11 +53,12 @@
 //#define ODOMETER_ENABLE      1 // Odometer plugin.
 //#define PPI_ENABLE           1 // Laser PPI plugin. To be completed.
 //#define LASER_COOLANT_ENABLE 1 // Laser coolant plugin. To be completed.
+//#define LB_CLUSTERS_ENABLE   1 // LaserBurn cluster support.
 //#define OPENPNP_ENABLE       1 // OpenPNP plugin. To be completed.
 //#define FANS_ENABLE          1 // Enable fan control via M106/M107. Enables fans plugin.
 //#define PLASMA_ENABLE        1 // Plasma (THC) plugin. To be completed.
 //#define TRINAMIC_ENABLE   2130 // Trinamic TMC2130 stepper driver support. NOTE: work in progress.
-//#define TRINAMIC_ENABLE   2209   // Trinamic TMC2209 stepper driver support. NOTE: work in progress.
+//#define TRINAMIC_ENABLE   2209 // Trinamic TMC2209 stepper driver support. NOTE: work in progress.
 //#define TRINAMIC_ENABLE   5160 // Trinamic TMC5160 stepper driver support. NOTE: work in progress.
 //#define TRINAMIC_I2C         1 // Trinamic I2C - SPI bridge interface.
 //#define TRINAMIC_DEV         1 // Development mode, adds a few M-codes to aid debugging. Do not enable in production code.
@@ -79,15 +81,19 @@
 //#define Z_GANGED_LIM_MAX    1
 
 #if ETHERNET_ENABLE > 0
-#define TELNET_ENABLE           1 // Telnet daemon - requires Ethernet streaming enabled.
-#define WEBSOCKET_ENABLE        1 // Websocket daemon - requires Ethernet streaming enabled.
+//#define TELNET_ENABLE       1 // Telnet daemon - requires Ethernet streaming enabled.
+//#define WEBSOCKET_ENABLE    1 // Websocket daemon - requires Ethernet streaming enabled.
+//#define MDNS_ENABLE         1 // mDNS daemon.
+//#define SSDP_ENABLE         1 // SSDP daemon - requires HTTP enabled.
+//#define MQTT_ENABLE         1 // MQTT client API, only enable if needed by plugin code.
 #ifdef SDCARD_ENABLE
-#define FTP_ENABLE              1 // Ftp daemon - requires SD card enabled.
-//#define HTTP_ENABLE             1 // http daemon - requires SD card enabled.
-//#define WEBDAV_ENABLE           1 // webdav protocol - requires http daemon and SD card enabled.
+//#define FTP_ENABLE          1 // Ftp daemon - requires SD card enabled.
+//#define HTTP_ENABLE         1 // http daemon - requires SD card enabled.
+//#define WEBDAV_ENABLE       1 // webdav protocol - requires http daemon and SD card enabled.
 #endif
+
 // The following symbols have the default values as shown, uncomment and change as needed.
-//#define NETWORK_HOSTNAME        "GRBL"
+//#define NETWORK_HOSTNAME        "grblHAL"
 //#define NETWORK_IPMODE          1 // 0 = static, 1 = DHCP, 2 = AutoIP
 //#define NETWORK_IP              "192.168.5.1"
 //#define NETWORK_GATEWAY         "192.168.5.1"

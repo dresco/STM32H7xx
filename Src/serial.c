@@ -104,7 +104,7 @@ static uint16_t serialRxFree (void)
 {
     uint16_t tail = rxbuf.tail, head = rxbuf.head;
 
-    return RX_BUFFER_SIZE - BUFCOUNT(head, tail, RX_BUFFER_SIZE);
+    return (RX_BUFFER_SIZE - 1) - BUFCOUNT(head, tail, RX_BUFFER_SIZE);
 }
 
 //

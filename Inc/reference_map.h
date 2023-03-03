@@ -3,7 +3,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2021-2022 Terje Io
+  Copyright (c) 2021-2023 Terje Io
 
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -171,6 +171,9 @@
 #define CYCLE_START_PORT        GPIOF
 #define CYCLE_START_PIN         4
 #if SAFETY_DOOR_ENABLE
+#if N_ABC_MOTORS
+#error "Safety door cannot be enabled when > 3 motors are defined."
+#endif
 #define SAFETY_DOOR_PORT        GPIOB
 #define SAFETY_DOOR_PIN         10
 #endif
@@ -181,6 +184,7 @@
 #define PROBE_PORT              GPIOF
 #define PROBE_PIN               10
 
+// STM32H7xx - SD card using SDMMC interface instead of SPI
 //#if SDCARD_ENABLE
 //#define SD_CS_PORT              GPIOC
 //#define SD_CS_PIN               8
@@ -188,6 +192,7 @@
 
 #define AUXINPUT0_PORT          GPIOE
 #define AUXINPUT0_PIN           15
+
 #define AUXINPUT1_PORT          GPIOD
 #define AUXINPUT1_PIN           1
 #define AUXINPUT2_PORT          GPIOF

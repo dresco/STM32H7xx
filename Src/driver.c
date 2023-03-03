@@ -4,8 +4,8 @@
 
   Part of grblHAL
 
-  Copyright (c) 2019-2022 Terje Io
-  Copyright (c) 2022 Jon Escombe
+  Copyright (c) 2019-2023 Terje Io
+  Copyright (c) 2023 Jon Escombe
 
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -56,10 +56,6 @@
 #include "eeprom/eeprom.h"
 #endif
 
-#if KEYPAD_ENABLE
-#include "keypad/keypad.h"
-#endif
-
 #if ODOMETER_ENABLE
 #include "odometer/odometer.h"
 #endif
@@ -80,8 +76,8 @@
 #include "openpnp/openpnp.h"
 #endif
 
-#if KEYPAD_ENABLE == 0
-#define KEYPAD_STROBE_BIT 0
+#if !I2C_STROBE_ENABLE
+#define I2C_STROBE_BIT 0
 #endif
 
 #if !SAFETY_DOOR_ENABLE
@@ -92,13 +88,13 @@
 #define SPINDLE_INDEX_BIT 0
 #endif
 
-#if CONTROL_MASK != (RESET_BIT+FEED_HOLD_BIT+CYCLE_START_BIT+SAFETY_DOOR_BIT)
+#if CONTROL_MASK != CONTROL_MASK_SUM
 #error Interrupt enabled input pins must have unique pin numbers!
 #endif
 
-#define DRIVER_IRQMASK (LIMIT_MASK|CONTROL_MASK|KEYPAD_STROBE_BIT|SPINDLE_INDEX_BIT)
+#define DRIVER_IRQMASK (LIMIT_MASK|CONTROL_MASK|I2C_STROBE_BIT|SPINDLE_INDEX_BIT)
 
-#if DRIVER_IRQMASK != (LIMIT_MASK+CONTROL_MASK+KEYPAD_STROBE_BIT+SPINDLE_INDEX_BIT)
+#if DRIVER_IRQMASK != (LIMIT_MASK_SUM+CONTROL_MASK_SUM+I2C_STROBE_BIT+SPINDLE_INDEX_BIT)
 #error Interrupt enabled input pins must have unique pin numbers!
 #endif
 
@@ -115,12 +111,13 @@ typedef union {
     };
 } debounce_t;
 
-#if (!VFD_SPINDLE || N_SPINDLE > 1) && defined(SPINDLE_ENABLE_PIN)
+#if DRIVER_SPINDLE_ENABLE && defined(SPINDLE_ENABLE_PIN)
 
 #define DRIVER_SPINDLE
 
 #if defined(SPINDLE_PWM_TIMER_N)
 static bool pwmEnabled = false;
+static spindle_id_t spindle_id = -1;
 static spindle_pwm_t spindle_pwm;
 static void spindle_set_speed (uint_fast16_t pwm_value);
 #endif
@@ -145,11 +142,11 @@ static input_signal_t inputpin[] = {
 #ifdef PROBE_PIN
     { .id = Input_Probe,          .port = PROBE_PORT,         .pin = PROBE_PIN,           .group = PinGroup_Probe },
 #endif
-#ifdef KEYPAD_STROBE_PIN
-    { .id = Input_KeypadStrobe,   .port = KEYPAD_PORT,        .pin = KEYPAD_STROBE_PIN,   .group = PinGroup_Keypad },
+#ifdef I2C_STROBE_PIN
+    { .id = Input_KeypadStrobe,   .port = I2C_STROBE_PORT,    .pin = I2C_STROBE_PIN,      .group = PinGroup_Keypad },
 #endif
 #ifdef MPG_MODE_PIN
-    { .id = Input_MPGSelect,     .port = MPG_MODE_PORT,       .pin = MPG_MODE_PIN,        .group = PinGroup_MPG },
+    { .id = Input_MPGSelect,      .port = MPG_MODE_PORT,      .pin = MPG_MODE_PIN,        .group = PinGroup_MPG },
 #endif
 // Limit input pins must be consecutive in this array
     { .id = Input_LimitX,         .port = X_LIMIT_PORT,       .pin = X_LIMIT_PIN,         .group = PinGroup_Limit },
@@ -383,6 +380,22 @@ static debounce_t debounce;
 static probe_state_t probe = {
     .connected = On
 };
+#endif
+
+#if I2C_STROBE_ENABLE
+
+static driver_irq_handler_t i2c_strobe = { .type = IRQ_I2C_Strobe };
+
+static bool irq_claim (irq_type_t irq, uint_fast8_t id, irq_callback_ptr handler)
+{
+    bool ok;
+
+    if((ok = irq == IRQ_I2C_Strobe && i2c_strobe.callback == NULL))
+        i2c_strobe.callback = handler;
+
+    return ok;
+}
+
 #endif
 
 #include "grbl/stepdir_map.h"
@@ -1101,6 +1114,8 @@ static void spindleSetStateVariable (spindle_state_t state, float rpm)
         spindle_data.rpm_low_limit = rpm - tolerance;
         spindle_data.rpm_high_limit = rpm + tolerance;
     }
+    spindle_data.state_programmed.on = state.on;
+    spindle_data.state_programmed.ccw = state.ccw;
     spindle_data.rpm_programmed = spindle_data.rpm = rpm;
 #endif
 }
@@ -1117,68 +1132,64 @@ static void spindlePulseOn (uint_fast16_t pulse_length)
 
 #endif
 
-bool spindleConfig (void)
+bool spindleConfig (spindle_ptrs_t *spindle)
 {
-    static spindle_settings_t spindle = {0};
+    if(spindle == NULL)
+        return false;
 
-    if(hal.spindle.rpm_max > 0.0f && memcmp(&spindle, &settings.spindle, sizeof(spindle_settings_t))) {
+    RCC_ClkInitTypeDef clock;
+    uint32_t latency, prescaler = settings.spindle.pwm_freq > 4000.0f ? 1 : (settings.spindle.pwm_freq > 200.0f ? 12 : 25);
 
-        RCC_ClkInitTypeDef clock;
-        uint32_t latency, prescaler = settings.spindle.pwm_freq > 4000.0f ? 1 : (settings.spindle.pwm_freq > 200.0f ? 12 : 25);
+    HAL_RCC_GetClockConfig(&clock, &latency);
 
-        memcpy(&spindle, &settings.spindle, sizeof(spindle_settings_t));
+  #if SPINDLE_PWM_TIMER_N == 1
+    if((spindle->cap.variable = !settings.spindle.flags.pwm_disable && spindle_precompute_pwm_values(spindle, &spindle_pwm, (HAL_RCC_GetPCLK2Freq() * (clock.APB2CLKDivider == 0 ? 1 : 2)) / prescaler))) {
+  #else
+    if((spindle->cap.variable = !settings.spindle.flags.pwm_disable && spindle_precompute_pwm_values(spindle, &spindle_pwm, (HAL_RCC_GetPCLK1Freq() * (clock.APB1CLKDivider == 0 ? 1 : 2)) / prescaler))) {
+  #endif
 
-        HAL_RCC_GetClockConfig(&clock, &latency);
+        spindle->set_state = spindleSetStateVariable;
 
-      #if SPINDLE_PWM_TIMER_N == 1
-        if((hal.spindle.cap.variable = !settings.spindle.flags.pwm_disable && spindle_precompute_pwm_values(&spindle_pwm, (HAL_RCC_GetPCLK2Freq() * (clock.APB2CLKDivider == 0 ? 1 : 2)) / prescaler))) {
-      #else
-        if((hal.spindle.cap.variable = !settings.spindle.flags.pwm_disable && spindle_precompute_pwm_values(&spindle_pwm, (HAL_RCC_GetPCLK1Freq() * (clock.APB1CLKDivider == 0 ? 1 : 2)) / prescaler))) {
-      #endif
+        SPINDLE_PWM_TIMER->CR1 &= ~TIM_CR1_CEN;
 
-            hal.spindle.set_state = spindleSetStateVariable;
+        TIM_Base_InitTypeDef timerInitStructure = {
+            .Prescaler = prescaler - 1,
+            .CounterMode = TIM_COUNTERMODE_UP,
+            .Period = spindle_pwm.period - 1,
+            .ClockDivision = TIM_CLOCKDIVISION_DIV1,
+            .RepetitionCounter = 0
+        };
 
-            SPINDLE_PWM_TIMER->CR1 &= ~TIM_CR1_CEN;
+        TIM_Base_SetConfig(SPINDLE_PWM_TIMER, &timerInitStructure);
 
-            TIM_Base_InitTypeDef timerInitStructure = {
-                .Prescaler = prescaler - 1,
-                .CounterMode = TIM_COUNTERMODE_UP,
-                .Period = spindle_pwm.period - 1,
-                .ClockDivision = TIM_CLOCKDIVISION_DIV1,
-                .RepetitionCounter = 0
-            };
-
-            TIM_Base_SetConfig(SPINDLE_PWM_TIMER, &timerInitStructure);
-
-            SPINDLE_PWM_TIMER->CCER &= ~SPINDLE_PWM_CCER_EN;
-            SPINDLE_PWM_TIMER_CCMR &= ~SPINDLE_PWM_CCMR_OCM_CLR;
-            SPINDLE_PWM_TIMER_CCMR |= SPINDLE_PWM_CCMR_OCM_SET;
-            SPINDLE_PWM_TIMER_CCR = 0;
-      #if SPINDLE_PWM_TIMER_N == 1
-            SPINDLE_PWM_TIMER->BDTR |= TIM_BDTR_OSSR|TIM_BDTR_OSSI;
-      #endif
-            if(settings.spindle.invert.pwm) {
-                SPINDLE_PWM_TIMER->CCER |= SPINDLE_PWM_CCER_POL;
-                SPINDLE_PWM_TIMER->CR2 |= SPINDLE_PWM_CR2_OIS;
-            } else {
-                SPINDLE_PWM_TIMER->CCER &= ~SPINDLE_PWM_CCER_POL;
-                SPINDLE_PWM_TIMER->CR2 &= ~SPINDLE_PWM_CR2_OIS;
-            }
-            SPINDLE_PWM_TIMER->CCER |= SPINDLE_PWM_CCER_EN;
-            SPINDLE_PWM_TIMER->CR1 |= TIM_CR1_CEN;
-
+        SPINDLE_PWM_TIMER->CCER &= ~SPINDLE_PWM_CCER_EN;
+        SPINDLE_PWM_TIMER_CCMR &= ~SPINDLE_PWM_CCMR_OCM_CLR;
+        SPINDLE_PWM_TIMER_CCMR |= SPINDLE_PWM_CCMR_OCM_SET;
+        SPINDLE_PWM_TIMER_CCR = 0;
+  #if SPINDLE_PWM_TIMER_N == 1
+        SPINDLE_PWM_TIMER->BDTR |= TIM_BDTR_OSSR|TIM_BDTR_OSSI;
+  #endif
+        if(settings.spindle.invert.pwm) {
+            SPINDLE_PWM_TIMER->CCER |= SPINDLE_PWM_CCER_POL;
+            SPINDLE_PWM_TIMER->CR2 |= SPINDLE_PWM_CR2_OIS;
         } else {
-            if(pwmEnabled)
-                hal.spindle.set_state((spindle_state_t){0}, 0.0f);
-
-            hal.spindle.set_state = spindleSetState;
+            SPINDLE_PWM_TIMER->CCER &= ~SPINDLE_PWM_CCER_POL;
+            SPINDLE_PWM_TIMER->CR2 &= ~SPINDLE_PWM_CR2_OIS;
         }
+        SPINDLE_PWM_TIMER->CCER |= SPINDLE_PWM_CCER_EN;
+        SPINDLE_PWM_TIMER->CR1 |= TIM_CR1_CEN;
+
+    } else {
+        if(pwmEnabled)
+            spindle->set_state((spindle_state_t){0}, 0.0f);
+
+        spindle->set_state = spindleSetState;
     }
 
-    spindle_update_caps(hal.spindle.cap.variable ? &spindle_pwm : NULL);
+    spindle_update_caps(spindle, spindle->cap.variable ? &spindle_pwm : NULL);
 
 #if SPINDLE_SYNC_ENABLE
-    hal.spindle.cap.at_speed = hal.spindle.get_data == spindleGetData;
+    spindle->cap.at_speed = spindle->get_data == spindleGetData;
 #endif
 
     return true;
@@ -1350,7 +1361,7 @@ static uint32_t getElapsedTicks (void)
 }
 
 // Configures peripherals when settings are initialized or changed
-void settings_changed (settings_t *settings)
+void settings_changed (settings_t *settings, settings_changed_flags_t changed)
 {
 
 #if USE_STEPDIR_MAP
@@ -1371,17 +1382,20 @@ void settings_changed (settings_t *settings)
 #endif
 
 #ifdef SPINDLE_PWM_TIMER_N
-        if(hal.spindle.config == spindleConfig)
-            spindleConfig();
+        if(changed.spindle) {
+            spindleConfig(spindle_get_hal(spindle_id, SpindleHAL_Configured));
+            if(spindle_id == spindle_get_default())
+                spindle_select(spindle_id);
+        }
 #endif
 
 #if SPINDLE_SYNC_ENABLE
 
-        if((hal.spindle.get_data = (hal.spindle.at_speed = settings->spindle.ppr > 0) ? spindleGetData : NULL) &&
+        if((hal.spindle_data.get = settings->spindle.ppr > 0 ? spindleGetData : NULL) &&
              (spindle_encoder.ppr != settings->spindle.ppr || pidf_config_changed(&spindle_tracker.pid, &settings->position.pid))) {
 
-            hal.spindle.reset_data = spindleDataReset;
-            hal.spindle.set_state((spindle_state_t){0}, 0.0f);
+            hal.spindle_data.reset = spindleDataReset;
+            spindle_get(spindle_get_current())->set_state((spindle_state_t){0}, 0.0f);
 
             pidf_init(&spindle_tracker.pid, &settings->position.pid);
 
@@ -1866,9 +1880,9 @@ static bool driver_setup (settings_t *settings)
 
 #endif
 
-    IOInitDone = settings->version == 21;
+    IOInitDone = settings->version == 22;
 
-    hal.settings_changed(settings);
+    hal.settings_changed(settings, (settings_changed_flags_t){0});
 
 #if PPI_ENABLE
     ppi_init();
@@ -1975,9 +1989,12 @@ bool driver_init (void)
     HAL_RCC_GetClockConfig(&clock, &latency);
 
     hal.info = "STM32H743";
-    hal.driver_version = "221014";
+    hal.driver_version = "230129";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
+#endif
+#ifdef BOARD_URL
+    hal.board = BOARD_URL;
 #endif
     hal.driver_setup = driver_setup;
     hal.f_mcu = HAL_RCC_GetHCLKFreq() / 1000000UL * (clock.AHBCLKDivider == 0 ? 1 : 2);
@@ -2015,6 +2032,9 @@ bool driver_init (void)
 
     hal.irq_enable = __enable_irq;
     hal.irq_disable = __disable_irq;
+#if I2C_STROBE_ENABLE
+    hal.irq_claim = irq_claim;
+#endif
     hal.set_bits_atomic = bitsSetAtomic;
     hal.clear_bits_atomic = bitsClearAtomic;
     hal.set_value_atomic = valueSetAtomic;
@@ -2073,9 +2093,9 @@ bool driver_init (void)
     };
 
 #ifdef SPINDLE_PWM_TIMER_N
-    spindle_register(&spindle, "PWM");
+    spindle_id = spindle_register(&spindle, "PWM");
 #else
-    spindle_register(&spindle, "Basic");
+    spindle_id = spindle_register(&spindle, "Basic");
 #endif
 
 #endif // DRIVER_SPINDLE
@@ -2253,7 +2273,7 @@ void RPM_COUNTER_IRQHandler (void)
 
 #if (DRIVER_IRQMASK|AUXINPUT_MASK) & (1<<0)
 
-void EXTI0_IRQHandler(void)
+void EXTI0_IRQHandler (void)
 {
     uint32_t ifg = __HAL_GPIO_EXTI_GET_IT(1<<0);
 
@@ -2268,8 +2288,9 @@ void EXTI0_IRQHandler(void)
         } else
   #endif
         hal.control.interrupt_callback(systemGetState());
-#elif defined(KEYPAD_ENABLED) && KEYPAD_STROBE_BIT & (1<<0)
-        keypad_keyclick_handler(DIGITAL_IN(KEYPAD_PORT, KEYPAD_STROBE_BIT) == 0);
+#elif defined(I2C_STROBE_ENABLE) && I2C_STROBE_BIT & (1<<0)
+        if(i2c_strobe.callback)
+            i2c_strobe.callback(0, DIGITAL_IN(I2C_STROBE_PORT, I2C_STROBE_PIN) == 0);
 #elif LIMIT_MASK & (1<<0)
         if(hal.driver_cap.software_debounce) {
             debounce.limits = On;
@@ -2496,9 +2517,9 @@ void EXTI15_10_IRQHandler(void)
                 hal.limits.interrupt_callback(limitsGetState());
         }
 #endif
-#if KEYPAD_ENABLE
-        if(ifg & KEYPAD_STROBE_BIT)
-            keypad_keyclick_handler(DIGITAL_IN(KEYPAD_PORT, KEYPAD_STROBE_BIT) == 0);
+#if I2C_STROBE_ENABLE && (I2C_STROBE_BIT & 0x03E0)
+        if((ifg & I2C_STROBE_BIT) && i2c_strobe.callback)
+            i2c_strobe.callback(0, DIGITAL_IN(I2C_STROBE_PORT, I2C_STROBE_PIN) == 0);
 #endif
 #if AUXINPUT_MASK & 0xFC00
         if(ifg & aux_irq)
