@@ -289,6 +289,15 @@ static output_signal_t outputpin[] = {
 #ifdef V_ENABLE_PORT
     { .id = Output_StepperEnableU,     .port = V_ENABLE_PORT,          .pin = V_ENABLE_PIN,          .group = PinGroup_StepperEnable, .mode = {STEPPERS_ENABLE_PINMODE} },
 #endif
+#ifdef X2_ENABLE_PIN
+    { .id = Output_StepperEnableX,     .port = X2_ENABLE_PORT,         .pin = X2_ENABLE_PIN,         .group = PinGroup_StepperEnable, .mode = {STEPPERS_ENABLE_PINMODE} },
+#endif
+#ifdef Y2_ENABLE_PIN
+    { .id = Output_StepperEnableY,     .port = Y2_ENABLE_PORT,         .pin = Y2_ENABLE_PIN,         .group = PinGroup_StepperEnable, .mode = {STEPPERS_ENABLE_PINMODE} },
+#endif
+#ifdef Z2_ENABLE_PIN
+    { .id = Output_StepperEnableZ,     .port = Z2_ENABLE_PORT,         .pin = Z2_ENABLE_PIN,         .group = PinGroup_StepperEnable, .mode = {STEPPERS_ENABLE_PINMODE} },
+#endif
 #endif // !TRINAMIC_MOTOR_ENABLE
 #ifdef MOTOR_CS_PIN
     { .id = Output_MotorChipSelect,    .port = MOTOR_CS_PORT,          .pin = MOTOR_CS_PIN,          .group = PinGroup_MotorChipSelect },
