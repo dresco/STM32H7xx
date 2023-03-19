@@ -387,7 +387,7 @@ const io_stream_t *serialInit (uint32_t baud_rate)
         .Pull      = GPIO_NOPULL,
         .Speed     = GPIO_SPEED_FREQ_VERY_HIGH,
         .Pin       = GPIO_PIN_6|GPIO_PIN_7,
-        .Alternate = GPIO_AF8_USART6
+        .Alternate = GPIO_AF7_USART6
     };
     HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
 
@@ -746,7 +746,7 @@ const io_stream_t *serial2Init (uint32_t baud_rate)
         .Pull      = GPIO_NOPULL,
         .Speed     = GPIO_SPEED_FREQ_VERY_HIGH,
         .Pin       = GPIO_PIN_6|GPIO_PIN_7,
-        .Alternate = GPIO_AF8_USART6
+        .Alternate = GPIO_AF7_USART6
     };
     HAL_GPIO_Init(GPIOC, &GPIO_InitStructure);
 
