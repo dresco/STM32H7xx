@@ -49,7 +49,9 @@ bool memcpy_to_flash (uint8_t *source)
     // performed on 128-Kbyte sectors.
     //
     // Rather than using two sectors for boot & eeprom emulation, have chosen to store the NVS data
-    // at the end of the user accessible flash (the last 128KB sector in the second bank).
+    // at the end of the user accessible flash (in the last 128KB sector).
+	//
+	// Note that devices may have either one or two banks of flash memory, depending on flash size.
 
     if (!memcmp(source, &_EEPROM_Emul_Start, hal.nvs.size))
         return true;
@@ -60,7 +62,11 @@ bool memcpy_to_flash (uint8_t *source)
 
         static FLASH_EraseInitTypeDef erase = {
             .Sector = FLASH_SECTOR_TOTAL - 1,
+#ifdef FLASH_BANK_2
             .Banks = FLASH_BANK_2,
+#else
+            .Banks = FLASH_BANK_1,
+#endif
             .TypeErase = FLASH_TYPEERASE_SECTORS,
             .NbSectors = 1,
             .VoltageRange = FLASH_VOLTAGE_RANGE_3

@@ -24,7 +24,7 @@
 #ifndef _flash_h_
 #define _flash_h_
 
-#ifdef STM32H743xx
+#if defined(STM32H743xx) || defined(STM32H723xx)
 #define FLASH_WRITE_SIZE   32
 #endif
 
