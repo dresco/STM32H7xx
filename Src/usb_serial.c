@@ -73,13 +73,21 @@ static inline bool usb_write (void)
 
     txbuf.s = txbuf.use_tx2data ? txbuf.data2 : txbuf.data;
 
+#ifdef STM32H723xx
+    while(CDC_Transmit_HS((uint8_t *)txbuf.s, txbuf.length) == USBD_BUSY) {
+#else
     while(CDC_Transmit_FS((uint8_t *)txbuf.s, txbuf.length) == USBD_BUSY) {
+#endif
         if(!hal.stream_blocking_callback())
             return false;
     }
 
     if(txbuf.length % 64 == 0) {
+#ifdef STM32H723xx
+        while(CDC_Transmit_HS(&dummy, 0) == USBD_BUSY) {
+#else
         while(CDC_Transmit_FS(&dummy, 0) == USBD_BUSY) {
+#endif
             if(!hal.stream_blocking_callback())
                 return false;
         }
@@ -101,7 +109,11 @@ static bool usbPutC (const char c)
 
     *buf = c;
 
+#ifdef STM32H723xx
+    while(CDC_Transmit_HS(buf, 1) == USBD_BUSY) {
+#else
     while(CDC_Transmit_FS(buf, 1) == USBD_BUSY) {
+#endif
         if(!hal.stream_blocking_callback())
             return false;
     }
@@ -235,7 +247,8 @@ const io_stream_t *usbInit (void)
     return &stream;
 }
 
-// NOTE: add a call to this function as the first line CDC_Receive_FS() in usbd_cdc_if.c
+// NOTE: A call to this function should be added as the first line of CDC_Receive_FS() & CDC_Receive_HS().
+//       These are found in the usbd_cdc_if.c support files for H743 and H723 parts.
 void usbBufferInput (uint8_t *data, uint32_t length)
 {
     while(length--) {

@@ -58,6 +58,7 @@
 
 /* External variables --------------------------------------------------------*/
 extern PCD_HandleTypeDef hpcd_USB_OTG_FS;
+extern PCD_HandleTypeDef hpcd_USB_OTG_HS;
 extern SD_HandleTypeDef hsd1;
 /* USER CODE BEGIN EV */
 
@@ -201,10 +202,26 @@ void SysTick_Handler(void)
 /* please refer to the startup file (startup_stm32h7xx.s).                    */
 /******************************************************************************/
 
+#if USB_SERIAL_CDC
+
+#if defined(STM32H723xx)
+/**
+  * @brief This function handles USB On The Go HS global interrupt.
+  */
+void OTG_HS_IRQHandler(void)
+{
+  /* USER CODE BEGIN OTG_HS_IRQn 0 */
+
+  /* USER CODE END OTG_HS_IRQn 0 */
+  HAL_PCD_IRQHandler(&hpcd_USB_OTG_HS);
+  /* USER CODE BEGIN OTG_HS_IRQn 1 */
+
+  /* USER CODE END OTG_HS_IRQn 1 */
+}
+#else
 /**
   * @brief This function handles USB On The Go FS global interrupt.
   */
-#if USB_SERIAL_CDC
 void OTG_FS_IRQHandler(void)
 {
   /* USER CODE BEGIN OTG_FS_IRQn 0 */
@@ -215,7 +232,9 @@ void OTG_FS_IRQHandler(void)
 
   /* USER CODE END OTG_FS_IRQn 1 */
 }
-#endif
+#endif // STM32H723xx / STM32H743xx
+
+#endif // USB_SERIAL_CDC
 
 /**
   * @brief This function handles SDMMC1 global interrupt.
