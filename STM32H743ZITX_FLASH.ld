@@ -21,13 +21,12 @@
 *****************************************************************************
 ** @attention
 **
-** <h2><center>&copy; Copyright (c) 2021 STMicroelectronics.
-** All rights reserved.</center></h2>
+** Copyright (c) 2022 STMicroelectronics.
+** All rights reserved.
 **
-** This software component is licensed by ST under BSD 3-Clause license,
-** the "License"; You may not use this file except in compliance with the
-** License. You may obtain a copy of the License at:
-**                        opensource.org/licenses/BSD-3-Clause
+** This software is licensed under terms that can be found in the LICENSE file
+** in the root directory of this software component.
+** If no LICENSE file comes with this software, it is provided AS-IS.
 **
 ****************************************************************************
 */
@@ -38,20 +37,23 @@ ENTRY(Reset_Handler)
 /* Highest address of the user mode stack */
 _estack = ORIGIN(RAM_D1) + LENGTH(RAM_D1);    /* end of RAM */
 /* Generate a link error if heap and stack don't fit into RAM */
-_Min_Heap_Size = 0x20000 ;      /* required amount of heap  */
+_Min_Heap_Size = 0x20000 ; /* required amount of heap  */
 _Min_Stack_Size = 0x3000 ; /* required amount of stack */
 
-/* Specify the memory areas */
+/* Specify the memory areas
+ * EEPROM emulation in the last 128KB sector of flash (2MB for ZI part)
+ * DMA buffers for LwIP in first 64K of D1_RAM (needed for SDMMC1 access)
+ */
 MEMORY
 {
   FLASH (rx)        : ORIGIN = 0x08000000, LENGTH = 2048K - 128K
   EEPROM_EMUL (xrw) : ORIGIN = 0x081E0000, LENGTH = 128K
-  DTCMRAM (xrw)  : ORIGIN = 0x20000000, LENGTH = 128K
-  RAM_D1 (xrw)      : ORIGIN = 0x24000000, LENGTH = 512K - 64K
-  RAM_D1_DMA (xrw)  : ORIGIN = 0x24070000, LENGTH = 64K
-  RAM_D2 (xrw)   : ORIGIN = 0x30000000, LENGTH = 288K
-  RAM_D3 (xrw)   : ORIGIN = 0x38000000, LENGTH = 64K
-  ITCMRAM (xrw)  : ORIGIN = 0x00000000, LENGTH = 64K
+  DTCMRAM (xrw)     : ORIGIN = 0x20000000, LENGTH = 128K
+  RAM_D1_DMA (xrw)  : ORIGIN = 0x24000000, LENGTH = 64K
+  RAM_D1 (xrw)      : ORIGIN = 0x24010000, LENGTH = 512K - LENGTH(RAM_D1_DMA)
+  RAM_D2 (xrw)      : ORIGIN = 0x30000000, LENGTH = 288K
+  RAM_D3 (xrw)      : ORIGIN = 0x38000000, LENGTH = 64K
+  ITCMRAM (xrw)     : ORIGIN = 0x00000000, LENGTH = 64K
 }
 
 _EEPROM_Emul_Start = ORIGIN(EEPROM_EMUL);
@@ -144,7 +146,7 @@ SECTIONS
   . = ALIGN(4);
   .bss :
   {
-    /* This is used by the startup in order to initialize the .bss secion */
+    /* This is used by the startup in order to initialize the .bss section */
     _sbss = .;         /* define a global symbol at bss start */
     __bss_start__ = _sbss;
     *(.bss)
@@ -167,24 +169,26 @@ SECTIONS
     . = ALIGN(8);
   } >RAM_D1
 
-  /* 64KB section at the end of D1 RAM (AXI SRAM), being used for DMA buffers as we need fixed addresses for MPU configuration */
+  /* 64KB section at the beginning of D1 RAM (AXI SRAM), being used
+   * for DMA buffers as we need fixed addresses for MPU configuration
+   */
   .dma_buffers (NOLOAD) : {
 
     /* 16KB for LwIP Rx Pool */
-    . = ABSOLUTE(0x24070000);
+    . = ABSOLUTE(0x24000000);
     *(.Rx_PoolSection)
 
     /* 32KB for LwIP Tx Heap */
-    . = ABSOLUTE(0x24074000);
+    . = ABSOLUTE(0x24004000);
     *(.Tx_HeapSection)
 
     /* 1KB for LwIP DMA Descriptors */
-    . = ABSOLUTE(0x2407C000);
+    . = ABSOLUTE(0x2400C000);
     *(.RxDecripSection)
-    . = ABSOLUTE(0x2407C200);
+    . = ABSOLUTE(0x2400C200);
     *(.TxDecripSection)
 
-    /* 15KB currently unused from 0x2407C400 */
+    /* 15KB currently unused from 0x2400C400 */
 
   } >RAM_D1_DMA AT> FLASH
 
@@ -198,5 +202,3 @@ SECTIONS
 
   .ARM.attributes 0 : { *(.ARM.attributes) }
 }
-
-

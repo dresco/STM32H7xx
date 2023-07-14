@@ -74,7 +74,7 @@
 #define MEM_SIZE (28*1024)
 
 /*----- Default Value for H7 devices: 0x30044000 -----*/
-#define LWIP_RAM_HEAP_POINTER 0x24074000
+#define LWIP_RAM_HEAP_POINTER 0x24004000
 
 /*----- Value supported for H7 devices: 1 -----*/
 #define LWIP_SUPPORT_CUSTOM_PBUF 1
