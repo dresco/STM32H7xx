@@ -28,7 +28,7 @@
 //#define BOARD_REFERENCE       // grblHAL reference board map.
 //#define BOARD_MY_MACHINE      // Add my_machine_map.h before enabling this!
 
-#if defined(NUCLEO_H743)
+#if defined(NUCLEO_H743) || defined(NUCLEO_H723)
 #define IS_NUCLEO_DEVKIT 1
 #else
 #define IS_NUCLEO_DEVKIT 0

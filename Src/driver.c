@@ -1997,7 +1997,12 @@ bool driver_init (void)
 
     HAL_RCC_GetClockConfig(&clock, &latency);
 
+#if defined(STM32H723xx)
+    hal.info = "STM32H723";
+#else
     hal.info = "STM32H743";
+#endif
+
     hal.driver_version = "230129";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
