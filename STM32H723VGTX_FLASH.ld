@@ -40,7 +40,7 @@ _estack = ORIGIN(RAM_D1) + LENGTH(RAM_D1);    /* end of RAM */
 _Min_Heap_Size = 0x20000 ; /* required amount of heap  */
 _Min_Stack_Size = 0x3000 ; /* required amount of stack */
 
-/* Specify the memory areas 
+/* Specify the memory areas
  * EEPROM emulation in the last 128KB sector of flash (1MB for VG part)
  * DMA buffers for LwIP in first 64K of D1_RAM (needed for SDMMC1 access)
  */

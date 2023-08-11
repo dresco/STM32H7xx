@@ -126,13 +126,13 @@ void MPU_Config(void)
 void SystemClock_Config(void)
 {
     // Clock configuration
-	//
-	// - 480MHZ system clock
-	// - 48MHz USB clock
-	// - 48MHz SDMMC clock
-	//
+    //
+    // - 480MHZ system clock
+    // - 48MHz USB clock
+    // - 48MHz SDMMC clock
+    //
     // WeAct MiniSTM32H7xx & BTT SKR3 using 25MHz crystal
-	// Nucleo dev board using 8MHz clock source (STLink MCO)
+    // Nucleo dev board using 8MHz clock source (STLink MCO)
 
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
     RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
