@@ -1,15 +1,12 @@
 {
     "build": {
       "arduino": {
-        "variant_h": "variant_WeActMiniH7xx.h"
+        "variant_h": "variant_generic.h"
       },
       "core": "stm32",
       "cpu": "cortex-m7",
       "extra_flags": "-DSTM32H7xx -DSTM32H743xx",
       "f_cpu": "480000000L",
-      "framework_extra_flags": {
-        "arduino": "-DCUSTOM_PERIPHERAL_PINS"
-      },
       "mcu": "stm32h743vit6",
       "product_line": "STM32H743xx",
       "variant": "STM32H7xx/H742V(G-I)(H-T)_H743V(G-I)(H-T)_H750VBT_H753VI(H-T)"
@@ -28,7 +25,7 @@
       "cmsis",
       "stm32cube"
     ],
-    "name": "WeAct Studio MiniSTM32H743VITX",
+    "name": "BTT SKR 3 (H743)",
     "upload": {
       "maximum_ram_size": 524288,
       "maximum_size": 2097152,
@@ -41,6 +38,6 @@
         "dfu"
       ]
     },
-    "url": "https://github.com/WeActTC/MiniSTM32H7xx",
-    "vendor": "WeAct Studio"
+    "url": "https://github.com/bigtreetech/SKR-3",
+    "vendor": "BIGTREETECH"
   }

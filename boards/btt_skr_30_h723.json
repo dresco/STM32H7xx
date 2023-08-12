@@ -1,0 +1,43 @@
+{
+    "build": {
+      "arduino": {
+        "variant_h": "variant_generic.h"
+      },
+      "core": "stm32",
+      "cpu": "cortex-m7",
+      "extra_flags": "-DSTM32H7xx -DSTM32H723xx",
+      "f_cpu": "480000000L",
+      "mcu": "stm32h723vgt6",
+      "product_line": "STM32H723xx",
+      "variant": "H723V(E-G)(H-T)_H733VG(H-T)"
+    },
+    "connectivity": [
+      "can",
+      "ethernet"
+    ],
+    "debug": {
+      "jlink_device": "STM32H723VG",
+      "openocd_target": "stm32h7x",
+      "svd_path": "STM32H723.svd"
+    },
+    "frameworks": [
+      "arduino",
+      "cmsis",
+      "stm32cube"
+    ],
+    "name": "BTT SKR 3 (H723)",
+    "upload": {
+      "maximum_ram_size": 524288,
+      "maximum_size": 1048576,
+      "protocol": "stlink",
+      "protocols": [
+        "jlink",
+        "cmsis-dap",
+        "stlink",
+        "blackmagic",
+        "dfu"
+      ]
+    },
+    "url": "https://github.com/bigtreetech/SKR-3",
+    "vendor": "BIGTREETECH"
+  }
