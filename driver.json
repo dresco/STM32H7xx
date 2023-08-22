@@ -11,32 +11,144 @@
     "digital_in": 7,
     "digital_out": 4,
     "safety_door": 0,
-    "probe": 0,
     "estop": 1,
     "mpg_mode": 1,
     "sdcard": 1,
+    "hc05": 0,
+    "ethernet": 0,
     "plugins": [
       { "id": "spindle" },
       { "id": "modbus" },
       { "id": "motors" },
+      { "id": "eeprom" },
       { "id": "sdcard" },
       { "id": "webui" },
-      { "id": "eth_networking" },
+      { "id": "networking" },
+      { "id": "keypad" },
       { "id": "laser_ppi" },
       { "id": "laser_cluster" },
       { "id": "laser_coolant" },
+      { "id": "fans" },
       { "id": "openpnp" },
       { "id": "bluetooth" }
     ]
   },
   "symbols": {
     "USE_HAL_DRIVER": "",
-    "STM32H743xx": ""
+    "BLOCK_BUFFER_DYNAMIC": ""
   },
   "symbols_networking": {
     "TCP_ECHOSERVER_ENABLE": 1
   },
   "boards": [
+    {
+      "name": "BTT SKR 3 H743",
+      "symbol": "BOARD_BTT_SKR_30",
+      "URL": "",
+      "caps": {
+        "axes": 5,
+        "digital_in": 0,
+        "digital_out": 0,
+        "eeprom": 0,
+        "fram": 0,
+        "i2c": 0,
+        "safety_door": 0,
+        "trinamic_spi_cs": 1,
+        "trinamic_spi_chain": 0,
+        "trinamic_uart_n": 0,
+        "trinamic_uart_addr": 1,
+        "pio_board": "btt_skr_30_h743",
+        "ldscript": "STM32H743ZITX_FLASH.ld"
+      },
+      "symbols" : {
+         "STM32H743xx": "",
+         "HSE_VALUE": 25000000
+      },
+      "pio_env" : {
+        "name": "usb"
+      }
+    },
+    {
+      "name": "BTT SKR 3 H743 (bootloader)",
+      "symbol": "BOARD_BTT_SKR_30",
+      "URL": "",
+      "caps": {
+        "axes": 5,
+        "digital_in": 0,
+        "digital_out": 0,
+        "eeprom": 0,
+        "fram": 0,
+        "i2c": 0,
+        "safety_door": 0,
+        "trinamic_spi_cs": 1,
+        "trinamic_spi_chain": 0,
+        "trinamic_uart_n": 0,
+        "trinamic_uart_addr": 1,
+        "pio_board": "btt_skr_30_h743",
+        "ldscript": "STM32H743ZITX_FLASH_BL.ld"
+      },
+      "symbols" : {
+         "STM32H743xx": "",
+         "HSE_VALUE": 25000000
+      },
+      "pio_env" : {
+        "name": "usb"
+      }
+    },
+    {
+      "name": "BTT SKR 3 H723",
+      "symbol": "BOARD_BTT_SKR_30",
+      "URL": "",
+      "caps": {
+        "axes": 5,
+        "digital_in": 0,
+        "digital_out": 0,
+        "eeprom": 0,
+        "fram": 0,
+        "i2c": 0,
+        "safety_door": 0,
+        "trinamic_spi_cs": 1,
+        "trinamic_spi_chain": 0,
+        "trinamic_uart_n": 0,
+        "trinamic_uart_addr": 1,
+        "pio_board": "btt_skr_30_h723",
+        "ldscript": "STM32H723VGTX_FLASH.ld"
+      },
+      "symbols" : {
+        "STM32H723xx": "",
+        "HSE_VALUE": 25000000
+      },
+      "pio_env" : {
+        "name": "usb_h723"
+      }
+    },
+    {
+      "name": "BTT SKR 3 H723 (bootloader)",
+      "symbol": "BOARD_BTT_SKR_30",
+      "URL": "",
+      "caps": {
+        "axes": 5,
+        "digital_in": 0,
+        "digital_out": 0,
+        "eeprom": 0,
+        "fram": 0,
+        "i2c": 0,
+        "safety_door": 0,
+        "trinamic_spi_cs": 1,
+        "trinamic_spi_chain": 0,
+        "trinamic_uart_n": 0,
+        "trinamic_uart_addr": 1,
+        "pio_board": "btt_skr_30_h723",
+        "ldscript": "STM32H723VGTX_FLASH_BL.ld"
+      },
+      "symbols" : {
+        "STM32H723xx": "",
+        "HSE_VALUE": 25000000
+      },
+      "pio_env" : {
+        "name": "usb_h723"
+      }
+    },
     {
       "name": "Nucleo H743 reference map",
       "symbol": "BOARD_REFERENCE",
@@ -45,14 +157,36 @@
         "axes": 8,
         "digital_in": 3,
         "digital_out": 4,
-        "eth_networking": 1,
         "ethernet": 1,
-        "usb_cdc": 1,
+        "usb_cdc": 0,
         "pio_board": "nucleo_h743zi",
         "ldscript": "STM32H743ZITX_FLASH.ld"
       },
       "symbols" : {
+        "STM32H743xx": "",
         "NUCLEO_H743": "",
+        "IS_NUCLEO_DEVKIT": 1,
+        "HSE_VALUE": 8000000,
+        "RTC_ENABLE": 1,
+        "NUCLEO_SLOW_SDMMC_CLOCK": ""
+      }
+    },
+    {
+      "name": "Nucleo H723 reference map",
+      "symbol": "BOARD_REFERENCE",
+      "URL": "",
+      "caps": {
+        "axes": 8,
+        "digital_in": 3,
+        "digital_out": 4,
+        "ethernet": 1,
+        "usb_cdc": 0,
+        "pio_board": "nucleo_h723zg",
+        "ldscript": "STM32H723VGTX_FLASH.ld"
+      },
+      "symbols" : {
+        "STM32H723xx": "",
+        "NUCLEO_H723": "",
         "IS_NUCLEO_DEVKIT": 1,
         "HSE_VALUE": 8000000,
         "RTC_ENABLE": 1,
@@ -79,31 +213,12 @@
         "ldscript": "STM32H743ZITX_FLASH.ld"
       },
       "symbols" : {
+        "STM32H743xx": "",
         "HSE_VALUE": 25000000,
         "RTC_ENABLE": 1
-      }
-    },
-    {
-      "name": "BTT SKR 3",
-      "symbol": "BOARD_BTT_SKR_30",
-      "URL": "",
-      "caps": {
-        "axes": 5,
-        "digital_in": 0,
-        "digital_out": 0,
-        "eeprom": 0,
-        "fram": 0,
-        "i2c": 0,
-        "safety_door": 0,
-        "trinamic_spi_cs": 1,
-        "trinamic_spi_chain": 0,
-        "trinamic_uart_n": 0,
-        "trinamic_uart_addr": 1,
-        "pio_board": "btt_skr_30",
-        "ldscript": "STM32H743ZITX_FLASH.ld"
       },
-      "symbols" : {
-        "HSE_VALUE": 25000000
+      "pio_env" : {
+        "name": "usb"
       }
     }
   ]

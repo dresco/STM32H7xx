@@ -14,10 +14,6 @@ build_flags =
   -I FATFS/Target
   -I FATFS/App
   -I Middlewares/Third_Party/FatFs/src
-  -I Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
-  -I Middlewares/ST/STM32_USB_Device_Library/Core/Inc
-  -I USB_DEVICE/Target
-  -I USB_DEVICE/App
 lib_deps =
   bluetooth
   grbl
@@ -35,12 +31,37 @@ lib_deps =
   FATFS/App
   FATFS/Target
   Middlewares/Third_Party/FatFs
+lib_extra_dirs =
+  .
+
+# Build settings for USB serial support, include in board environments as needed
+[usb]
+build_flags =
+  -I Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
+  -I Middlewares/ST/STM32_USB_Device_Library/Core/Inc
+  -I USB_DEVICE/Target
+  -I USB_DEVICE/App
+lib_deps =
   USB_DEVICE/App
   USB_DEVICE/Target
   Middlewares/ST/STM32_USB_Device_Library/Class
   Middlewares/ST/STM32_USB_Device_Library/Core
 lib_extra_dirs =
-  .
+
+# Build settings for H723 USB serial support, include in board environments as needed
+# (STM32H723xx does not have a FS USB peripherial, using the HS peripheral in FS mode)
+[usb_h723]
+build_flags =
+  -I Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
+  -I Middlewares/ST/STM32_USB_Device_Library/Core/Inc
+  -I USB_DEVICE_H723/Target
+  -I USB_DEVICE_H723/App
+lib_deps =
+  USB_DEVICE_H723/App
+  USB_DEVICE_H723/Target
+  Middlewares/ST/STM32_USB_Device_Library/Class
+  Middlewares/ST/STM32_USB_Device_Library/Core
+lib_extra_dirs =
 
 [eth_networking]
 build_flags =
