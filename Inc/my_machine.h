@@ -47,8 +47,8 @@
 //#define WEBUI_AUTH_ENABLE    1 // Enable ESP3D-WEBUI authentication.
 //#define WEBUI_INFLASH        1 // Store WebUI files in flash instead of on SD card.
 //#define ETHERNET_ENABLE      1 // Ethernet streaming. Uses networking plugin.
-//#define BLUETOOTH_ENABLE     1 // Set to 1 for HC-05 module. Uses Bluetooth plugin.
-//#define SDCARD_ENABLE        1 // Run gcode programs from SD card, uses sdcard plugin.
+//#define BLUETOOTH_ENABLE     2 // Set to 2 for HC-05 module. Uses Bluetooth plugin.
+//#define SDCARD_ENABLE        1 // Run gcode programs from SD card. Set to 2 to enable YModem upload.
 //#define KEYPAD_ENABLE        1 // I2C keypad for jogging etc., uses keypad plugin.
 //#define ODOMETER_ENABLE      1 // Odometer plugin.
 //#define PPI_ENABLE           1 // Laser PPI plugin. To be completed.
@@ -56,14 +56,17 @@
 //#define LB_CLUSTERS_ENABLE   1 // LaserBurn cluster support.
 //#define OPENPNP_ENABLE       1 // OpenPNP plugin. To be completed.
 //#define FANS_ENABLE          1 // Enable fan control via M106/M107. Enables fans plugin.
+//#define EMBROIDERY_ENABLE    1 // Embroidery plugin. To be completed.
 //#define PLASMA_ENABLE        1 // Plasma (THC) plugin. To be completed.
 //#define TRINAMIC_ENABLE   2130 // Trinamic TMC2130 stepper driver support. NOTE: work in progress.
 //#define TRINAMIC_ENABLE   2209 // Trinamic TMC2209 stepper driver support. NOTE: work in progress.
 //#define TRINAMIC_ENABLE   5160 // Trinamic TMC5160 stepper driver support. NOTE: work in progress.
 //#define TRINAMIC_I2C         1 // Trinamic I2C - SPI bridge interface.
 //#define TRINAMIC_DEV         1 // Development mode, adds a few M-codes to aid debugging. Do not enable in production code.
-//#define EEPROM_ENABLE        2 // I2C EEPROM support. Set to 1 for 24LC16 (2K), 3 for 24C32 (4K - 32 byte page) and 2 for other sizes. Uses eeprom plugin.
+//#define EEPROM_ENABLE       16 // I2C EEPROM/FRAM support. Set to 16 for 2K, 32 for 4K, 64 for 8K, 128 for 16K and 256 for 16K capacity.
 //#define EEPROM_IS_FRAM       1 // Uncomment when EEPROM is enabled and chip is FRAM, this to remove write delay.
+//#define ESTOP_ENABLE         0 // When enabled only real-time report requests will be executed when the reset pin is asserted.
+                                 // Note: if left commented out the default setting is determined from COMPATIBILITY_LEVEL.
 /**/
 
 // If the selected board map supports more than three motors ganging and/or auto-squaring
@@ -80,14 +83,14 @@
 //#define Y_GANGED_LIM_MAX    1
 //#define Z_GANGED_LIM_MAX    1
 
-#if ETHERNET_ENABLE > 0
+#if ETHERNET_ENABLE || WEBUI_ENABLE
 //#define TELNET_ENABLE       1 // Telnet daemon - requires Ethernet streaming enabled.
 //#define WEBSOCKET_ENABLE    1 // Websocket daemon - requires Ethernet streaming enabled.
 //#define MDNS_ENABLE         1 // mDNS daemon.
 //#define SSDP_ENABLE         1 // SSDP daemon - requires HTTP enabled.
 //#define MQTT_ENABLE         1 // MQTT client API, only enable if needed by plugin code.
-#ifdef SDCARD_ENABLE
-//#define FTP_ENABLE          1 // Ftp daemon - requires SD card enabled.
+#if SDCARD_ENABLE  || WEBUI_ENABLE
+//#define FTP_ENABLE         1 // Ftp daemon - requires SD card enabled.
 //#define HTTP_ENABLE         1 // http daemon - requires SD card enabled.
 //#define WEBDAV_ENABLE       1 // webdav protocol - requires http daemon and SD card enabled.
 #endif

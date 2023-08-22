@@ -253,11 +253,18 @@ static void netif_status_callback (struct netif *netif)
     if(!mqtt_connected)
         mqtt_connect(&network.mqtt, networking_get_info()->mqtt_client_id);
 #endif
+
+#if MODBUS_ENABLE & MODBUS_TCP_ENABLED
+    modbus_tcp_client_start();
+#endif
 }
 
 static void enet_poll (sys_state_t state)
 {
     static uint32_t last_ms0, last_link_check;
+
+    on_execute_realtime(state);
+
     uint32_t ms = hal.get_elapsed_ticks();
 
     if(ms - last_link_check >= 100) {
@@ -268,26 +275,24 @@ static void enet_poll (sys_state_t state)
     sys_check_timeouts();
     ethernetif_input(netif_default);
 
-    if(linkUp) {
-
-        if(ms - last_ms0 > 3) {
-            last_ms0 = ms;
-    #if TELNET_ENABLE
-            if(services.telnet)
-                telnetd_poll();
-    #endif
-    #if FTP_ENABLE
-            if(services.ftp)
-                ftpd_poll();
-    #endif
-    #if WEBSOCKET_ENABLE
-            if(services.websocket)
-                websocketd_poll();
-    #endif
-        }
+    if(linkUp && ms - last_ms0 > 3) {
+        last_ms0 = ms;
+#if TELNET_ENABLE
+        if(services.telnet)
+            telnetd_poll();
+#endif
+#if FTP_ENABLE
+        if(services.ftp)
+            ftpd_poll();
+#endif
+#if WEBSOCKET_ENABLE
+        if(services.websocket)
+            websocketd_poll();
+#endif
+#if MODBUS_ENABLE & MODBUS_TCP_ENABLED
+        modbus_tcp_client_poll();
+#endif
     }
-
-    on_execute_realtime(state);
 }
 
 bool enet_start (void)
@@ -426,7 +431,7 @@ static const setting_descr_t ethernet_settings_descr[] = {
     { Setting_MQTTBrokerIpAddress, "IP address for remote MQTT broker. Set to 0.0.0.0 to disable connection." },
     { Setting_MQTTBrokerPort, "Remote MQTT broker portnumber." },
     { Setting_MQTTBrokerUserName, "Remote MQTT broker username." },
-    { Setting_MQTTBrokerPassword, "Remote MQTT broker username." },
+    { Setting_MQTTBrokerPassword, "Remote MQTT broker password." },
 #endif
 };
 
@@ -614,7 +619,12 @@ bool enet_init (network_settings_t *settings)
         on_client_connected = mqtt_events.on_client_connected;
         mqtt_events.on_client_connected = mqtt_connection_changed;
 #endif
+
         settings_register(&setting_details);
+
+#if MODBUS_ENABLE & MODBUS_TCP_ENABLED
+        modbus_tcp_client_init ();
+#endif
 
         allowed_services.mask = networking_get_services_list((char *)netservices).mask;
     }

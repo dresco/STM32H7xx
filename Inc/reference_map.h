@@ -105,7 +105,7 @@
 #define M5_DIRECTION_PORT       GPIOE
 #define M5_DIRECTION_PIN        8
 #define M5_LIMIT_PORT           GPIOF
-#define M5_LIMIT_PIN            7
+#define M5_LIMIT_PIN            8
 #ifndef STEPPERS_ENABLE_PORT
 #define M5_ENABLE_PORT          GPIOF
 #define M5_ENABLE_PIN           9
@@ -119,10 +119,10 @@
 #define M6_DIRECTION_PORT       GPIOD
 #define M6_DIRECTION_PIN        0
 #define M6_LIMIT_PORT           GPIOD
-#define M6_LIMIT_PIN            1
+#define M6_LIMIT_PIN            11
 #ifndef STEPPERS_ENABLE_PORT
 #define M6_ENABLE_PORT          GPIOG
-#define M6_ENABLE_PIN           0
+#define M6_ENABLE_PIN           2
 #endif
 #endif
 
@@ -133,7 +133,7 @@
 #define M7_DIRECTION_PORT       GPIOF
 #define M7_DIRECTION_PIN        2
 #define M7_LIMIT_PORT           GPIOF
-#define M7_LIMIT_PIN            1
+#define M7_LIMIT_PIN            9
 #ifndef STEPPERS_ENABLE_PORT
 #define M7_ENABLE_PORT          GPIOF
 #define M7_ENABLE_PIN           0
