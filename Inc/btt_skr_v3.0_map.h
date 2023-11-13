@@ -3,7 +3,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2022 Jon Escombe
+  Copyright (c) 2022-2023 Jon Escombe
 
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -153,7 +153,7 @@
 #elif TRINAMIC_SPI_ENABLE
 
 // The BTT SKR-3 uses software SPI
-#define TRINAIC_SOFT_SPI
+#define TRINAMIC_SOFT_SPI
 
 #define TRINAMIC_MOSI_PORT          GPIOE
 #define TRINAMIC_MOSI_PIN           13

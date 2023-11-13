@@ -5,7 +5,7 @@
 
   Copyright (c) 2021-2022 Terje Io
   Copyright (c) 2021 fitch22
-  Copyright (c) 2022 Jon Escombe
+  Copyright (c) 2022-2023 Jon Escombe
 
   Some software serial code is ported from Arduino.  Credit belongs to the many
   authors that contributed to that project.
@@ -188,6 +188,38 @@ void if_init(uint8_t motors, axes_signals_t enabled)
     GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
     GPIO_InitStruct.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(TRINAMIC_MISO_PORT, &GPIO_InitStruct);
+
+    static const periph_pin_t sdi = {
+        .function = Output_MOSI,
+        .group = PinGroup_SPI,
+        .port = TRINAMIC_MOSI_PORT,
+        .pin = TRINAMIC_MOSI_PIN,
+        .mode = { .mask = PINMODE_NONE },
+        .description = "Motor"
+    };
+
+    static const periph_pin_t sdo = {
+        .function = Input_MISO,
+        .group = PinGroup_SPI,
+        .port = TRINAMIC_MISO_PORT,
+        .pin = TRINAMIC_MISO_PIN,
+        .mode = { .mask = PINMODE_NONE },
+        .description = "Motor"
+    };
+
+    static const periph_pin_t sck = {
+        .function = Output_SCK,
+        .group = PinGroup_SPI,
+        .port = TRINAMIC_SCK_PORT,
+        .pin = TRINAMIC_SCK_PIN,
+        .mode = { .mask = PINMODE_OUTPUT },
+        .description = "Motor"
+    };
+
+    hal.periph_port.register_pin(&sdi);
+    hal.periph_port.register_pin(&sdo);
+    hal.periph_port.register_pin(&sck);
+
 #else
     spi_init();
     spi_set_speed(SPI_BAUDRATEPRESCALER_32); // 48 MHz SPI clock / 32 = 1.5MHz
