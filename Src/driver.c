@@ -2034,7 +2034,7 @@ bool driver_init (void)
     hal.info = "STM32H743";
 #endif
 
-    hal.driver_version = "230816";
+    hal.driver_version = "231115";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
 #endif
