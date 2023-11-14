@@ -44,7 +44,8 @@
     {
       "name": "BTT SKR 3 H743",
       "symbol": "BOARD_BTT_SKR_30",
-      "URL": "",
+      "URL": "https://github.com/bigtreetech/SKR-3",
+      "MAP": "Inc/btt_skr_v3.0_map.h",
       "caps": {
         "axes": 5,
         "digital_in": 0,
@@ -71,7 +72,8 @@
     {
       "name": "BTT SKR 3 H743 (bootloader)",
       "symbol": "BOARD_BTT_SKR_30",
-      "URL": "",
+      "URL": "https://github.com/bigtreetech/SKR-3",
+      "MAP": "Inc/btt_skr_v3.0_map.h",
       "caps": {
         "axes": 5,
         "digital_in": 0,
@@ -98,7 +100,8 @@
     {
       "name": "BTT SKR 3 H723",
       "symbol": "BOARD_BTT_SKR_30",
-      "URL": "",
+      "URL": "https://github.com/bigtreetech/SKR-3",
+      "MAP": "Inc/btt_skr_v3.0_map.h",
       "caps": {
         "axes": 5,
         "digital_in": 0,
@@ -125,7 +128,8 @@
     {
       "name": "BTT SKR 3 H723 (bootloader)",
       "symbol": "BOARD_BTT_SKR_30",
-      "URL": "",
+      "URL": "https://github.com/bigtreetech/SKR-3",
+      "MAP": "Inc/btt_skr_v3.0_map.h",
       "caps": {
         "axes": 5,
         "digital_in": 0,
@@ -152,7 +156,8 @@
     {
       "name": "Nucleo H743 reference map",
       "symbol": "BOARD_REFERENCE",
-      "URL": "",
+      "URL": "https://www.st.com/en/evaluation-tools/nucleo-h743zi.html",
+      "MAP": "Inc/reference_map.h",
       "caps": {
         "axes": 8,
         "digital_in": 3,
@@ -174,7 +179,8 @@
     {
       "name": "Nucleo H723 reference map",
       "symbol": "BOARD_REFERENCE",
-      "URL": "",
+      "URL": "https://www.st.com/en/evaluation-tools/nucleo-h743zi.html",
+      "MAP": "Inc/reference_map.h",
       "caps": {
         "axes": 8,
         "digital_in": 3,
@@ -196,7 +202,8 @@
     {
       "name": "WeAct Mini H743",
       "symbol": "BOARD_WEACT_MINI_H743",
-      "URL": "",
+      "MAP": "Inc/weact_mini_h743_map.h",
+      "URL": "https://github.com/WeActStudio/MiniSTM32H7xx",
       "caps": {
         "axes": 3,
         "digital_in": 0,

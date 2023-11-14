@@ -28,6 +28,8 @@
 #endif
 
 #define BOARD_NAME "BTT SKR-3"
+#define BOARD_URL "https://github.com/bigtreetech/SKR-3"
+
 #define HAS_BOARD_INIT
 
 // Define step pulse output pins.

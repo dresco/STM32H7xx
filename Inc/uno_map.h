@@ -28,6 +28,8 @@
 #endif
 
 #define BOARD_NAME "Generic Uno"
+#define BOARD_URL "https://www.makerfabs.com/arduino-cnc-shield-v3.html"
+
 #define I2C_PORT 1
 #define SPI_PORT 3
 #define IS_NUCLEO_BOB

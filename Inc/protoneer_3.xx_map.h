@@ -32,6 +32,8 @@
 #endif
 
 #define BOARD_NAME "Protoneer v3"
+#define BOARD_URL "https://blog.protoneer.co.nz/arduino-cnc-shield/"
+
 #define IS_NUCLEO_BOB
 
 // Define step pulse output pins.

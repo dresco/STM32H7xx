@@ -28,6 +28,8 @@
 #endif
 
 #define BOARD_NAME "WeAct Mini H743"
+#define BOARD_URL "https://github.com/WeActStudio/MiniSTM32H7xx"
+
 #define HAS_BOARD_INIT
 
 // Define step pulse output pins.
