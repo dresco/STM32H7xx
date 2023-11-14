@@ -30,6 +30,8 @@
 #define BOARD_NAME "WeAct Mini H743"
 #define BOARD_URL "https://github.com/WeActStudio/MiniSTM32H7xx"
 
+#define SERIAL_PORT  1   // GPIOA: TX =  9, RX = 10
+
 #define HAS_BOARD_INIT
 
 // Define step pulse output pins.

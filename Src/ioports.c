@@ -34,6 +34,25 @@ static output_signal_t *aux_out;
 static ioport_bus_t invert_digital_out;
 static volatile uint32_t event_bits;
 static volatile bool spin_lock = false;
+#if PLASMA_ENABLE
+static xbar_t analog_in;
+static uint_fast8_t analog_n_in;
+static enumerate_pins_ptr on_enumerate_pins;
+static ADC_HandleTypeDef hadc1 = {
+    .Instance = ADC1,
+    .Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4,
+    .Init.Resolution = ADC_RESOLUTION_12B,
+    .Init.ScanConvMode = ADC_SCAN_DISABLE,
+    .Init.ContinuousConvMode = DISABLE,
+    .Init.DiscontinuousConvMode = DISABLE,
+    .Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE,
+    .Init.ExternalTrigConv = ADC_SOFTWARE_START,
+    .Init.DataAlign = ADC_DATAALIGN_RIGHT,
+    .Init.NbrOfConversion = 1,
+    .Init.DMAContinuousRequests = DISABLE,
+    .Init.EOCSelection = ADC_EOC_SINGLE_CONV
+};
+#endif
 
 static void digital_out (uint8_t port, bool on)
 {
@@ -41,24 +60,6 @@ static void digital_out (uint8_t port, bool on)
         port = ioports_map(digital.out, port);
         DIGITAL_OUT(aux_out[port].port, aux_out[port].bit, ((settings.ioport.invert_out.mask >> port) & 0x01) ? !on : on);
     }
-}
-
-static void enable_irq (const input_signal_t *input, pin_irq_mode_t irq_mode)
-{
-    if(irq_mode == IRQ_Mode_Rising) {
-        EXTI->RTSR1 |= input->bit;
-        EXTI->FTSR1 &= ~input->bit;
-    } else if(irq_mode == IRQ_Mode_Falling) {
-        EXTI->RTSR1 &= ~input->bit;
-        EXTI->FTSR1 |= input->bit;
-    } else if(irq_mode == IRQ_Mode_Change) {
-        EXTI->RTSR1 |= input->bit;
-        EXTI->FTSR1 |= input->bit;
-    } else
-        EXTI->IMR1 &= ~input->bit;   // Disable pin interrupt
-
-    if(irq_mode != IRQ_Mode_None)
-        EXTI->IMR1 |= input->bit;    // Enable pin interrupt
 }
 
 inline static __attribute__((always_inline)) int32_t get_input (const input_signal_t *input, bool invert, wait_mode_t wait_mode, float timeout)
@@ -76,7 +77,7 @@ inline static __attribute__((always_inline)) int32_t get_input (const input_sign
         if(input->cap.irq_mode & irq_mode) {
 
             event_bits &= ~input->bit;
-            enable_irq(input, irq_mode);
+            gpio_irq_enable(input, irq_mode);
 
             do {
                 if(event_bits & input->bit) {
@@ -90,7 +91,7 @@ inline static __attribute__((always_inline)) int32_t get_input (const input_sign
                     break;
             } while(--delay && !sys.abort);
 
-            enable_irq(input, input->irq_mode);    // Restore pin interrupt status
+            gpio_irq_enable(input, input->irq_mode);    // Restore pin interrupt status
         }
 
     } else {
@@ -122,6 +123,13 @@ static int32_t wait_on_input (io_port_type_t type, uint8_t port, wait_mode_t wai
         port = ioports_map(digital.in, port);
         value = get_input(&aux_in[port], (settings.ioport.invert_in.mask >> port) & 0x01, wait_mode, timeout);
     }
+#if PLASMA_ENABLE
+    else if(port < analog_n_in) {
+        HAL_ADC_Start(&hadc1);
+        HAL_ADC_PollForConversion(&hadc1, 2);
+        value = HAL_ADC_GetValue(&hadc1);
+    }
+#endif
 
     return value;
 }
@@ -154,7 +162,7 @@ static bool register_interrupt_handler (uint8_t port, pin_irq_mode_t irq_mode, i
         if((ok = (irq_mode & input->cap.irq_mode) == irq_mode && interrupt_callback != NULL)) {
             input->irq_mode = irq_mode;
             input->interrupt_callback = interrupt_callback;
-            enable_irq(input, irq_mode);
+            gpio_irq_enable(input, irq_mode);
         }
 
         if(irq_mode == IRQ_Mode_None || !ok) {
@@ -205,6 +213,10 @@ static xbar_t *get_pin_info (io_port_type_t type, io_port_direction_t dir, uint8
             info = &pin;
         }
     }
+#if PLASMA_ENABLE
+    else if(dir == Port_Input && port == 0)
+        info = &analog_in;
+#endif
 
     return info;
 }
@@ -217,6 +229,12 @@ static void set_pin_description (io_port_type_t type, io_port_direction_t dir, u
         if(dir == Port_Output && port < digital.out.n_ports)
             aux_out[ioports_map(digital.out, port)].description = s;
     }
+#if xPLASMA_ENABLE
+    else {
+        if(dir == Port_Output && port < analog.out.n_ports)
+            aux_out[ioports_map(analog.out, port)].description = s;
+    }
+#endif
 }
 
 static bool claim (io_port_type_t type, io_port_direction_t dir, uint8_t *port, const char *description)
@@ -263,6 +281,13 @@ static bool claim (io_port_type_t type, io_port_direction_t dir, uint8_t *port, 
             *port = hal.port.num_digital_out;
         }
     }
+#if PLASMA_ENABLE
+    else if(dir == Port_Input && (ok = *port == 0 && analog_in.mode.analog && !analog_in.mode.claimed)) {
+        hal.port.num_analog_in--;
+        analog_in.mode.claimed = On;
+        analog_in.description = description;
+    }
+#endif
 
     return ok;
 }
@@ -300,6 +325,17 @@ bool swap_pins (io_port_type_t type, io_port_direction_t dir, uint8_t port_a, ui
 
     return ok;
 }
+
+#if PLASMA_ENABLE
+
+static void enumerate_pins (bool low_level, pin_info_ptr pin_info, void *data)
+{
+    on_enumerate_pins(low_level, pin_info, data);
+
+    pin_info(&analog_in, data);
+}
+
+#endif
 
 static void on_setting_changed (setting_id_t id)
 {
@@ -354,4 +390,37 @@ void ioports_init (pin_group_pins_t *aux_inputs, pin_group_pins_t *aux_outputs)
 
     } else
         hal.port.set_pin_description = NULL;
+
+#if PLASMA_ENABLE
+
+    analog_in.function = Input_Analog_Aux0;
+    analog_in.group = PinGroup_AuxInput;
+    analog_in.pin = 3;
+    analog_in.port = "PC";
+
+    __HAL_RCC_ADC1_CLK_ENABLE();
+
+    GPIO_InitTypeDef GPIO_InitStruct = {
+        .Pin = GPIO_PIN_3,
+        .Mode = GPIO_MODE_ANALOG,
+        .Pull = GPIO_NOPULL
+    };
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+    ADC_ChannelConfTypeDef sConfig = {
+        .Channel = ADC_CHANNEL_13,
+        .Rank = ADC_REGULAR_RANK_1,
+        .SamplingTime = ADC_SAMPLETIME_3CYCLES
+    };
+    if (HAL_ADC_Init(&hadc1) == HAL_OK && HAL_ADC_ConfigChannel(&hadc1, &sConfig) == HAL_OK) {
+        analog_in.mode.analog = On;
+        hal.port.num_analog_in = analog_n_in = 1;
+        hal.port.wait_on_input = wait_on_input;
+        analog_in.description = "E0";
+
+        on_enumerate_pins = hal.enumerate_pins;
+        hal.enumerate_pins = enumerate_pins;
+    }
+
+#endif // PLASMA_ENABLE
 }

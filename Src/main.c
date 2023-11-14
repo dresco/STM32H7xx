@@ -4,7 +4,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2021-2022 Terje Io
+  Copyright (c) 2021-2023 Terje Io
   Copyright (c) 2022 Jon Escombe
   Some parts (C) COPYRIGHT STMicroelectronics - code created by IDE
 
@@ -45,6 +45,14 @@ int main(void)
 
     HAL_Init();
     SystemClock_Config();
+
+    if(!(CoreDebug->DEMCR & CoreDebug_DEMCR_TRCENA_Msk)) {
+        CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk;
+        DWT->LAR = 0xC5ACCE55;
+        DWT->CYCCNT = 0;
+        DWT->CTRL |= DWT_CTRL_CYCCNTENA_Msk;
+        DWT->LAR = 0;
+    }
 
     grbl_enter();
 }

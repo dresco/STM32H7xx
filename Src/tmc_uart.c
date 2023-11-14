@@ -34,7 +34,7 @@
 #define TMC_UART_TIMER          timer(TMC_UART_TIMER_N)
 #define TMC_UART_IRQn           timerINT(TMC_UART_TIMER_N)
 #define TMC_UART_IRQHandler     timerHANDLER(TMC_UART_TIMER_N)
-#define TMC_UART_CLKENA         timerCLKENA(TMC_UART_TIMER_N)
+#define TMC_UART_CLKENA         timerCLKEN(TMC_UART_TIMER_N)
 
 #define SWS_BAUDRATE            100000      // 10us bit period
 #define START_DELAY             0           // delay in us * timer clock freq

@@ -4,7 +4,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2021-2022 Terje Io
+  Copyright (c) 2021-2023 Terje Io
 
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -47,6 +47,8 @@
 #define timerint(t) TIM ## t ## _IRQn
 #define timerHANDLER(t) timerhandler(t)
 #define timerhandler(t) TIM ## t ## _IRQHandler
+#define timerCLKEN(t) timerclken(t)
+#define timerclken(t) __HAL_RCC_TIM ## t ## _CLK_ENABLE
 #define timerCCEN(c, n) timerccen(c, n)
 #define timerccen(c, n) TIM_CCER_CC ## c ## n ## E
 #define timerCCMR(p, c) timerccmr(p, c)
@@ -69,8 +71,9 @@
 #define usartint(t) USART ## t ## _IRQn
 #define usartHANDLER(t) usarthandler(t)
 #define usarthandler(t) USART ## t ## _IRQHandler
-#define timerCLKENA(t) timercken(t)
-#define timercken(t) __HAL_RCC_TIM ## t ## _CLK_ENABLE
+#define usartCLKEN(t) usartclken(t)
+#define usartclken(t) __HAL_RCC_USART ## t ## _CLK_ENABLE
+
 #define TIMER_CLOCK_MUL(d) (d == RCC_HCLK_DIV1 ? 1 : 2)
 
 // Define GPIO output mode options
@@ -120,13 +123,21 @@
 
 #define STEPPER_TIMER_N             5
 #define STEPPER_TIMER               timer(STEPPER_TIMER_N)
+#define STEPPER_TIMER_CLKEN         timerCLKEN(STEPPER_TIMER_N)
 #define STEPPER_TIMER_IRQn          timerINT(STEPPER_TIMER_N)
 #define STEPPER_TIMER_IRQHandler    timerHANDLER(STEPPER_TIMER_N)
 
 #define PULSE_TIMER_N               4
 #define PULSE_TIMER                 timer(PULSE_TIMER_N)
+#define PULSE_TIMER_CLKEN           timerCLKEN(PULSE_TIMER_N)
 #define PULSE_TIMER_IRQn            timerINT(PULSE_TIMER_N)
 #define PULSE_TIMER_IRQHandler      timerHANDLER(PULSE_TIMER_N)
+
+#define PULSE2_TIMER_N              7
+#define PULSE2_TIMER                timer(PULSE2_TIMER_N)
+#define PULSE2_TIMER_CLKEN          timerCLKEN(PULSE2_TIMER_N)
+#define PULSE2_TIMER_IRQn           timerINT(PULSE2_TIMER_N)
+#define PULSE2_TIMER_IRQHandler     timerHANDLER(PULSE2_TIMER_N)
 
 #ifdef SPINDLE_PWM_PORT_BASE
 
@@ -186,6 +197,7 @@
 #define SPINDLE_PWM_CCR 2
 #endif
 #define SPINDLE_PWM_TIMER           timer(SPINDLE_PWM_TIMER_N)
+#define SPINDLE_PWM_TIMER_CLKEN     timerCLKEN(SPINDLE_PWM_TIMER_N)
 #define SPINDLE_PWM_TIMER_CCR       timerCCR(SPINDLE_PWM_TIMER_N, SPINDLE_PWM_TIMER_CH)
 #define SPINDLE_PWM_TIMER_CCMR      timerCCMR(SPINDLE_PWM_TIMER_N, SPINDLE_PWM_CCR)
 #define SPINDLE_PWM_CCMR_OCM_SET    timerOCM(SPINDLE_PWM_CCR, SPINDLE_PWM_TIMER_CH)
@@ -215,21 +227,25 @@
 
 #define DEBOUNCE_TIMER_N            12
 #define DEBOUNCE_TIMER              timer(DEBOUNCE_TIMER_N)
+#define DEBOUNCE_TIMER_CLKEN        timerCLKEN(DEBOUNCE_TIMER_N)
 #define DEBOUNCE_TIMER_IRQn         TIM8_BRK_TIM12_IRQn       // !
 #define DEBOUNCE_TIMER_IRQHandler   TIM8_BRK_TIM12_IRQHandler // !
 
 #define RPM_COUNTER_N               3
 #define RPM_COUNTER                 timer(RPM_COUNTER_N)
+#define RPM_COUNTER_CLKEN           timerCLKEN(RPM_COUNTER_N)
 #define RPM_COUNTER_IRQn            timerINT(RPM_COUNTER_N)
 #define RPM_COUNTER_IRQHandler      timerHANDLER(RPM_COUNTER_N)
 
 #define RPM_TIMER_N                 2
 #define RPM_TIMER                   timer(RPM_TIMER_N)
+#define RPM_TIMER_CLKEN             timerCLKEN(RPM_TIMER_N)
 #define RPM_TIMER_IRQn              timerINT(RPM_TIMER_N)
 #define RPM_TIMER_IRQHandler        timerHANDLER(RPM_TIMER_N)
 
 #define PPI_TIMER_N                 2
 #define PPI_TIMER                   timer(PPI_TIMER_N)
+#define PPI_TIMER_CLKEN             timerCLKEN(PPI_TIMER_N)
 #define PPI_TIMER_IRQn              timerINT(PPI_TIMER_N)
 #define PPI_TIMER_IRQHandler        timerHANDLER(PPI_TIMER_N)
 
@@ -256,6 +272,24 @@
 #define SPI_PORT 1
 #endif
 
+#if USB_SERIAL_CDC && defined(SERIAL_PORT)
+#define SP0 1
+#else
+#define SP0 0
+#endif
+
+#ifdef SERIAL1_PORT
+#define SP1 1
+#else
+#define SP1 0
+#endif
+
+#ifdef SERIAL2_PORT
+#define SP2 1
+#else
+#define SP3 0
+#endif
+
 #if MODBUS_ENABLE
 #define MODBUS_TEST 1
 #else
@@ -268,18 +302,13 @@
 #define KEYPAD_TEST 0
 #endif
 
-#if MODBUS_TEST + KEYPAD_TEST + (BLUETOOTH_ENABLE ? 1 : 0) + TRINAMIC_UART_ENABLE + MPG_ENABLE > 1
-#error "Only one option that uses the serial port can be enabled!"
+#if (MODBUS_TEST + KEYPAD_TEST + (BLUETOOTH_ENABLE ? 1 : 0)) > (SP0 + SP1 + SP2)
+#error "Too many options that uses a serial port are enabled!"
 #endif
 
-#if MODBUS_TEST || KEYPAD_TEST|| BLUETOOTH_ENABLE || TRINAMIC_UART_ENABLE || MPG_ENABLE
-#if IS_NUCLEO_DEVKIT
-#define SERIAL2_MOD 6
-#else
-#define SERIAL2_MOD 2
-#endif
-#endif
-
+#undef SP0
+#undef SP1
+#undef SP2
 #undef MODBUS_TEST
 #undef KEYPAD_TEST
 
@@ -354,9 +383,12 @@ typedef struct {
 
 bool driver_init (void);
 void Driver_IncTick (void);
+void gpio_irq_enable (const input_signal_t *input, pin_irq_mode_t irq_mode);
+
 #ifdef HAS_BOARD_INIT
 void board_init (void);
 #endif
+
 #ifdef HAS_IOPORTS
 void ioports_init(pin_group_pins_t *aux_inputs, pin_group_pins_t *aux_outputs);
 void ioports_event (uint32_t bit);

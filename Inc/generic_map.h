@@ -3,7 +3,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2021 Terje Io
+  Copyright (c) 2021-2023 Terje Io
 
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -27,10 +27,13 @@
 #error "Trinamic plugin not supported!"
 #endif
 
-#define I2C_PORT 1
-#define SPI_PORT 3
+#define SERIAL_PORT    32   // GPIOD: TX = 8, RX = 9
+#define I2C_PORT        1   // GPIOB: SCL = 8, SDA = 9
+#define SPI_PORT        3   // GPIOC: SCK = 10, MISO - 11, MOSI - 12
 #define IS_NUCLEO_BOB
 #define VARIABLE_SPINDLE // Comment out to disable variable spindle
+
+#define SERIAL1_PORT 6
 
 // Define step pulse output pins.
 #define STEP_PORT               GPIOA

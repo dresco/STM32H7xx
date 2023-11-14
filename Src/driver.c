@@ -370,9 +370,11 @@ static output_signal_t outputpin[] = {
 #endif
 };
 
-extern __IO uint32_t uwTick;
+extern __IO uint32_t uwTick, cycle_count;
+static uint32_t systick_safe_read = 0, cycles2us_factor = 0;
 static uint32_t pulse_length, pulse_delay, aux_irq = 0;
 static bool IOInitDone = false, rtc_started = false;
+static pin_group_pins_t limit_inputs = {0};
 static axes_signals_t next_step_outbits;
 static delay_t delay = { .ms = 1, .callback = NULL }; // NOTE: initial ms set to 1 for "resetting" systick timer on startup
 static debounce_t debounce;
@@ -860,18 +862,122 @@ static void stepperPulseStartSynchronized (stepper_t *stepper)
 #endif
 
 // Enable/disable limit pins interrupt
-static void limitsEnable (bool on, bool homing)
+static void limitsEnable (bool on, axes_signals_t homing_cycle)
 {
-    if(on && settings.limits.flags.hard_enabled) {
-        EXTI->PR1 |= LIMIT_MASK;     // Clear any pending limit interrupts
-        EXTI->IMR1 |= LIMIT_MASK;    // and enable
-    } else
-        EXTI->IMR1 &= ~LIMIT_MASK;
+    bool disable = !on;
+    axes_signals_t pin;
+    input_signal_t *limit;
+    uint_fast8_t idx = limit_inputs.n_pins;
+    limit_signals_t homing_source = xbar_get_homing_source_from_cycle(homing_cycle);
 
-//#if TRINAMIC_ENABLE
-//    trinamic_homing(homing);
-//#endif
+    do {
+        limit = &limit_inputs.pins.inputs[--idx];
+        if(on && homing_cycle.mask) {
+            pin = xbar_fn_to_axismask(limit->id);
+            disable = limit->group == PinGroup_Limit ? (pin.mask & homing_source.min.mask) : (pin.mask & homing_source.max.mask);
+        }
+        gpio_irq_enable(limit, disable ? IRQ_Mode_None : limit->irq_mode);
+    } while(idx);
 }
+
+#if STEP_INJECT_ENABLE
+
+static axes_signals_t pulse_output = {0};
+
+static inline __attribute__((always_inline)) void stepperInjectStep (axes_signals_t step_outbits)
+{
+    if(pulse_output.x) {
+        DIGITAL_OUT(X_STEP_PORT, X_STEP_BIT, step_outbits.x);
+#ifdef X2_STEP_PIN
+        DIGITAL_OUT(X2_STEP_PORT, X2_STEP_BIT, step_outbits.x);
+#endif
+     }
+
+    if(pulse_output.y) {
+        DIGITAL_OUT(Y_STEP_PORT, Y_STEP_BIT, step_outbits.y);
+#ifdef Y2_STEP_PIN
+        DIGITAL_OUT(Y2_STEP_PORT, Y2_STEP_BIT, step_outbits.y);
+#endif
+     }
+
+    if(pulse_output.z) {
+        DIGITAL_OUT(Z_STEP_PORT, Z_STEP_BIT, step_outbits.z);
+#ifdef Z2_STEP_PIN
+        DIGITAL_OUT(Z2_STEP_PORT, Z2_STEP_BIT, step_outbits.z);
+#endif
+    }
+
+#ifdef A_AXIS
+    if(pulse_output.a)
+        DIGITAL_OUT(A_STEP_PORT, A_STEP_BIT, step_outbits.a);
+#endif
+#ifdef B_AXIS
+    if(pulse_output.b)
+        DIGITAL_OUT(B_STEP_PORT, B_STEP_BIT, step_outbits.b);
+#endif
+#ifdef C_AXIS
+    if(pulse_output.c)
+        DIGITAL_OUT(C_STEP_PORT, C_STEP_BIT, step_outbits.c);
+#endif
+#ifdef U_AXIS
+    if(pulse_output.u)
+        DIGITAL_OUT(U_STEP_PORT, U_STEP_BIT, step_outbits.u);
+#endif
+#ifdef V_AXIS
+    if(pulse_output.v)
+        DIGITAL_OUT(V_STEP_PORT, V_STEP_BIT, step_outbits.v);
+#endif
+}
+
+void stepperOutputStep (axes_signals_t step_outbits, axes_signals_t dir_outbits)
+{
+    if(step_outbits.value) {
+
+        pulse_output = step_outbits;
+        dir_outbits.value ^= settings.steppers.dir_invert.mask;
+
+        if(pulse_output.x)
+            DIGITAL_OUT(X_DIRECTION_PORT, X_DIRECTION_BIT, dir_outbits.x);
+
+        if(pulse_output.y)
+            DIGITAL_OUT(Y_DIRECTION_PORT, Y_DIRECTION_BIT, dir_outbits.y);
+
+        if(pulse_output.z)
+            DIGITAL_OUT(Z_DIRECTION_PORT, Z_DIRECTION_BIT, dir_outbits.z);
+
+#ifdef A_AXIS
+        if(pulse_output.a)
+            DIGITAL_OUT(A_DIRECTION_PORT, A_DIRECTION_BIT, dir_outbits.a);
+#endif
+#ifdef B_AXIS
+        if(pulse_output.b)
+            DIGITAL_OUT(B_DIRECTION_PORT, B_DIRECTION_BIT, dir_outbits.b);
+#endif
+#ifdef C_AXIS
+        if(pulse_output.c)
+            DIGITAL_OUT(C_DIRECTION_PORT, C_DIRECTION_BIT, dir_outbits.c);
+#endif
+#ifdef U_AXIS
+        if(pulse_output.u)
+            DIGITAL_OUT(U_DIRECTION_PORT, U_DIRECTION_BIT, dir_outbits.u);
+#endif
+#ifdef V_AXIS
+        if(pulse_output.v)
+            DIGITAL_OUT(V_DIRECTION_PORT, V_DIRECTION_BIT, dir_outbits.v);
+#endif
+
+        if(pulse_delay == 0) {
+            step_outbits.value ^= settings.steppers.step_invert.mask;
+            stepperInjectStep(step_outbits);
+        } else
+            PULSE2_TIMER->ARR = pulse_delay;
+
+        PULSE2_TIMER->EGR = TIM_EGR_UG;
+        PULSE2_TIMER->CR1 |= TIM_CR1_CEN;
+    }
+}
+
+#endif // STEP_INJECT_ENABLE
 
 // Returns limit state as an axes_signals_t variable.
 // Each bitfield bit indicates an axis limit, where triggered is 1 and not triggered is 0.
@@ -1388,9 +1494,44 @@ static uint_fast16_t valueSetAtomic (volatile uint_fast16_t *ptr, uint_fast16_t 
     return prev;
 }
 
+static uint32_t getElapsedMicros (void)
+{
+    uint32_t ms, cycles;
+    do {
+        __LDREXW(&systick_safe_read);
+        ms = uwTick;
+        cycles = cycle_count;
+    } while(__STREXW(1, &systick_safe_read));
+
+    uint32_t cyccnt = DWT->CYCCNT;
+    asm volatile("" : : : "memory");
+    uint32_t ccdelta = cyccnt - cycles;
+    uint32_t frac = ((uint64_t)ccdelta * cycles2us_factor) >> 32;
+
+    return ms * 1000 + (frac > 1000 ? 1000 : frac);
+}
+
 static uint32_t getElapsedTicks (void)
 {
     return uwTick;
+}
+
+void gpio_irq_enable (const input_signal_t *input, pin_irq_mode_t irq_mode)
+{
+    if(irq_mode == IRQ_Mode_Rising) {
+        EXTI->RTSR1 |= input->bit;
+        EXTI->FTSR1 &= ~input->bit;
+    } else if(irq_mode == IRQ_Mode_Falling) {
+        EXTI->RTSR1 &= ~input->bit;
+        EXTI->FTSR1 |= input->bit;
+    } else if(irq_mode == IRQ_Mode_Change) {
+        EXTI->RTSR1 |= input->bit;
+        EXTI->FTSR1 |= input->bit;
+    } else
+        EXTI->IMR1 &= ~input->bit;   // Disable pin interrupt
+
+    if(irq_mode != IRQ_Mode_None)
+        EXTI->IMR1 |= input->bit;    // Enable pin interrupt
 }
 
 // Configures peripherals when settings are initialized or changed
@@ -1461,6 +1602,11 @@ void settings_changed (settings_t *settings, settings_changed_flags_t changed)
 
         PULSE_TIMER->ARR = pulse_length;
         PULSE_TIMER->EGR = TIM_EGR_UG;
+
+#if STEP_INJECT_ENABLE
+        PULSE2_TIMER->ARR = pulse_length;
+        PULSE2_TIMER->EGR = TIM_EGR_UG;
+#endif
 
         /*************************
          *  Control pins config  *
@@ -1675,7 +1821,7 @@ void settings_changed (settings_t *settings, settings_changed_flags_t changed)
         }
     }
 
-    hal.limits.enable(settings->limits.flags.hard_enabled, false);
+    hal.limits.enable(settings->limits.flags.hard_enabled, (axes_signals_t){0});
 }
 
 static char *port2char (GPIO_TypeDef *port)
@@ -1770,14 +1916,7 @@ void setPeriphPinDescription (const pin_function_t function, const pin_group_t g
 // Initializes MCU peripherals for Grbl use
 static bool driver_setup (settings_t *settings)
 {
-    //    Interrupt_disableSleepOnIsrExit();
-
-    __HAL_RCC_TIM1_CLK_ENABLE();
-    __HAL_RCC_TIM2_CLK_ENABLE();
-    __HAL_RCC_TIM3_CLK_ENABLE();
-    __HAL_RCC_TIM4_CLK_ENABLE();
-    __HAL_RCC_TIM5_CLK_ENABLE();
-    __HAL_RCC_TIM12_CLK_ENABLE();
+    // Interrupt_disableSleepOnIsrExit();
 
     GPIO_InitTypeDef GPIO_Init = {
         .Speed = GPIO_SPEED_FREQ_HIGH,
@@ -1817,6 +1956,7 @@ static bool driver_setup (settings_t *settings)
 
  // Stepper init
 
+    STEPPER_TIMER_CLKEN();
     STEPPER_TIMER->CR1 &= ~TIM_CR1_CEN;
     STEPPER_TIMER->SR &= ~TIM_SR_UIF;
     STEPPER_TIMER->PSC = STEPPER_TIMER_DIV - 1;
@@ -1828,6 +1968,8 @@ static bool driver_setup (settings_t *settings)
     NVIC_EnableIRQ(STEPPER_TIMER_IRQn);
 
  // Single-shot 100 ns per tick
+
+    PULSE_TIMER_CLKEN();
     PULSE_TIMER->CR1 |= TIM_CR1_OPM|TIM_CR1_DIR|TIM_CR1_CKD_1|TIM_CR1_ARPE|TIM_CR1_URS;
     PULSE_TIMER->PSC = hal.f_step_timer / 10000000UL - 1;
     PULSE_TIMER->SR &= ~(TIM_SR_UIF|TIM_SR_CC1IF);
@@ -1836,6 +1978,22 @@ static bool driver_setup (settings_t *settings)
 
     NVIC_SetPriority(PULSE_TIMER_IRQn, 0);
     NVIC_EnableIRQ(PULSE_TIMER_IRQn);
+
+#if STEP_INJECT_ENABLE
+
+    // Single-shot 100 ns per tick
+
+    PULSE2_TIMER_CLKEN();
+    PULSE2_TIMER->CR1 |= TIM_CR1_OPM|TIM_CR1_DIR|TIM_CR1_CKD_1|TIM_CR1_ARPE|TIM_CR1_URS;
+    PULSE2_TIMER->PSC = (hal.f_step_timer * STEPPER_TIMER_DIV) / 10000000UL - 1;
+    PULSE2_TIMER->SR &= ~(TIM_SR_UIF|TIM_SR_CC1IF);
+    PULSE2_TIMER->CNT = 0;
+    PULSE2_TIMER->DIER |= TIM_DIER_UIE;
+
+    NVIC_SetPriority(PULSE2_TIMER_IRQn, 0);
+    NVIC_EnableIRQ(PULSE2_TIMER_IRQn);
+
+#endif
 
  // Limit pins init
 
@@ -1846,6 +2004,7 @@ static bool driver_setup (settings_t *settings)
 
     if(hal.driver_cap.software_debounce) {
         // Single-shot 0.1 ms per tick
+        DEBOUNCE_TIMER_CLKEN();
         DEBOUNCE_TIMER->CR1 |= TIM_CR1_OPM|TIM_CR1_DIR|TIM_CR1_CKD_1|TIM_CR1_ARPE|TIM_CR1_URS;
         DEBOUNCE_TIMER->PSC = hal.f_step_timer / 10000UL - 1;
         DEBOUNCE_TIMER->SR &= ~TIM_SR_UIF;
@@ -1858,6 +2017,8 @@ static bool driver_setup (settings_t *settings)
   // Spindle init
 
 #if defined(DRIVER_SPINDLE) && defined(SPINDLE_PWM_TIMER_N)
+
+    SPINDLE_PWM_TIMER_CLKEN();
 
     GPIO_Init.Pin = (1<<SPINDLE_PWM_PIN);
     GPIO_Init.Mode = GPIO_MODE_AF_PP;
@@ -1887,6 +2048,8 @@ static bool driver_setup (settings_t *settings)
 #if PPI_ENABLE
 
     // Single-shot 1 us per tick
+
+    PPI_TIMER_CLKEN();
     PPI_TIMER->CR1 |= TIM_CR1_OPM|TIM_CR1_DIR|TIM_CR1_CKD_1|TIM_CR1_ARPE|TIM_CR1_URS;
     PPI_TIMER->PSC = hal.f_step_timer / 1000000UL - 1;
     PPI_TIMER->SR &= ~(TIM_SR_UIF|TIM_SR_CC1IF);
@@ -1899,10 +2062,12 @@ static bool driver_setup (settings_t *settings)
 
 #if SPINDLE_SYNC_ENABLE
 
+    RPM_TIMER_CLKEN();
     RPM_TIMER->CR1 = TIM_CR1_CKD_1;
     RPM_TIMER->PSC = hal.f_step_timer / 1000000UL - 1;
     RPM_TIMER->CR1 |= TIM_CR1_CEN;
 
+    RPM_COUNTER_CLKEN();
 //    RPM_COUNTER->SMCR = TIM_SMCR_SMS_0|TIM_SMCR_SMS_1|TIM_SMCR_SMS_2|TIM_SMCR_ETF_2|TIM_SMCR_ETF_3|TIM_SMCR_TS_0|TIM_SMCR_TS_1|TIM_SMCR_TS_2;
     RPM_COUNTER->SMCR = TIM_SMCR_ECE;
     RPM_COUNTER->PSC = 0;
@@ -2034,7 +2199,7 @@ bool driver_init (void)
     hal.info = "STM32H743";
 #endif
 
-    hal.driver_version = "231115";
+    hal.driver_version = "231116";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
 #endif
@@ -2049,6 +2214,9 @@ bool driver_init (void)
     hal.delay_ms = &driver_delay;
     hal.settings_changed = settings_changed;
 
+    cycles2us_factor = 0xFFFFFFFFU / hal.f_mcu;
+
+    hal.stepper.wake_up = stepperWakeUp;
     hal.stepper.go_idle = stepperGoIdle;
     hal.stepper.enable = stepperEnable;
     hal.stepper.cycles_per_tick = stepperCyclesPerTick;
@@ -2059,6 +2227,9 @@ bool driver_init (void)
 #endif
 #ifdef SQUARING_ENABLED
     hal.stepper.disable_motors = StepperDisableMotors;
+#endif
+#if STEP_INJECT_ENABLE
+    hal.stepper.output_step = stepperOutputStep;
 #endif
 
     hal.limits.enable = limitsEnable;
@@ -2082,6 +2253,7 @@ bool driver_init (void)
     hal.set_bits_atomic = bitsSetAtomic;
     hal.clear_bits_atomic = bitsClearAtomic;
     hal.set_value_atomic = valueSetAtomic;
+    hal.get_micros = getElapsedMicros;
     hal.get_elapsed_ticks = getElapsedTicks;
     hal.enumerate_pins = enumeratePins;
     hal.periph_port.register_pin = registerPeriphPin;
@@ -2092,10 +2264,13 @@ bool driver_init (void)
     hal.rtc.set_datetime = set_rtc_time;
 #endif
 
+    serialRegisterStreams();
+
 #if USB_SERIAL_CDC
     stream_connect(usbInit());
 #else
-    stream_connect(serialInit(BAUD_RATE));
+    if(!stream_connect_instance(SERIAL_STREAM, BAUD_RATE))
+        while(true); // Cannot boot if no communication channel is available!
 #endif
 
 #if I2C_ENABLE
@@ -2154,6 +2329,7 @@ bool driver_init (void)
     hal.signals_cap.safety_door_ajar = On;
 #endif
     hal.limits_cap = get_limits_cap();
+    hal.home_cap = get_home_cap();
 #if SPINDLE_SYNC_ENABLE
     hal.driver_cap.spindle_sync = On;
 #endif
@@ -2182,6 +2358,10 @@ bool driver_init (void)
             input->bit = 1 << input->pin;
             input->cap.pull_mode = PullMode_UpDown;
             input->cap.irq_mode = (input->bit & DRIVER_IRQMASK) ? IRQ_Mode_None : IRQ_Mode_Edges;
+        } else if(input->group & (PinGroup_Limit|PinGroup_LimitMax)) {
+            if(limit_inputs.pins.inputs == NULL)
+                limit_inputs.pins.inputs = input;
+            limit_inputs.n_pins++;
         }
     }
 
@@ -2198,8 +2378,6 @@ bool driver_init (void)
 #ifdef HAS_IOPORTS
     ioports_init(&aux_inputs, &aux_outputs);
 #endif
-
-    serialRegisterStreams();
 
 #if ETHERNET_ENABLE
     enet_init();
@@ -2250,8 +2428,7 @@ void PULSE_TIMER_IRQHandler (void)
 {
     PULSE_TIMER->SR &= ~TIM_SR_UIF;                 // Clear UIF flag
 
-    if (PULSE_TIMER->ARR == pulse_delay)            // Delayed step pulse?
-    {
+    if (PULSE_TIMER->ARR == pulse_delay) {          // Delayed step pulse?
         PULSE_TIMER->ARR = pulse_length;
         stepperSetStepOutputs(next_step_outbits);   // begin step pulse
         PULSE_TIMER->EGR = TIM_EGR_UG;
@@ -2259,6 +2436,25 @@ void PULSE_TIMER_IRQHandler (void)
     } else
         stepperSetStepOutputs((axes_signals_t){0}); // end step pulse
 }
+
+#if STEP_INJECT_ENABLE
+
+void PULSE2_TIMER_IRQHandler (void)
+{
+    PULSE2_TIMER->SR &= ~TIM_SR_UIF;                        // Clear UIF flag
+
+    if(PULSE2_TIMER->ARR == pulse_delay) {                  // Delayed step pulse?
+        axes_signals_t step_outbits;
+        step_outbits.value =  pulse_output.value ^ settings.steppers.step_invert.mask;
+        PULSE2_TIMER->ARR = pulse_length;
+        stepperInjectStep(step_outbits);                    // begin step pulse
+        PULSE2_TIMER->EGR = TIM_EGR_UG;
+        PULSE2_TIMER->CR1 |= TIM_CR1_CEN;
+    } else
+        stepperInjectStep(settings.steppers.step_invert);   // end step pulse
+}
+
+#endif // STEP_INJECT_ENABLE
 
 static inline bool debounce_start (void)
 {

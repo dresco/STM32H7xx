@@ -4,7 +4,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2017-2021 Terje Io
+  Copyright (c) 2017-2023 Terje Io
 
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -21,23 +21,21 @@
 
 */
 
+/*
+
+1  - GPIOA: TX =  9, RX = 10
+11 - GPIOB: TX =  6, RX =  7
+2  - GPIOA: TX =  2, RX =  3 - Nucleo-144: cannot be used with ethernet enabled
+21 - GPIOD: TX =  5, RX =  6
+3  - GPIOB: TX = 10, RX = 11 - Nucleo-144: cannot be used with ethernet enabled
+31 - GPIOC: TX = 10, RX = 11 - Nucleo-144: cannot be used with SDIO enabled
+32 - GPIOD: TX =  8, RX =  9
+6  - GPIOC: TX =  6, RX =  7
+
+*/
+
 #pragma once
 
-#include <stdint.h>
-#include <stdbool.h>
-
-#include "driver.h"
-
-#include "grbl/stream.h"
-
-#define UART_PORT GPIOD
-#define UART_TX_PIN 8
-#define UART_RX_PIN 9
-
-const io_stream_t *serialInit (uint32_t baud_rate);
-#ifdef SERIAL2_MOD
-const io_stream_t *serial2Init(uint32_t baud_rate);
-#endif
 void serialRegisterStreams (void);
 
 /*EOF*/

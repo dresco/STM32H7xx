@@ -3,7 +3,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2021 Terje Io
+  Copyright (c) 2021-2023 Terje Io
 
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@
 #define BOARD_NAME "Protoneer v3"
 #define BOARD_URL "https://blog.protoneer.co.nz/arduino-cnc-shield/"
 
-#define IS_NUCLEO_BOB
+#define SERIAL_PORT             32   // GPIOD: TX = 8, RX = 9
 
 // Define step pulse output pins.
 #define X_STEP_PORT             GPIOF // D2

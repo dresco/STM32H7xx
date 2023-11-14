@@ -27,10 +27,14 @@
 //#error "Reference map is work in progress - pin assignments are subject to changes, do not use!"
 
 #define BOARD_NAME "grblHAL reference map"
-#define HAS_IOPORTS
-#define I2C_PORT 1
-#define SPI_PORT 3 // SCK - C10, MISO - C11, MOSI - C12
+
+
+#define SERIAL_PORT    32   // GPIOD: TX = 8, RX = 9
+#define SERIAL1_PORT    1   // GPIOC: TX = 6, RX = 7
+#define I2C_PORT        1   // GPIOB: SCL = 8, SDA = 9
+#define SPI_PORT        3   // GPIOC: SCK = 10, MISO - 11, MOSI - 12
 #define IS_NUCLEO_BOB
+#define HAS_IOPORTS
 #define VARIABLE_SPINDLE // Comment out to disable variable spindle
 
 // Define stepper driver enable/disable output pin.
@@ -190,14 +194,14 @@
 //#define SD_CS_PIN               8
 //#endif
 
+/*
 #define AUXINPUT0_PORT          GPIOE
 #define AUXINPUT0_PIN           15
-
 #define AUXINPUT1_PORT          GPIOD
 #define AUXINPUT1_PIN           1
 #define AUXINPUT2_PORT          GPIOF
 #define AUXINPUT2_PIN           2
-
+*/
 #define AUXOUTPUT0_PORT         GPIOB
 #define AUXOUTPUT0_PIN          11
 #define AUXOUTPUT1_PORT         GPIOB
@@ -206,5 +210,12 @@
 #define AUXOUTPUT2_PIN          2
 #define AUXOUTPUT3_PORT         GPIOF
 #define AUXOUTPUT3_PIN          0
+
+#define AUXOUTPUT4_PORT          GPIOE
+#define AUXOUTPUT4_PIN           15
+#define AUXOUTPUT5_PORT          GPIOD
+#define AUXOUTPUT5_PIN           1
+#define AUXOUTPUT6_PORT          GPIOF
+#define AUXOUTPUT6_PIN           2
 
 /**/
