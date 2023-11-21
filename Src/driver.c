@@ -1943,12 +1943,13 @@ static bool driver_setup (settings_t *settings)
 
     for(i = 0 ; i < sizeof(outputpin) / sizeof(output_signal_t); i++) {
         if(outputpin[i].group != PinGroup_StepperPower) {
+
+            if(outputpin[i].group == PinGroup_MotorChipSelect || outputpin[i].group == PinGroup_MotorUART || outputpin[i].group == PinGroup_StepperEnable)
+                DIGITAL_OUT(outputpin[i].port, outputpin[i].bit, 1);
+
             GPIO_Init.Pin = outputpin[i].bit = 1 << outputpin[i].pin;
             GPIO_Init.Mode = outputpin[i].mode.open_drain ? GPIO_MODE_OUTPUT_OD : GPIO_MODE_OUTPUT_PP;
             HAL_GPIO_Init(outputpin[i].port, &GPIO_Init);
-
-            if(outputpin[i].group == PinGroup_MotorChipSelect || outputpin[i].group == PinGroup_MotorUART)
-                DIGITAL_OUT(outputpin[i].port, outputpin[i].bit, 1);
         }
     }
 
@@ -2199,7 +2200,7 @@ bool driver_init (void)
     hal.info = "STM32H743";
 #endif
 
-    hal.driver_version = "231116";
+    hal.driver_version = "231121";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
 #endif
