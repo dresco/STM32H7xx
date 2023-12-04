@@ -1944,8 +1944,9 @@ static bool driver_setup (settings_t *settings)
     for(i = 0 ; i < sizeof(outputpin) / sizeof(output_signal_t); i++) {
         if(outputpin[i].group != PinGroup_StepperPower) {
 
+            // Set the initial state of the pin when it is enabled (note: need to use ODR instead of BSRR)
             if(outputpin[i].group == PinGroup_MotorChipSelect || outputpin[i].group == PinGroup_MotorUART || outputpin[i].group == PinGroup_StepperEnable)
-                DIGITAL_OUT(outputpin[i].port, outputpin[i].bit, 1);
+                outputpin[i].port->ODR |= 1 << outputpin[i].pin;
 
             GPIO_Init.Pin = outputpin[i].bit = 1 << outputpin[i].pin;
             GPIO_Init.Mode = outputpin[i].mode.open_drain ? GPIO_MODE_OUTPUT_OD : GPIO_MODE_OUTPUT_PP;
@@ -2200,7 +2201,7 @@ bool driver_init (void)
     hal.info = "STM32H743";
 #endif
 
-    hal.driver_version = "231121";
+    hal.driver_version = "231205";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
 #endif
