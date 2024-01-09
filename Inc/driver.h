@@ -109,6 +109,8 @@
   #include "uno_map.h"
 #elif defined(BOARD_BTT_SKR_30)
   #include "btt_skr_v3.0_map.h"
+#elif defined(BOARD_BTT_OCTOPUS_MAX)
+  #include "btt_octopus_max_map.h"
 #elif defined(BOARD_WEACT_MINI_H743)
   #include "weact_mini_h743_map.h"
 #elif defined(BOARD_REFERENCE)
@@ -182,7 +184,12 @@
 #endif
 
 #if SPINDLE_PWM_PORT_BASE == GPIOA_BASE
-  #if SPINDLE_PWM_PIN == 7 // PA7 - TIM1_CH1N
+  #if SPINDLE_PWM_PIN == 1 // PA1 - TIM2_CH2
+    #define SPINDLE_PWM_TIMER_N     2
+    #define SPINDLE_PWM_TIMER_CH    2
+    #define SPINDLE_PWM_TIMER_INV   0
+    #define SPINDLE_PWM_TIMER_AF    1
+  #elif SPINDLE_PWM_PIN == 7 // PA7 - TIM1_CH1N
     #define SPINDLE_PWM_TIMER_N     1
     #define SPINDLE_PWM_TIMER_CH    1
     #define SPINDLE_PWM_TIMER_INV   1

@@ -159,6 +159,42 @@ void spi_init (void)
             .mode = { .mask = PINMODE_NONE }
         };
 #endif
+#if SPI_PORT == 4
+        __HAL_RCC_SPI4_CLK_ENABLE();
+
+        GPIO_InitTypeDef GPIO_InitStruct = {
+            .Pin = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14,
+            .Mode = GPIO_MODE_AF_PP,
+            .Pull = GPIO_NOPULL,
+            .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
+            .Alternate = GPIO_AF5_SPI4
+        };
+        HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
+
+        static const periph_pin_t sck = {
+            .function = Output_SCK,
+            .group = PinGroup_SPI,
+            .port = GPIOE,
+            .pin = 12,
+            .mode = { .mask = PINMODE_OUTPUT }
+        };
+
+        static const periph_pin_t sdo = {
+            .function = Input_MISO,
+            .group = PinGroup_SPI,
+            .port = GPIOE,
+            .pin = 13,
+            .mode = { .mask = PINMODE_NONE }
+        };
+
+        static const periph_pin_t sdi = {
+            .function = Output_MOSI,
+            .group = PinGroup_SPI,
+            .port = GPIOE,
+            .pin = 14,
+            .mode = { .mask = PINMODE_NONE }
+        };
+#endif
 
         HAL_SPI_Init(&spi_port);
         __HAL_SPI_ENABLE(&spi_port);

@@ -164,6 +164,68 @@
       }
     },
     {
+      "name": "BTT Octopus MAX 3 H723",
+      "symbol": "BOARD_BTT_OCTOPUS_MAX",
+      "URL": "https://github.com/bigtreetech/Octopus-Max-EZ",
+      "MAP": "Inc/btt_octopus_max_map.h",
+      "caps": {
+        "axes": 6,
+        "ganged_axes": 3,
+        "auto_square": 3,
+        "digital_in": 0,
+        "digital_out": 0,
+        "sdcard": 0,
+        "eeprom": -32,
+        "fram": 0,
+        "i2c": 0,
+        "safety_door": 0,
+        "trinamic_spi_cs": 1,
+        "trinamic_spi_chain": 0,
+        "trinamic_uart_n": 0,
+        "trinamic_uart_addr": 1,
+        "pio_board": "btt_octopus_max_h723",
+        "ldscript": "STM32H723ZETX_FLASH.ld"
+      },
+      "symbols" : {
+        "STM32H723xx": "",
+        "HSE_VALUE": 25000000
+      },
+      "pio_env" : {
+        "name": "usb_h723"
+      }
+    },
+    {
+      "name": "BTT Octopus MAX 3 H723 (bootloader)",
+      "symbol": "BOARD_BTT_OCTOPUS_MAX",
+      "URL": "https://github.com/bigtreetech/Octopus-Max-EZ",
+      "MAP": "Inc/btt_octopus_max_map.h",
+      "caps": {
+        "axes": 6,
+        "ganged_axes": 3,
+        "auto_square": 3,
+        "digital_in": 0,
+        "digital_out": 0,
+        "sdcard": 0,
+        "eeprom": -32,
+        "fram": 0,
+        "i2c": 0,
+        "safety_door": 0,
+        "trinamic_spi_cs": 1,
+        "trinamic_spi_chain": 0,
+        "trinamic_uart_n": 0,
+        "trinamic_uart_addr": 1,
+        "pio_board": "btt_octopus_max_h723",
+        "ldscript": "STM32H723ZETX_FLASH_BL.ld"
+      },
+      "symbols" : {
+        "STM32H723xx": "",
+        "HSE_VALUE": 25000000
+      },
+      "pio_env" : {
+        "name": "usb_h723"
+      }
+    },
+    {
       "name": "Nucleo H743 reference map",
       "symbol": "BOARD_REFERENCE",
       "URL": "https://www.st.com/en/evaluation-tools/nucleo-h743zi.html",
