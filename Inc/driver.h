@@ -119,6 +119,27 @@
   #include "generic_map.h"
 #endif
 
+#if DRIVER_SPINDLE_ENABLE && !defined(SPINDLE_ENABLE_PIN)
+#warning "Selected spindle is not supported!"
+#undef DRIVER_SPINDLE_ENABLE
+#define DRIVER_SPINDLE_ENABLE 0
+#endif
+
+#if DRIVER_SPINDLE_DIR_ENABLE && !defined(SPINDLE_DIRECTION_PIN)
+#warning "Selected spindle is not fully supported - no direction output!"
+#undef DRIVER_SPINDLE_DIR_ENABLE
+#define DRIVER_SPINDLE_DIR_ENABLE 0
+#endif
+
+#if DRIVER_SPINDLE_PWM_ENABLE && (!DRIVER_SPINDLE_ENABLE || !defined(SPINDLE_PWM_PIN))
+#warning "Selected spindle is not supported!"
+#undef DRIVER_SPINDLE_PWM_ENABLE
+#define DRIVER_SPINDLE_PWM_ENABLE 0
+#ifdef SPINDLE_PWM_PORT_BASE
+#undef SPINDLE_PWM_PORT_BASE
+#endif
+#endif
+
 // Define timer allocations.
 
 #define STEPPER_TIMER_N             5
@@ -217,6 +238,200 @@
 
 #endif // SPINDLE_PWM_PORT_BASE
 
+#ifdef AUXOUTPUT0_PWM_PORT_BASE
+
+#if AUXOUTPUT0_PWM_PORT_BASE == GPIOA_BASE
+  #if AUXOUTPUT0_PWM_PIN == 5 // PA5 - TIM2_CH1
+    #define AUXOUTPUT0_PWM_TIMER_N     2
+    #define AUXOUTPUT0_PWM_TIMER_CH    1
+    #define AUXOUTPUT0_PWM_TIMER_INV   0
+    #define AUXOUTPUT0_PWM_TIMER_AF    1
+  #elif AUXOUTPUT0_PWM_PIN == 7 // PA7 - TIM1_CH1N
+    #define AUXOUTPUT0_PWM_TIMER_N     1
+    #define AUXOUTPUT0_PWM_TIMER_CH    1
+    #define AUXOUTPUT0_PWM_TIMER_INV   1
+    #define AUXOUTPUT0_PWM_TIMER_AF    1
+  #elif AUXOUTPUT0_PWM_PIN == 8 // PA8 - TIM1_CH1
+    #define AUXOUTPUT0_PWM_TIMER_N     1
+    #define AUXOUTPUT0_PWM_TIMER_CH    1
+    #define AUXOUTPUT0_PWM_TIMER_INV   0
+    #define AUXOUTPUT0_PWM_TIMER_AF    1
+  #endif
+#elif AUXOUTPUT0_PWM_PORT_BASE == GPIOB_BASE
+  #if AUXOUTPUT0_PWM_PIN == 0 // PB0 - TIM1_CH2N
+    #define AUXOUTPUT0_PWM_TIMER_N     1
+    #define AUXOUTPUT0_PWM_TIMER_CH    2
+    #define AUXOUTPUT0_PWM_TIMER_INV   1
+    #define AUXOUTPUT0_PWM_TIMER_AF    1
+  #elif AUXOUTPUT0_PWM_PIN == 2 // PB2 - TIM2_CH4
+    #define AUXOUTPUT0_PWM_TIMER_N     2
+    #define AUXOUTPUT0_PWM_TIMER_CH    4
+    #define AUXOUTPUT0_PWM_TIMER_INV   0
+    #define AUXOUTPUT0_PWM_TIMER_AF    1
+  #elif AUXOUTPUT0_PWM_PIN == 3 // PB3 - TIM2_CH2
+    #define AUXOUTPUT0_PWM_TIMER_N     2
+    #define AUXOUTPUT0_PWM_TIMER_CH    2
+    #define AUXOUTPUT0_PWM_TIMER_INV   0
+    #define AUXOUTPUT0_PWM_TIMER_AF    1
+  #elif AUXOUTPUT0_PWM_PIN == 4 // PB4 - TIM3_CH1
+    #define AUXOUTPUT0_PWM_TIMER_N     3
+    #define AUXOUTPUT0_PWM_TIMER_CH    1
+    #define AUXOUTPUT0_PWM_TIMER_INV   0
+    #define AUXOUTPUT0_PWM_TIMER_AF    2
+  #elif AUXOUTPUT0_PWM_PIN == 9 // PB9 - TIM11_CH1
+    #define AUXOUTPUT0_PWM_TIMER_N     11
+    #define AUXOUTPUT0_PWM_TIMER_CH    1
+    #define AUXOUTPUT0_PWM_TIMER_INV   0
+    #define AUXOUTPUT0_PWM_TIMER_AF    3
+  #endif
+#elif AUXOUTPUT0_PWM_PORT_BASE == GPIOC_BASE
+  #if AUXOUTPUT0_PWM_PIN == 8 // PC8 - TIM3_CH3
+    #define AUXOUTPUT0_PWM_TIMER_N     3
+    #define AUXOUTPUT0_PWM_TIMER_CH    3
+    #define AUXOUTPUT0_PWM_TIMER_INV   0
+    #define AUXOUTPUT0_PWM_TIMER_AF    2
+  #endif
+//#elif AUXOUTPUT0_PWM_PORT_BASE == GPIOE_BASE
+//  #if AUXOUTPUT0_PWM_PIN == 5 // PE5 - TIM9_CH1
+//    #define AUXOUTPUT0_PWM_TIMER_N     9
+//    #define AUXOUTPUT0_PWM_TIMER_CH    1
+//    #define AUXOUTPUT0_PWM_TIMER_INV   0
+//    #define AUXOUTPUT0_PWM_TIMER_AF    3
+//  #elif AUXOUTPUT0_PWM_PIN == 6 // PE6 - TIM9_CH2
+//    #define AUXOUTPUT0_PWM_TIMER_N     9
+//    #define AUXOUTPUT0_PWM_TIMER_CH    2
+//    #define AUXOUTPUT0_PWM_TIMER_INV   0
+//    #define AUXOUTPUT0_PWM_TIMER_AF    3
+//  #endif
+#endif
+
+#if AUXOUTPUT0_PWM_TIMER_CH == 1 || AUXOUTPUT0_PWM_TIMER_CH == 2
+#define AUXOUTPUT0_PWM_CCR 1
+#else
+#define AUXOUTPUT0_PWM_CCR 2
+#endif
+#define AUXOUTPUT0_PWM_TIMER           timer(AUXOUTPUT0_PWM_TIMER_N)
+#define AUXOUTPUT0_PWM_TIMER_CCR       timerCCR(AUXOUTPUT0_PWM_TIMER_N, AUXOUTPUT0_PWM_TIMER_CH)
+#define AUXOUTPUT0_PWM_TIMER_CCMR      timerCCMR(AUXOUTPUT0_PWM_TIMER_N, AUXOUTPUT0_PWM_CCR)
+#define AUXOUTPUT0_PWM_CCMR_OCM_SET    timerOCM(AUXOUTPUT0_PWM_CCR, AUXOUTPUT0_PWM_TIMER_CH)
+#define AUXOUTPUT0_PWM_CCMR_OCM_CLR    timerOCMC(AUXOUTPUT0_PWM_CCR, AUXOUTPUT0_PWM_TIMER_CH)
+#if AUXOUTPUT0_PWM_TIMER_INV
+#define AUXOUTPUT0_PWM_CCER_EN         timerCCEN(AUXOUTPUT0_PWM_TIMER_CH, N)
+#define AUXOUTPUT0_PWM_CCER_POL        timerCCP(AUXOUTPUT0_PWM_TIMER_CH, N)
+#define AUXOUTPUT0_PWM_CR2_OIS         timerCR2OIS(AUXOUTPUT0_PWM_TIMER_CH, N)
+#else
+#define AUXOUTPUT0_PWM_CCER_EN         timerCCEN(AUXOUTPUT0_PWM_TIMER_CH, )
+#define AUXOUTPUT0_PWM_CCER_POL        timerCCP(AUXOUTPUT0_PWM_TIMER_CH, )
+#define AUXOUTPUT0_PWM_CR2_OIS         timerCR2OIS(AUXOUTPUT0_PWM_TIMER_CH, )
+#endif
+
+#define AUXOUTPUT0_PWM_PORT            ((GPIO_TypeDef *)AUXOUTPUT0_PWM_PORT_BASE)
+#define AUXOUTPUT0_PWM_AF              timerAF(AUXOUTPUT0_PWM_TIMER_N, AUXOUTPUT0_PWM_TIMER_AF)
+#define AUXOUTPUT0_PWM_CLKEN           timerCLKEN(AUXOUTPUT0_PWM_TIMER_N)
+
+#endif // AUXOUTPUT0_PWM_PORT_BASE
+
+#ifdef AUXOUTPUT1_PWM_PORT_BASE
+
+#if AUXOUTPUT1_PWM_PORT_BASE == GPIOA_BASE
+  #if AUXOUTPUT1_PWM_PIN == 5 // PA5 - TIM2_CH1
+    #define AUXOUTPUT1_PWM_TIMER_N     2
+    #define AUXOUTPUT1_PWM_TIMER_CH    1
+    #define AUXOUTPUT1_PWM_TIMER_INV   0
+    #define AUXOUTPUT1_PWM_TIMER_AF    1
+  #elif AUXOUTPUT1_PWM_PIN == 7 // PA7 - TIM1_CH1N
+    #define AUXOUTPUT1_PWM_TIMER_N     1
+    #define AUXOUTPUT1_PWM_TIMER_CH    1
+    #define AUXOUTPUT1_PWM_TIMER_INV   1
+    #define AUXOUTPUT1_PWM_TIMER_AF    1
+  #elif AUXOUTPUT1_PWM_PIN == 8 // PA8 - TIM1_CH1
+    #define AUXOUTPUT1_PWM_TIMER_N     1
+    #define AUXOUTPUT1_PWM_TIMER_CH    1
+    #define AUXOUTPUT1_PWM_TIMER_INV   0
+    #define AUXOUTPUT1_PWM_TIMER_AF    1
+  #endif
+#elif AUXOUTPUT1_PWM_PORT_BASE == GPIOB_BASE
+  #if AUXOUTPUT1_PWM_PIN == 0 // PB0 - TIM1_CH2N
+    #define AUXOUTPUT1_PWM_TIMER_N     1
+    #define AUXOUTPUT1_PWM_TIMER_CH    2
+    #define AUXOUTPUT1_PWM_TIMER_INV   1
+    #define AUXOUTPUT1_PWM_TIMER_AF    1
+  #elif AUXOUTPUT1_PWM_PIN == 2 // PB2 - TIM2_CH4
+    #define AUXOUTPUT1_PWM_TIMER_N     2
+    #define AUXOUTPUT1_PWM_TIMER_CH    4
+    #define AUXOUTPUT1_PWM_TIMER_INV   0
+    #define AUXOUTPUT1_PWM_TIMER_AF    1
+  #elif AUXOUTPUT1_PWM_PIN == 3 // PB3 - TIM2_CH2
+    #define AUXOUTPUT1_PWM_TIMER_N     2
+    #define AUXOUTPUT1_PWM_TIMER_CH    2
+    #define AUXOUTPUT1_PWM_TIMER_INV   0
+    #define AUXOUTPUT1_PWM_TIMER_AF    1
+  #elif AUXOUTPUT1_PWM_PIN == 4 // PB4 - TIM3_CH1
+    #define AUXOUTPUT1_PWM_TIMER_N     3
+    #define AUXOUTPUT1_PWM_TIMER_CH    1
+    #define AUXOUTPUT1_PWM_TIMER_INV   0
+    #define AUXOUTPUT1_PWM_TIMER_AF    2
+  #elif AUXOUTPUT1_PWM_PIN == 9 // PB9 - TIM11_CH1
+    #define AUXOUTPUT1_PWM_TIMER_N     11
+    #define AUXOUTPUT1_PWM_TIMER_CH    1
+    #define AUXOUTPUT1_PWM_TIMER_INV   0
+    #define AUXOUTPUT1_PWM_TIMER_AF    3
+  #endif
+#elif AUXOUTPUT1_PWM_PORT_BASE == GPIOC_BASE
+  #if AUXOUTPUT1_PWM_PIN == 8 // PC8 - TIM3_CH3
+    #define AUXOUTPUT1_PWM_TIMER_N     3
+    #define AUXOUTPUT1_PWM_TIMER_CH    3
+    #define AUXOUTPUT1_PWM_TIMER_INV   0
+    #define AUXOUTPUT1_PWM_TIMER_AF    2
+  #endif
+//#elif AUXOUTPUT1_PWM_PORT_BASE == GPIOE_BASE
+//  #if AUXOUTPUT1_PWM_PIN == 5 // PE5 - TIM9_CH1
+//    #define AUXOUTPUT1_PWM_TIMER_N     9
+//    #define AUXOUTPUT1_PWM_TIMER_CH    1
+//    #define AUXOUTPUT1_PWM_TIMER_INV   0
+//    #define AUXOUTPUT1_PWM_TIMER_AF    3
+//  #elif AUXOUTPUT1_PWM_PIN == 6 // PE6 - TIM9_CH2
+//    #define AUXOUTPUT1_PWM_TIMER_N     9
+//    #define AUXOUTPUT1_PWM_TIMER_CH    2
+//    #define AUXOUTPUT1_PWM_TIMER_INV   0
+//    #define AUXOUTPUT1_PWM_TIMER_AF    3
+//  #endif
+#endif
+
+#if AUXOUTPUT1_PWM_TIMER_CH == 1 || AUXOUTPUT1_PWM_TIMER_CH == 2
+#define AUXOUTPUT1_PWM_CCR 1
+#else
+#define AUXOUTPUT1_PWM_CCR 2
+#endif
+#define AUXOUTPUT1_PWM_TIMER           timer(AUXOUTPUT1_PWM_TIMER_N)
+#define AUXOUTPUT1_PWM_TIMER_CCR       timerCCR(AUXOUTPUT1_PWM_TIMER_N, AUXOUTPUT1_PWM_TIMER_CH)
+#define AUXOUTPUT1_PWM_TIMER_CCMR      timerCCMR(AUXOUTPUT1_PWM_TIMER_N, AUXOUTPUT1_PWM_CCR)
+#define AUXOUTPUT1_PWM_CCMR_OCM_SET    timerOCM(AUXOUTPUT1_PWM_CCR, AUXOUTPUT1_PWM_TIMER_CH)
+#define AUXOUTPUT1_PWM_CCMR_OCM_CLR    timerOCMC(AUXOUTPUT1_PWM_CCR, AUXOUTPUT1_PWM_TIMER_CH)
+#if AUXOUTPUT1_PWM_TIMER_INV
+#define AUXOUTPUT1_PWM_CCER_EN         timerCCEN(AUXOUTPUT1_PWM_TIMER_CH, N)
+#define AUXOUTPUT1_PWM_CCER_POL        timerCCP(AUXOUTPUT1_PWM_TIMER_CH, N)
+#define AUXOUTPUT1_PWM_CR2_OIS         timerCR2OIS(AUXOUTPUT1_PWM_TIMER_CH, N)
+#else
+#define AUXOUTPUT1_PWM_CCER_EN         timerCCEN(AUXOUTPUT1_PWM_TIMER_CH, )
+#define AUXOUTPUT1_PWM_CCER_POL        timerCCP(AUXOUTPUT1_PWM_TIMER_CH, )
+#define AUXOUTPUT1_PWM_CR2_OIS         timerCR2OIS(AUXOUTPUT1_PWM_TIMER_CH, )
+#endif
+
+#define AUXOUTPUT1_PWM_PORT            ((GPIO_TypeDef *)AUXOUTPUT1_PWM_PORT_BASE)
+#define AUXOUTPUT1_PWM_AF              timerAF(AUXOUTPUT1_PWM_TIMER_N, AUXOUTPUT1_PWM_TIMER_AF)
+#define AUXOUTPUT1_PWM_CLKEN           timerCLKEN(AUXOUTPUT1_PWM_TIMER_N)
+
+#endif // AUXOUTPUT1_PWM_PORT_BASE
+
+#if defined(AUXOUTPUT0_PWM_PORT_BASE) || defined(AUXOUTPUT1_PWM_PORT_BASE) ||\
+     defined(AUXOUTPUT0_ANALOG_PORT) || defined( AUXOUTPUT1_ANALOG_PORT) ||\
+      defined(MCP3221_ENABLE)
+#define AUX_ANALOG 1
+#else
+#define AUX_ANALOG 0
+#endif
+
 #if defined(SPINDLE_PWM_PIN) && !defined(SPINDLE_PWM_TIMER_N)
 #ifdef SPINDLE_PWM_PORT
 #error Map spindle port by defining SPINDLE_PWM_PORT_BASE in the map file!
@@ -287,7 +502,7 @@
 #ifdef SERIAL2_PORT
 #define SP2 1
 #else
-#define SP3 0
+#define SP2 0
 #endif
 
 #if MODBUS_ENABLE
@@ -360,6 +575,7 @@ typedef struct {
     pin_irq_mode_t irq_mode;
     pin_mode_t cap;
     ioport_interrupt_callback_ptr interrupt_callback;
+    ADC_HandleTypeDef *adc;
     const char *description;
 } input_signal_t;
 
@@ -381,17 +597,17 @@ typedef struct {
     } pins;
 } pin_group_pins_t;
 
-bool driver_init (void);
-void Driver_IncTick (void);
-void gpio_irq_enable (const input_signal_t *input, pin_irq_mode_t irq_mode);
-
 #ifdef HAS_BOARD_INIT
 void board_init (void);
 #endif
 
-#ifdef HAS_IOPORTS
+bool driver_init (void);
+void Driver_IncTick (void);
+void gpio_irq_enable (const input_signal_t *input, pin_irq_mode_t irq_mode);
 void ioports_init(pin_group_pins_t *aux_inputs, pin_group_pins_t *aux_outputs);
-void ioports_event (uint32_t bit);
+#if AUX_ANALOG
+void ioports_init_analog (pin_group_pins_t *aux_inputs, pin_group_pins_t *aux_outputs);
 #endif
+void ioports_event (uint32_t bit);
 
 #endif // __DRIVER_H__

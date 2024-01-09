@@ -3,7 +3,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2021-2022 Terje Io
+  Copyright (c) 2021-2023 Terje Io
 
   Grbl is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -38,35 +38,56 @@
 // Uncomment to enable.
 
 #if !IS_NUCLEO_DEVKIT && !defined(USB_SERIAL_CDC)   // The Nucleo-F756ZG board has an off-chip UART to USB interface.
-//#define USB_SERIAL_CDC       1 // Serial communication via native USB.
+//#define USB_SERIAL_CDC          1 // Serial communication via native USB.
 #endif
-//#define SAFETY_DOOR_ENABLE   1 // Enable safety door input.
-//#define VFD_ENABLE           1 // Set to 1 or 2 for Huanyang VFD spindle. More here https://github.com/grblHAL/Plugins_spindle
-//#define MODBUS_ENABLE        1 // Set to 1 for auto direction, 2 for direction signal on auxillary output pin.
-//#define WEBUI_ENABLE         3 // Enable ESP3D-WEBUI plugin along with networking and SD card plugins.
-//#define WEBUI_AUTH_ENABLE    1 // Enable ESP3D-WEBUI authentication.
-//#define WEBUI_INFLASH        1 // Store WebUI files in flash instead of on SD card.
-//#define ETHERNET_ENABLE      1 // Ethernet streaming. Uses networking plugin.
-//#define BLUETOOTH_ENABLE     2 // Set to 2 for HC-05 module. Uses Bluetooth plugin.
-//#define SDCARD_ENABLE        1 // Run gcode programs from SD card. Set to 2 to enable YModem upload.
-//#define KEYPAD_ENABLE        1 // I2C keypad for jogging etc., uses keypad plugin.
-//#define ODOMETER_ENABLE      1 // Odometer plugin.
-//#define PPI_ENABLE           1 // Laser PPI plugin. To be completed.
-//#define LASER_COOLANT_ENABLE 1 // Laser coolant plugin. To be completed.
-//#define LB_CLUSTERS_ENABLE   1 // LaserBurn cluster support.
-//#define OPENPNP_ENABLE       1 // OpenPNP plugin. To be completed.
-//#define FANS_ENABLE          1 // Enable fan control via M106/M107. Enables fans plugin.
-//#define EMBROIDERY_ENABLE    1 // Embroidery plugin. To be completed.
-//#define PLASMA_ENABLE        1 // Plasma (THC) plugin. To be completed.
-//#define TRINAMIC_ENABLE   2130 // Trinamic TMC2130 stepper driver support. NOTE: work in progress.
-//#define TRINAMIC_ENABLE   2209 // Trinamic TMC2209 stepper driver support. NOTE: work in progress.
-//#define TRINAMIC_ENABLE   5160 // Trinamic TMC5160 stepper driver support. NOTE: work in progress.
-//#define TRINAMIC_I2C         1 // Trinamic I2C - SPI bridge interface.
-//#define TRINAMIC_DEV         1 // Development mode, adds a few M-codes to aid debugging. Do not enable in production code.
-//#define EEPROM_ENABLE       16 // I2C EEPROM/FRAM support. Set to 16 for 2K, 32 for 4K, 64 for 8K, 128 for 16K and 256 for 16K capacity.
-//#define EEPROM_IS_FRAM       1 // Uncomment when EEPROM is enabled and chip is FRAM, this to remove write delay.
-//#define ESTOP_ENABLE         0 // When enabled only real-time report requests will be executed when the reset pin is asserted.
-                                 // Note: if left commented out the default setting is determined from COMPATIBILITY_LEVEL.
+// Spindle selection:
+// Up to four specific spindle drivers can be instantiated at a time
+// depending on N_SPINDLE and N_SYS_SPINDLE definitions in grbl/config.h.
+// If none are specified the default PWM spindle is instantiated.
+// Spindle definitions can be found in grbl/spindle_control.h.
+// More here https://github.com/grblHAL/Plugins_spindle
+//#define SPINDLE0_ENABLE         SPINDLE_HUANYANG1
+//#define SPINDLE1_ENABLE         SPINDLE_PWM0
+//#define SPINDLE2_ENABLE         SPINDLE_NONE
+//#define SPINDLE3_ENABLE         SPINDLE_NONE
+// **********************
+//#define MODBUS_ENABLE           1 // Set to 1 for auto direction, 2 for direction signal on auxillary output pin.
+//#define WEBUI_ENABLE            3 // Enable ESP3D-WEBUI plugin along with networking and SD card plugins.
+//#define WEBUI_AUTH_ENABLE       1 // Enable ESP3D-WEBUI authentication.
+//#define WEBUI_INFLASH           1 // Store WebUI files in flash instead of on SD card.
+//#define ETHERNET_ENABLE         1 // Ethernet streaming. Uses networking plugin.
+//#define BLUETOOTH_ENABLE        2 // Set to 2 for HC-05 module. Uses Bluetooth plugin.
+//#define SDCARD_ENABLE           1 // Run gcode programs from SD card. Set to 2 to enable YModem upload.
+//#define KEYPAD_ENABLE           1 // I2C keypad for jogging etc., uses keypad plugin.
+//#define ODOMETER_ENABLE         1 // Odometer plugin.
+//#define PPI_ENABLE              1 // Laser PPI plugin. To be completed.
+//#define LASER_COOLANT_ENABLE    1 // Laser coolant plugin. To be completed.
+//#define LB_CLUSTERS_ENABLE      1 // LaserBurn cluster support.
+//#define OPENPNP_ENABLE          1 // OpenPNP plugin. To be completed.
+//#define FANS_ENABLE             1 // Enable fan control via M106/M107. Enables fans plugin.
+//#define EMBROIDERY_ENABLE       1 // Embroidery plugin. To be completed.
+//#define PLASMA_ENABLE           1 // Plasma (THC) plugin. To be completed.
+//#define TRINAMIC_ENABLE      2130 // Trinamic TMC2130 stepper driver support. NOTE: work in progress.
+//#define TRINAMIC_ENABLE      2209 // Trinamic TMC2209 stepper driver support. NOTE: work in progress.
+//#define TRINAMIC_ENABLE      5160 // Trinamic TMC5160 stepper driver support. NOTE: work in progress.
+//#define TRINAMIC_I2C            1 // Trinamic I2C - SPI bridge interface.
+//#define TRINAMIC_DEV            1 // Development mode, adds a few M-codes to aid debugging. Do not enable in production code.
+//#define EEPROM_ENABLE          16 // I2C EEPROM/FRAM support. Set to 16 for 2K, 32 for 4K, 64 for 8K, 128 for 16K and 256 for 16K capacity.
+//#define EEPROM_IS_FRAM          1 // Uncomment when EEPROM is enabled and chip is FRAM, this to remove write delay.
+//#define ESTOP_ENABLE            0 // When enabled only real-time report requests will be executed when the reset pin is asserted.
+                                    // NOTE: if left commented out the default setting is determined from COMPATIBILITY_LEVEL.
+// Optional control signals:
+// These will be assigned to aux input pins. Use the $pins command to check which pins are assigned.
+// NOTE: If not enough pins are available assignment will silently fail.
+//#define SAFETY_DOOR_ENABLE      1
+//#define MOTOR_FAULT_ENABLE      1
+//#define MOTOR_WARNING_ENABLE    1
+//#define PROBE_DISCONNECT_ENABLE 1
+//#define STOP_DISABLE_ENABLE     1
+//#define BLOCK_DELETE_ENABLE     1
+//#define SINGLE_BLOCK_ENABLE     1
+//#define LIMITS_OVERRIDE_ENABLE  1
+
 /**/
 
 // If the selected board map supports more than three motors ganging and/or auto-squaring

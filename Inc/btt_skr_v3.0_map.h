@@ -124,9 +124,12 @@
 #define FEED_HOLD_PIN               5                           // EXP2 - PA5, pin 9
 #define CYCLE_START_PIN             6                           // EXP2 - PA6, pin 10
 
+#define AUXINPUT0_PORT              GPIOA
+#define AUXINPUT0_PIN               7                           // EXP2 - PA7, pin 5
+
 #if SAFETY_DOOR_ENABLE
-#define SAFETY_DOOR_PORT            GPIOA
-#define SAFETY_DOOR_PIN             7                           // EXP2 - PA7, pin 5
+#define SAFETY_DOOR_PORT            AUXINPUT0_PORT
+#define SAFETY_DOOR_PIN             AUXINPUT0_PIN
 #endif
 
 #define CONTROL_INMODE              GPIO_SINGLE
