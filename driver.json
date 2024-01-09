@@ -50,6 +50,8 @@
       "MAP": "Inc/btt_skr_v3.0_map.h",
       "caps": {
         "axes": 5,
+        "ganged_axes": 2,
+        "auto_square": 2,
         "digital_in": 0,
         "digital_out": 0,
         "eeprom": 0,
@@ -78,6 +80,8 @@
       "MAP": "Inc/btt_skr_v3.0_map.h",
       "caps": {
         "axes": 5,
+        "ganged_axes": 2,
+        "auto_square": 2,
         "digital_in": 0,
         "digital_out": 0,
         "eeprom": 0,
@@ -106,6 +110,8 @@
       "MAP": "Inc/btt_skr_v3.0_map.h",
       "caps": {
         "axes": 5,
+        "ganged_axes": 2,
+        "auto_square": 2,
         "digital_in": 0,
         "digital_out": 0,
         "eeprom": 0,
@@ -134,6 +140,8 @@
       "MAP": "Inc/btt_skr_v3.0_map.h",
       "caps": {
         "axes": 5,
+        "ganged_axes": 2,
+        "auto_square": 2,
         "digital_in": 0,
         "digital_out": 0,
         "eeprom": 0,
