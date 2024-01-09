@@ -24,6 +24,7 @@
 //#define BOARD_PROTONEER_3XX   // For use with a Nucleo-F756ZG board.
 //#define BOARD_GENERIC_UNO     // For use with a Nucleo-F756ZG board.
 //#define BOARD_BTT_SKR_30      // BTT SKR V3 board.
+//#define BOARD_BTT_OCTOPUS_MAX // BTT Octopus Max board.
 //#define BOARD_WEACT_MINI_H743 // WeAct MiniSTM32H743 board.
 //#define BOARD_REFERENCE       // grblHAL reference board map.
 //#define BOARD_MY_MACHINE      // Add my_machine_map.h before enabling this!
