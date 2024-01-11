@@ -33,6 +33,7 @@
 
 #define SERIAL_PORT                 32      // GPIOD: TX = 8, RX = 9
 #define I2C_PORT                    2       // GPIOB: SCL = 10, SDA = 11
+#define SPI_PORT                    4       // GPIOE: SCK = 12, MISO = 13, MOSI = 14
 
 #define HAS_BOARD_INIT
 
