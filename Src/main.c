@@ -136,14 +136,15 @@ void SystemClock_Config(void)
     // Clock configuration
     //
     // - 480MHZ system clock
-    // - 48MHz USB clock
-    // - 48MHz SDMMC clock
+    // - 48MHz clock for USB, SDMMC, SPI1/SPI2/SPI3 from PLL1Q
+    // - 48MHz clock for SPI4/SPI5 from PLL2Q
     //
     // WeAct MiniSTM32H7xx & BTT SKR3 using 25MHz crystal
     // Nucleo dev board using 8MHz clock source (STLink MCO)
 
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
     RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
 
     /** Supply configuration update enable
     */
@@ -162,7 +163,7 @@ void SystemClock_Config(void)
 
 #if defined(STM32H743xx)
 
-#if defined(NUCLEO_H743) // Nucleo dev board with 8MHz clock source
+#if defined(NUCLEO_H743) // Nucleo H743 dev board with 8MHz clock source
 #define FLASH_LATENCY FLASH_LATENCY_4
 
 #if RTC_ENABLE
@@ -183,7 +184,16 @@ void SystemClock_Config(void)
     RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
     RCC_OscInitStruct.PLL.PLLFRACN = 0;
 
-#else // Common configuration for WeAct MiniSTM32H7xx and BTT SKR3 with 25MHz crystals
+    PeriphClkInitStruct.PLL2.PLL2M = 2;
+    PeriphClkInitStruct.PLL2.PLL2N = 240;
+    PeriphClkInitStruct.PLL2.PLL2P = 2;
+    PeriphClkInitStruct.PLL2.PLL2Q = 20;
+    PeriphClkInitStruct.PLL2.PLL2R = 80;
+    PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL1VCIRANGE_2;
+    PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL1VCOWIDE;
+    PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
+
+#else // Common configuration for H743 WeAct and BTT boards with 25MHz crystals
 #define FLASH_LATENCY FLASH_LATENCY_4
 
 #if RTC_ENABLE
@@ -203,11 +213,21 @@ void SystemClock_Config(void)
     RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_2;
     RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
     RCC_OscInitStruct.PLL.PLLFRACN = 0;
+
+    PeriphClkInitStruct.PLL2.PLL2M = 5;
+    PeriphClkInitStruct.PLL2.PLL2N = 192;
+    PeriphClkInitStruct.PLL2.PLL2P = 2;
+    PeriphClkInitStruct.PLL2.PLL2Q = 20;
+    PeriphClkInitStruct.PLL2.PLL2R = 2;
+    PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL2VCIRANGE_2;
+    PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOWIDE;
+    PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
+
 #endif // H743 WeAct Mini and BTT SKR3
 
 #elif defined (STM32H723xx)
 
-#if defined(NUCLEO_H723) // Nucleo dev board with 8MHz clock source
+#if defined(NUCLEO_H723) //  // Nucleo H723 dev board with 8MHz clock source
 #define FLASH_LATENCY FLASH_LATENCY_3
 
 #if RTC_ENABLE
@@ -228,7 +248,16 @@ void SystemClock_Config(void)
     RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
     RCC_OscInitStruct.PLL.PLLFRACN = 0;
 
-#else // BTT SKR3 with 25MHz crystal
+    PeriphClkInitStruct.PLL2.PLL2M = 2;
+    PeriphClkInitStruct.PLL2.PLL2N = 120;
+    PeriphClkInitStruct.PLL2.PLL2P = 1;
+    PeriphClkInitStruct.PLL2.PLL2Q = 10;
+    PeriphClkInitStruct.PLL2.PLL2R = 40;
+    PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL1VCIRANGE_2;
+    PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL1VCOWIDE;
+    PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
+
+#else  // Common configuration for H723 WeAct and BTT boards with 25MHz crystals
 #define FLASH_LATENCY FLASH_LATENCY_3
 
 #if RTC_ENABLE
@@ -248,6 +277,16 @@ void SystemClock_Config(void)
     RCC_OscInitStruct.PLL.PLLRGE = RCC_PLL1VCIRANGE_2;
     RCC_OscInitStruct.PLL.PLLVCOSEL = RCC_PLL1VCOWIDE;
     RCC_OscInitStruct.PLL.PLLFRACN = 0;
+
+    PeriphClkInitStruct.PLL2.PLL2M = 5;
+    PeriphClkInitStruct.PLL2.PLL2N = 96;
+    PeriphClkInitStruct.PLL2.PLL2P = 1;
+    PeriphClkInitStruct.PLL2.PLL2Q = 10;
+    PeriphClkInitStruct.PLL2.PLL2R = 2;
+    PeriphClkInitStruct.PLL2.PLL2RGE = RCC_PLL1VCIRANGE_2;
+    PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL1VCOWIDE;
+    PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
+
 #endif // STM32H723xx BTT SKR3
 #endif // STM32H723xx
 
@@ -277,15 +316,19 @@ void SystemClock_Config(void)
       Error_Handler();
     }
 
+    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPI123 | RCC_PERIPHCLK_SPI45;
+    PeriphClkInitStruct.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PLL;
+    PeriphClkInitStruct.Spi45ClockSelection  = RCC_SPI45CLKSOURCE_PLL2;
+
 #if RTC_ENABLE
-    RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
-    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_RTC;
+    PeriphClkInitStruct.PeriphClockSelection = PeriphClkInitStruct.PeriphClockSelection | RCC_PERIPHCLK_RTC;
     PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
+#endif
+
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
     {
       Error_Handler();
     }
-#endif
 }
 
 /**

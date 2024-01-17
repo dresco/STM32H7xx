@@ -58,7 +58,7 @@ void spi_init (void)
             .Pin = GPIO_PIN_5|GPIO_PIN_6|GPIO_PIN_7,
             .Mode = GPIO_MODE_AF_PP,
             .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
+            .Speed = GPIO_SPEED_FREQ_HIGH,
             .Alternate = GPIO_AF5_SPI1,
         };
         HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
@@ -94,7 +94,7 @@ void spi_init (void)
             .Pin = GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15,
             .Mode = GPIO_MODE_AF_PP,
             .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
+            .Speed = GPIO_SPEED_FREQ_HIGH,
             .Alternate = GPIO_AF5_SPI2,
         };
         HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
@@ -130,7 +130,7 @@ void spi_init (void)
             .Pin = GPIO_PIN_10|GPIO_PIN_11|GPIO_PIN_12,
             .Mode = GPIO_MODE_AF_PP,
             .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
+            .Speed = GPIO_SPEED_FREQ_HIGH,
             .Alternate = GPIO_AF6_SPI3
         };
         HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -166,7 +166,7 @@ void spi_init (void)
             .Pin = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14,
             .Mode = GPIO_MODE_AF_PP,
             .Pull = GPIO_NOPULL,
-            .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
+            .Speed = GPIO_SPEED_FREQ_HIGH,
             .Alternate = GPIO_AF5_SPI4
         };
         HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
