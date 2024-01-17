@@ -115,8 +115,8 @@
 #define M5_DIRECTION_PIN            3
 #define M5_LIMIT_PORT               GPIOC
 #define M5_LIMIT_PIN                15      // MIN6
-#define M5_ENABLE_PORT              GPIOG
-#define M5_ENABLE_PIN               9       // EN for M5 motor
+#define M5_ENABLE_PORT              GPIOD
+#define M5_ENABLE_PIN               5       // EN for M5 motor
 #endif
 
 // Define spindle enable, direction, and PWM output pins.
