@@ -136,8 +136,9 @@ void SystemClock_Config(void)
     // Clock configuration
     //
     // - 480MHZ system clock
-    // - 48MHz clock for USB, SDMMC, SPI1/SPI2/SPI3 from PLL1Q
-    // - 48MHz clock for SPI4/SPI5 from PLL2Q
+    // - 48MHz clock from PLL1Q - USB, SDMMC1, SPI1/SPI2/SPI3
+    // - 48MHz clock from PLL2Q - SPI4/SPI5
+    // - 12MHz clock from PLL2R - optional SDMMC1 clock source with NUCLEO_SLOW_SDMMC_CLOCK
     //
     // WeAct MiniSTM32H7xx & BTT SKR3 using 25MHz crystal
     // Nucleo dev board using 8MHz clock source (STLink MCO)
@@ -324,6 +325,15 @@ void SystemClock_Config(void)
     PeriphClkInitStruct.PeriphClockSelection = PeriphClkInitStruct.PeriphClockSelection | RCC_PERIPHCLK_RTC;
     PeriphClkInitStruct.RTCClockSelection = RCC_RTCCLKSOURCE_LSE;
 #endif
+
+#if SDCARD_ENABLE
+    PeriphClkInitStruct.PeriphClockSelection = PeriphClkInitStruct.PeriphClockSelection | RCC_PERIPHCLK_SDMMC;
+#ifdef NUCLEO_SLOW_SDMMC_CLOCK
+    PeriphClkInitStruct.SdmmcClockSelection = RCC_SDMMCCLKSOURCE_PLL2;
+#else
+    PeriphClkInitStruct.SdmmcClockSelection = RCC_SDMMCCLKSOURCE_PLL;
+#endif //NUCLEO_SLOW_SDMMC_CLOCK
+#endif //SDCARD_ENABLE
 
     if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
     {

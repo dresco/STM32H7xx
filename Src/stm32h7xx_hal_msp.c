@@ -85,31 +85,18 @@ void HAL_MspInit(void)
 void HAL_SD_MspInit(SD_HandleTypeDef* hsd)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
-  RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {0};
   if(hsd->Instance==SDMMC1)
   {
   /* USER CODE BEGIN SDMMC1_MspInit 0 */
 
   /* USER CODE END SDMMC1_MspInit 0 */
 
-  /** Initializes the peripherals clock
-  */
-    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SDMMC;
-    PeriphClkInitStruct.SdmmcClockSelection = RCC_SDMMCCLKSOURCE_PLL;
-
-#ifdef NUCLEO_SLOW_SDMMC_CLOCK
-    // Select alternative SDMMC clock source for prototyping on Nucleo with external uSD breakout. A slower
-    // clock is needed for signal integrity (note that changing the ClockDiv does not have the same effect).
-    // 
-    // PLL2R clock source is configured @ 12MHz for Nucleo boards.
-    // 
-    PeriphClkInitStruct.SdmmcClockSelection = RCC_SDMMCCLKSOURCE_PLL2;
-#endif
-
-    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) != HAL_OK)
-    {
-      Error_Handler();
-    }
+    /* Peripheral clock initialisation moved to main().
+     *
+     * The NUCLEO_SLOW_SDMMC_CLOCK symbol allows for an alternative SDMMC clock source, useful when
+     * prototyping on Nucleo dev boards with external uSD breakout. A slower clock may be needed for
+     * signal integrity (note that changing the ClockDiv does not have the same effect).
+     */
 
     /* Peripheral clock enable */
     __HAL_RCC_SDMMC1_CLK_ENABLE();
