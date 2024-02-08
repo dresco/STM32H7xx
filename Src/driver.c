@@ -64,6 +64,10 @@
 #include "laser/ppi.h"
 #endif
 
+#if KEYPAD_ENABLE == 2
+#include "keypad/keypad.h"
+#endif
+
 #if FLASH_ENABLE
 #include "flash.h"
 #endif
@@ -1638,6 +1642,21 @@ static uint_fast16_t valueSetAtomic (volatile uint_fast16_t *ptr, uint_fast16_t 
     return prev;
 }
 
+#if MPG_MODE == 1
+
+static void mpg_select (void *data)
+{
+    stream_mpg_enable(DIGITAL_IN(MPG_MODE_PORT, MPG_MODE_PIN) == 0);
+}
+
+static void mpg_enable (void *data)
+{
+    if(sys.mpg_mode != (DIGITAL_IN(MPG_MODE_PORT, MPG_MODE_PIN) == 0))
+        stream_mpg_enable(true);
+}
+
+#endif
+
 static uint64_t getElapsedMicros (void)
 {
     uint32_t ms, cycles;
@@ -2364,7 +2383,8 @@ bool driver_init (void)
     hal.info = "STM32H743";
 #endif
 
-    hal.driver_version = "240122";
+    hal.driver_version = "240205";
+    hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
 #endif
@@ -2536,7 +2556,7 @@ bool driver_init (void)
                 aux_inputs.pins.inputs = input;
             input->id = (pin_function_t)(Input_Aux0 + aux_inputs.n_pins++);
             input->bit = 1 << input->pin;
-            input->cap.pull_mode = PullMode_UpDown;
+            input->mode.pull_mode = input->cap.pull_mode = PullMode_Up;
             input->cap.irq_mode = (input->bit & DRIVER_IRQMASK) ? IRQ_Mode_None : IRQ_Mode_Edges;
 #if SAFETY_DOOR_ENABLE
             if(input->port == SAFETY_DOOR_PORT && input->pin == SAFETY_DOOR_PIN && input->cap.irq_mode != IRQ_Mode_None)
@@ -2610,10 +2630,26 @@ bool driver_init (void)
 #if AUX_CONTROLS_ENABLED
     for(i = AuxCtrl_ProbeDisconnect; i < AuxCtrl_NumEntries; i++) {
         if(aux_ctrl[i].enabled) {
-            if((aux_ctrl[i].enabled = ioports_enumerate(Port_Digital, Port_Input, (pin_mode_t){ .irq_mode = aux_ctrl[i].irq_mode, .claimable = On }, aux_claim, (void *)&aux_ctrl[i])))
+            if((aux_ctrl[i].enabled = ioports_enumerate(Port_Digital, Port_Input, (pin_cap_t){ .irq_mode = aux_ctrl[i].irq_mode, .claimable = On }, aux_claim, (void *)&aux_ctrl[i])))
                 hal.signals_cap.mask |= aux_ctrl[i].cap.mask;
         }
     }
+#endif
+
+#if MPG_MODE == 1
+  #if KEYPAD_ENABLE == 2
+    if((hal.driver_cap.mpg_mode = stream_mpg_register(stream_open_instance(MPG_STREAM, 115200, NULL, NULL), false, keypad_enqueue_keycode)))
+        protocol_enqueue_foreground_task(mpg_enable, NULL);
+  #else
+    if((hal.driver_cap.mpg_mode = stream_mpg_register(stream_open_instance(MPG_STREAM, 115200, NULL, NULL), false, NULL)))
+        protocol_enqueue_foreground_task(mpg_enable, NULL);
+  #endif
+#elif MPG_MODE == 2
+    hal.driver_cap.mpg_mode = stream_mpg_register(stream_open_instance(MPG_STREAM, 115200, NULL, NULL), false, keypad_enqueue_keycode);
+#elif MPG_MODE == 3
+    hal.driver_cap.mpg_mode = stream_mpg_register(stream_open_instance(MPG_STREAM, 115200, NULL, NULL), false, stream_mpg_check_enable);
+#elif KEYPAD_ENABLE == 2
+    stream_open_instance(KEYPAD_STREAM, 115200, keypad_enqueue_keycode, "Keypad");
 #endif
 
 #if ETHERNET_ENABLE
@@ -2771,7 +2807,7 @@ void EXTI0_IRQHandler(void)
 #elif PROBE_IRQ_BIT & (1<<0)
         probe.triggered = On;
 #elif MPG_MODE_BIT && (1<<0)
-        protocol_enqueue_rt_command(mpg_select);
+        protocol_enqueue_foreground_task(mpg_select, NULL);
 #elif I2C_STROBE_BIT & (1<<0)
         if(i2c_strobe.callback)
             i2c_strobe.callback(0, DIGITAL_IN(I2C_STROBE_PORT, I2C_STROBE_PIN) == 0);
@@ -2817,7 +2853,7 @@ void EXTI1_IRQHandler(void)
 #elif PROBE_IRQ_BIT & (1<<1)
         probe.triggered = On;
 #elif MPG_MODE_BIT && (1<<1)
-        protocol_enqueue_rt_command(mpg_select);
+        protocol_enqueue_foreground_task(mpg_select, NULL);
 #elif I2C_STROBE_BIT & (1<<1)
         if(i2c_strobe.callback)
             i2c_strobe.callback(0, DIGITAL_IN(I2C_STROBE_PORT, I2C_STROBE_PIN) == 0);
@@ -2863,7 +2899,7 @@ void EXTI2_IRQHandler(void)
 #elif PROBE_IRQ_BIT & (1<<2)
         probe.triggered = On;
 #elif MPG_MODE_BIT && (1<<2)
-        protocol_enqueue_rt_command(mpg_select);
+        protocol_enqueue_foreground_task(mpg_select, NULL);
 #elif I2C_STROBE_BIT & (1<<2)
         if(i2c_strobe.callback)
             i2c_strobe.callback(0, DIGITAL_IN(I2C_STROBE_PORT, I2C_STROBE_PIN) == 0);
@@ -2909,7 +2945,7 @@ void EXTI3_IRQHandler(void)
 #elif PROBE_IRQ_BIT & (1<<3)
         probe.triggered = On;
 #elif MPG_MODE_BIT && (1<<3)
-        protocol_enqueue_rt_command(mpg_select);
+        protocol_enqueue_foreground_task(mpg_select, NULL);
 #elif I2C_STROBE_BIT & (1<<3)
         if(i2c_strobe.callback)
             i2c_strobe.callback(0, DIGITAL_IN(I2C_STROBE_PORT, I2C_STROBE_PIN) == 0);
@@ -2955,7 +2991,7 @@ void EXTI4_IRQHandler(void)
 #elif PROBE_IRQ_BIT & (1<<4)
         probe.triggered = On;
 #elif MPG_MODE_BIT && (1<<4)
-        protocol_enqueue_rt_command(mpg_select);
+        protocol_enqueue_foreground_task(mpg_select, NULL);
 #elif I2C_STROBE_BIT & (1<<4)
         if(i2c_strobe.callback)
             i2c_strobe.callback(0, DIGITAL_IN(I2C_STROBE_PORT, I2C_STROBE_PIN) == 0);
@@ -3037,7 +3073,7 @@ void EXTI9_5_IRQHandler(void)
 #endif
 #if MPG_MODE_BIT & 0x03E0
         if(ifg & MPG_MODE_BIT)
-            protocol_enqueue_rt_command(mpg_select);
+            protocol_enqueue_foreground_task(mpg_select, NULL);
 #endif
 #if AUXINPUT_MASK & 0x03E0
         if(ifg & aux_irq)
@@ -3101,7 +3137,7 @@ void EXTI15_10_IRQHandler(void)
 #endif
 #if MPG_MODE_BIT & 0xFC00
         if(ifg & MPG_MODE_BIT)
-            protocol_enqueue_rt_command(mpg_select);
+            protocol_enqueue_foreground_task(mpg_select, NULL);
 #endif
 #if AUXINPUT_MASK & 0xFC00
         if(ifg & aux_irq)
