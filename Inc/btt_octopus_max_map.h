@@ -129,7 +129,7 @@
 #define SPINDLE_DIRECTION_PIN       5       // FAN1
 #endif
 #if DRIVER_SPINDLE_PWM_ENABLE
-#define SPINDLE_PWM_PORT_BASE       GPIOA_BASE
+#define SPINDLE_PWM_PORT            GPIOA
 #define SPINDLE_PWM_PIN             1       // Fan4 PWM
 #endif
 

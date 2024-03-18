@@ -4,21 +4,20 @@
 
   Part of grblHAL
 
-  Copyright (c) 2019-2023 Terje Io
+  Copyright (c) 2019-2024 Terje Io
 
-  Grbl is free software: you can redistribute it and/or modify
+  grblHAL is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Grbl is distributed in the hope that it will be useful,
+  grblHAL is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
-
+  along with grblHAL. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <string.h>
@@ -77,6 +76,11 @@ static const io_stream_t *serial2Init(uint32_t baud_rate);
 #define UART0_IRQ        usartINT(3)
 #define UART0_IRQHandler usartHANDLER(3)
 #define UART0_CLK_En     usartCLKEN(3)
+#elif (SERIAL_PORT >= 60 && SERIAL_PORT < 69)
+#define UART0            usart(6)
+#define UART0_IRQ        usartINT(6)
+#define UART0_IRQHandler usartHANDLER(6)
+#define UART0_CLK_En     usartCLKEN(6)
 #else
 #define UART0            usart(SERIAL_PORT)
 #define UART0_IRQ        usartINT(SERIAL_PORT)
@@ -129,6 +133,11 @@ static const io_stream_t *serial2Init(uint32_t baud_rate);
 #define UART0_RX_PIN 7
 #define UART0_PORT GPIOC
 #define UART0_AF GPIO_AF8_USART6
+#elif SERIAL_PORT == 61
+#define UART0_TX_PIN 14
+#define UART0_RX_PIN 9
+#define UART0_PORT GPIOG
+#define UART0_AF GPIO_AF8_USART6
 #else
 #error Code has to be added to support serial port
 #endif
@@ -156,6 +165,11 @@ static const io_stream_t *serial2Init(uint32_t baud_rate);
 #define UART1_IRQ        usartINT(3)
 #define UART1_IRQHandler usartHANDLER(3)
 #define UART1_CLK_En     usartCLKEN(3)
+#elif (SERIAL1_PORT >= 60 && SERIAL1_PORT < 69)
+#define UART1            usart(6)
+#define UART1_IRQ        usartINT(6)
+#define UART1_IRQHandler usartHANDLER(6)
+#define UART1_CLK_En     usartCLKEN(6)
 #else
 #define UART1            usart(SERIAL1_PORT)
 #define UART1_IRQ        usartINT(SERIAL1_PORT)
@@ -208,6 +222,11 @@ static const io_stream_t *serial2Init(uint32_t baud_rate);
 #define UART1_RX_PIN 7
 #define UART1_PORT GPIOC
 #define UART1_AF GPIO_AF8_USART6
+#elif SERIAL1_PORT == 61
+#define UART1_TX_PIN 14
+#define UART1_RX_PIN 9
+#define UART1_PORT GPIOG
+#define UART1_AF GPIO_AF8_USART6
 #else
 #error Code has to be added to support serial port 1
 #endif
@@ -235,6 +254,11 @@ static const io_stream_t *serial2Init(uint32_t baud_rate);
 #define UART2_IRQ        usartINT(3)
 #define UART2_IRQHandler usartHANDLER(3)
 #define UART2_CLK_En     usartCLKEN(3)
+#elif (SERIAL2_PORT >= 60 && SERIAL2_PORT < 69)
+#define UART2            usart(6)
+#define UART2_IRQ        usartINT(6)
+#define UART2_IRQHandler usartHANDLER(6)
+#define UART2_CLK_En     usartCLKEN(6)
 #else
 #define UART2            usart(SERIAL2_PORT)
 #define UART2_IRQ        usartINT(SERIAL2_PORT)
@@ -286,6 +310,11 @@ static const io_stream_t *serial2Init(uint32_t baud_rate);
 #define UART2_TX_PIN 6
 #define UART2_RX_PIN 7
 #define UART2_PORT GPIOC
+#define UART2_AF GPIO_AF8_USART6
+#elif SERIAL2_PORT == 61
+#define UART2_TX_PIN 14
+#define UART2_RX_PIN 9
+#define UART2_PORT GPIOG
 #define UART2_AF GPIO_AF8_USART6
 #else
 #error Code has to be added to support serial port 2

@@ -108,7 +108,7 @@
 #define SPINDLE_DIRECTION_PIN       5                           // FAN2
 
 // Define spindle PWM output pin.
-#define SPINDLE_PWM_PORT_BASE       GPIOB_BASE
+#define SPINDLE_PWM_PORT            GPIOB
 #define SPINDLE_PWM_PIN             0                           // EXP1 - PB0, pin 9
 
 // Define flood and mist coolant enable output pins.

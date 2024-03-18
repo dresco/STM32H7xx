@@ -1,10 +1,10 @@
 /*
 
-  serial.h - stream interface for serial ports
+  pwm.h - driver code for STM32H7xx ARM processors
 
   Part of grblHAL
 
-  Copyright (c) 2017-2024 Terje Io
+  Copyright (c) 2024 Terje Io
 
   grblHAL is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -18,25 +18,26 @@
 
   You should have received a copy of the GNU General Public License
   along with grblHAL. If not, see <http://www.gnu.org/licenses/>.
-
-*/
-
-/*
-
-1  - GPIOA: TX =  9, RX = 10
-11 - GPIOB: TX =  6, RX =  7
-2  - GPIOA: TX =  2, RX =  3 - Nucleo-144: cannot be used with ethernet enabled
-21 - GPIOD: TX =  5, RX =  6
-3  - GPIOB: TX = 10, RX = 11 - Nucleo-144: cannot be used with ethernet enabled
-31 - GPIOC: TX = 10, RX = 11 - Nucleo-144: cannot be used with SDIO enabled
-32 - GPIOD: TX =  8, RX =  9 - Nucleo-144: virtual COM port
-6  - GPIOC: TX =  6, RX =  7
-61 - GPIOG: TX = 14, RX =  9
-
 */
 
 #pragma once
 
-void serialRegisterStreams (void);
+typedef struct {
+    uint8_t pin;
+    uint8_t af;
+    GPIO_TypeDef *port;
+    TIM_TypeDef *timer;
+    __IO uint32_t *ccr;
+    __IO uint32_t *ccmr;
+    uint32_t ois;
+    uint32_t ocm;
+    uint32_t ocmc;
+    uint32_t en;
+    uint32_t pol;
+} pwm_signal_t;
 
-/*EOF*/
+const pwm_signal_t *pwm_claim (GPIO_TypeDef *port, uint8_t pin);
+bool pwm_enable (const pwm_signal_t *pwm);
+bool pwm_config (const pwm_signal_t *pwm, uint32_t prescaler, uint32_t period, bool inverted);
+bool pwm_is_available (GPIO_TypeDef *port, uint8_t pin);
+uint32_t pwm_get_clock_hz (const pwm_signal_t *pwm);

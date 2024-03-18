@@ -3,25 +3,52 @@
 
   Part of grblHAL
 
-  Copyright (c) 2021-2023 Terje Io
+  Copyright (c) 2021-2024 Terje Io
 
-  Grbl is free software: you can redistribute it and/or modify
+  grblHAL is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Grbl is distributed in the hope that it will be useful,
+  grblHAL is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
+  along with grblHAL. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#if ETHERNET_ENABLE
-#error "Not compatible with ethernet!"
-#endif
+/* PIN NOTES:
+
+Reset is on A5, not A0 due to pin interrupt clash with A2.
+If Ethernet is enabled D11 cannot be used and JP6 on Nucleo-144 boards must be removed!
+
+Default:
+Spindle On   D12
+Spindle Dir  D1
+Spindle PWM  D13
+Z-Limit      D11
+
+A-axis or ganged/auto squared axis enabled:
+Spindle On   A4
+Spindle Dir  -
+Spindle PWM  A0
+Z-Limit      D11
+
+Ethernet enabled:
+Spindle On   D12
+Spindle Dir  D1
+Spindle PWM  D13
+Z-Limit      A4
+
+Ethernet and A-axis or ganged/auto squared axis enabled:
+Spindle On   A0
+Spindle Dir  -
+Spindle PWM  -
+Z-Limit      A4
+
+*/
 
 #if N_AUTO_SQUARED || N_ABC_MOTORS > 1
 #error "Axis configuration is not supported!"
@@ -32,9 +59,13 @@
 #endif
 
 #define BOARD_NAME "Protoneer v3"
+#define IS_NUCLEO_BOB
 #define BOARD_URL "https://blog.protoneer.co.nz/arduino-cnc-shield/"
 
-#define SERIAL_PORT             32   // GPIOD: TX = 8, RX = 9
+#define SERIAL_PORT             32   // GPIOD: TX =  8, RX = 9
+#if MODBUS_ENABLE & MODBUS_RTU_ENABLED
+#define SERIAL1_PORT            61   // GPIOG: TX = 14, RX = 9
+#endif
 
 // Define step pulse output pins.
 #define X_STEP_PORT             GPIOF // D2
@@ -63,8 +94,13 @@
 #define X_LIMIT_PIN             15
 #define Y_LIMIT_PORT            GPIOD // D10
 #define Y_LIMIT_PIN             14
-#define Z_LIMIT_PORT            GPIOA // D11 - NOTE: remove JP6 on Nucleo-144 board
+#if ETHERNET_ENABLE
+#define Z_LIMIT_PORT            GPIOF // A4
+#define Z_LIMIT_PIN             5
+#else
+#define Z_LIMIT_PORT            GPIOA // D11
 #define Z_LIMIT_PIN             7
+#endif
 #define LIMIT_INMODE            GPIO_SINGLE
 
 // Define ganged axis or A axis step pulse and step direction output pins.
@@ -76,40 +112,57 @@
 #define M3_DIRECTION_PIN        5
 #endif
 
-// Define spindle enable and spindle direction output pins.
-#ifndef M3_AVAILABLE
+#if N_ABC_MOTORS == 0
+#define AUXOUTPUT2_PORT         GPIOF // A4 - spindle on
+#define AUXOUTPUT2_PIN          5
+#define AUXOUTPUT1_PORT         GPIOA // A0 - spindle PWM
+#define AUXOUTPUT1_PIN          3
+#else
+#define AUXOUTPUT2_PORT         GPIOA // D12 - spindle on
+#define AUXOUTPUT2_PIN          6
+#define AUXOUTPUT1_PORT         GPIOA // D13 - spindle PWM
+#define AUXOUTPUT1_PIN          7
+#endif
+#if !(MODBUS_ENABLE & MODBUS_RTU_ENABLED)
+#define AUXOUTPUT0_PORT         GPIOG // D0 - spindle dir
+#define AUXOUTPUT0_PIN          9
+#define AUXOUTPUT3_PORT         GPIOG // D1
+#define AUXOUTPUT3_PIN          14
+#endif
+
 #if DRIVER_SPINDLE_ENABLE
-#define SPINDLE_ENABLE_PORT     GPIOA // D12
-#define SPINDLE_ENABLE_PIN      6
-#else
-#define AUXOUTPUT1_PORT         GPIOA // D12
-#define AUXOUTPUT1_PIN          6
-#endif
+#define SPINDLE_ENABLE_PORT     AUXOUTPUT2_PORT
+#define SPINDLE_ENABLE_PIN      AUXOUTPUT2_PIN
 #if DRIVER_SPINDLE_PWM_ENABLE
-#define SPINDLE_PWM_PORT_BASE   GPIOA_BASE // D13
-#define SPINDLE_PWM_PIN         5
-#elif DRIVER_SPINDLE_DIR_ENABLE
-#define SPINDLE_DIRECTION_PORT  GPIOA // D13
-#define SPINDLE_DIRECTION_PIN   5
-#else
-#define AUXOUTPUT0_PORT         GPIOA // D13
-#define AUXOUTPUT0_PIN          5
+#define SPINDLE_PWM_PORT        AUXOUTPUT1_PORT
+#define SPINDLE_PWM_PIN         AUXOUTPUT1_PIN
 #endif
-#endif // M3_AVAILABLE
+#if DRIVER_SPINDLE_DIR_ENABLE && defined(AUXOUTPUT0_PORT)
+#define SPINDLE_DIRECTION_PORT  AUXOUTPUT0_PORT
+#define SPINDLE_DIRECTION_PIN   AUXOUTPUT0_PIN
+#endif
+#endif // DRIVER_SPINDLE_ENABLE
 
 // Define flood and mist coolant enable output pins.
 #define COOLANT_FLOOD_PORT      GPIOF // A3
 #define COOLANT_FLOOD_PIN       3
 
 // Define user-control CONTROLs (cycle start, reset, feed hold) input pins.
-#define RESET_PORT              GPIOA // A0
-#define RESET_PIN               3
-#define FEED_HOLD_PORT          GPIOC
-#define FEED_HOLD_PIN           0 // A1
-#define CYCLE_START_PORT        GPIOC
-#define CYCLE_START_PIN         1
+#define RESET_PORT              GPIOF // A5
+#define RESET_PIN               10
+#define FEED_HOLD_PORT          GPIOC // A1
+#define FEED_HOLD_PIN           0
+#define CYCLE_START_PORT        GPIOC // A2
+#define CYCLE_START_PIN         3
 #define CONTROL_INMODE          GPIO_SINGLE
 
-// I2C -> A4 & A5 (PF5 & PF10) cannot be used
+#define AUXINPUT0_PORT          GPIOC // A2
+#define AUXINPUT0_PIN           3
+
+#if PROBE_ENABLE
+#define PROBE_PORT              AUXINPUT0_PORT
+#define PROBE_PIN               AUXINPUT0_PIN
+#endif
+
 
 /**/
