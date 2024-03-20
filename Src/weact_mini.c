@@ -23,7 +23,7 @@
 */
 
 #include "driver.h"
-#if defined(BOARD_WEACT_MINI_H743)
+#if defined(BOARD_WEACT_MINI)
 
 void board_init (void)
 {
@@ -37,4 +37,4 @@ void board_init (void)
 #endif
 }
 
-#endif //BOARD_BTT_SKR_30
+#endif //BOARD_WEACT_MINI

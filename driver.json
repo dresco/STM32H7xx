@@ -56,8 +56,8 @@
         "serial_ports": 1,
         "trinamic_spi_cs": 1,
         "trinamic_uart_addr": 1,
-        "pio_board": "btt_skr_30_h743",
-        "ldscript": "STM32H743ZITX_FLASH.ld"
+        "pio_board": "generic_stm32h743vi",
+        "ldscript": "STM32H743VITX_FLASH.ld"
       },
       "symbols" : {
          "STM32H743xx": "",
@@ -78,8 +78,8 @@
         "serial_ports": 1,
         "trinamic_spi_cs": 1,
         "trinamic_uart_addr": 1,
-        "pio_board": "btt_skr_30_h743",
-        "ldscript": "STM32H743ZITX_FLASH_BL.ld"
+        "pio_board": "generic_stm32h743vi",
+        "ldscript": "STM32H743VITX_FLASH_BL.ld"
       },
       "symbols" : {
          "STM32H743xx": "",
@@ -100,7 +100,7 @@
         "serial_ports": 1,
         "trinamic_spi_cs": 1,
         "trinamic_uart_addr": 1,
-        "pio_board": "btt_skr_30_h723",
+        "pio_board": "generic_stm32h723vg",
         "ldscript": "STM32H723VGTX_FLASH.ld"
       },
       "symbols" : {
@@ -122,7 +122,7 @@
         "serial_ports": 1,
         "trinamic_spi_cs": 1,
         "trinamic_uart_addr": 1,
-        "pio_board": "btt_skr_30_h723",
+        "pio_board": "generic_stm32h723vg",
         "ldscript": "STM32H723VGTX_FLASH_BL.ld"
       },
       "symbols" : {
@@ -146,7 +146,7 @@
         "serial_ports": 1,
         "trinamic_spi_cs": 1,
         "trinamic_uart_addr": 1,
-        "pio_board": "btt_octopus_max_h723",
+        "pio_board": "generic_stm32h723ze",
         "ldscript": "STM32H723ZETX_FLASH.ld"
       },
       "symbols" : {
@@ -170,7 +170,7 @@
         "serial_ports": 1,
         "trinamic_spi_cs": 1,
         "trinamic_uart_addr": 1,
-        "pio_board": "btt_octopus_max_h723",
+        "pio_board": "generic_stm32h723ze",
         "ldscript": "STM32H723ZETX_FLASH_BL.ld"
       },
       "symbols" : {
@@ -218,7 +218,7 @@
         "ethernet": 1,
         "usb_cdc": 0,
         "pio_board": "nucleo_h723zg",
-        "ldscript": "STM32H723VGTX_FLASH.ld"
+        "ldscript": "STM32H723ZGTX_FLASH.ld"
       },
       "symbols" : {
         "STM32H723xx": "",
@@ -231,8 +231,8 @@
     },
     {
       "name": "WeAct Mini H743",
-      "symbol": "BOARD_WEACT_MINI_H743",
-      "MAP": "Inc/weact_mini_h743_map.h",
+      "symbol": "BOARD_WEACT_MINI",
+      "MAP": "Inc/weact_mini_map.h",
       "URL": "https://github.com/WeActStudio/MiniSTM32H7xx",
       "caps": {
         "axes": 3,
@@ -240,8 +240,8 @@
         "serial_ports": 1,
         "trinamic_spi_cs": 1,
         "trinamic_uart_addr": 1,
-        "pio_board": "weact_mini_h743vitx",
-        "ldscript": "STM32H743ZITX_FLASH.ld"
+        "pio_board": "generic_stm32h743vi",
+        "ldscript": "STM32H743VITX_FLASH.ld"
       },
       "symbols" : {
         "STM32H743xx": "",
@@ -250,6 +250,29 @@
       },
       "pio_env" : {
         "name": "usb"
+      }
+    },
+    {
+      "name": "WeAct Mini H723",
+      "symbol": "BOARD_WEACT_MINI",
+      "MAP": "Inc/weact_mini_map.h",
+      "URL": "https://github.com/WeActStudio/MiniSTM32H7xx",
+      "caps": {
+        "axes": 3,
+        "safety_door": 1,
+        "serial_ports": 1,
+        "trinamic_spi_cs": 1,
+        "trinamic_uart_addr": 1,
+        "pio_board": "generic_stm32h723vg",
+        "ldscript": "STM32H723VGTX_FLASH.ld"
+      },
+      "symbols" : {
+        "STM32H723xx": "",
+        "HSE_VALUE": 25000000,
+        "RTC_ENABLE": 1
+      },
+      "pio_env" : {
+        "name": "usb_h723"
       }
     }
   ]

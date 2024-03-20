@@ -23,8 +23,8 @@
 #error "WeAct Mini STM32H743 supports 3 motors max."
 #endif
 
-#if !defined(STM32H743xx) || HSE_VALUE != 25000000
-#error "This board has STM32H743 processor with a 25MHz crystal, please select a corresponding build!"
+#if !(defined(STM32H743xx)|| defined(STM32H723xx)) || HSE_VALUE != 25000000
+#error "This board has STM32H7xx processor with a 25MHz crystal, select a corresponding build!"
 #endif
 
 #define BOARD_NAME "WeAct Mini H743"

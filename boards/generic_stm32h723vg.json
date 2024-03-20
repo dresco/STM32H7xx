@@ -1,15 +1,12 @@
 {
     "build": {
-      "arduino": {
-        "variant_h": "variant_generic.h"
-      },
       "core": "stm32",
       "cpu": "cortex-m7",
       "extra_flags": "-DSTM32H7xx -DSTM32H723xx",
-      "f_cpu": "480000000L",
+      "f_cpu": "550000000L",
       "mcu": "stm32h723vgt6",
       "product_line": "STM32H723xx",
-      "variant": "H723V(E-G)(H-T)_H733VG(H-T)"
+      "variant": "STM32H7xx/H723VG"
     },
     "connectivity": [
       "can",
@@ -25,19 +22,18 @@
       "cmsis",
       "stm32cube"
     ],
-    "name": "BTT SKR 3 (H723)",
+    "name": "STM32H723VG (564k RAM. 1024k Flash)",
     "upload": {
-      "maximum_ram_size": 524288,
+      "maximum_ram_size": 577536,
       "maximum_size": 1048576,
       "protocol": "stlink",
       "protocols": [
-        "jlink",
-        "cmsis-dap",
         "stlink",
-        "blackmagic",
-        "dfu"
+        "dfu",
+        "jlink",
+        "cmsis-dap"
       ]
     },
-    "url": "https://github.com/bigtreetech/SKR-3",
-    "vendor": "BIGTREETECH"
+    "url": "https://www.st.com/en/microcontrollers-microprocessors/stm32h723vg.html",
+    "vendor": "ST"
   }

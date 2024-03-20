@@ -1,15 +1,12 @@
 {
     "build": {
-      "arduino": {
-        "variant_h": "variant_generic.h"
-      },
       "core": "stm32",
       "cpu": "cortex-m7",
       "extra_flags": "-DSTM32H7xx -DSTM32H723xx",
-      "f_cpu": "480000000L",
+      "f_cpu": "550000000L",
       "mcu": "stm32h723zet6",
       "product_line": "STM32H723xx",
-      "variant": "STM32H7xx/H723Z(E-G)T_H730ZBT_H733ZGT"
+      "variant": "STM32H7xx/H723ZE"
     },
     "connectivity": [
       "can",
@@ -25,19 +22,18 @@
       "cmsis",
       "stm32cube"
     ],
-    "name": "BTT Octopus Max (H723)",
+    "name": "STM32H723ZE (564k RAM. 512k Flash)",
     "upload": {
-      "maximum_ram_size": 524288,
+      "maximum_ram_size": 577536,
       "maximum_size": 524288,
       "protocol": "stlink",
       "protocols": [
-        "jlink",
-        "cmsis-dap",
         "stlink",
-        "blackmagic",
-        "dfu"
+        "dfu",
+        "jlink",
+        "cmsis-dap"
       ]
     },
-    "url": "https://github.com/bigtreetech/Octopus-Max-EZ",
-    "vendor": "BIGTREETECH"
+    "url": "https://www.st.com/en/microcontrollers-microprocessors/stm32h723ze.html",
+    "vendor": "ST"
   }

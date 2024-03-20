@@ -112,8 +112,8 @@
   #include "btt_skr_v3.0_map.h"
 #elif defined(BOARD_BTT_OCTOPUS_MAX)
   #include "btt_octopus_max_map.h"
-#elif defined(BOARD_WEACT_MINI_H743)
-  #include "weact_mini_h743_map.h"
+#elif defined(BOARD_WEACT_MINI)
+  #include "weact_mini_map.h"
 #elif defined(BOARD_REFERENCE)
   #include "reference_map.h"
 #elif defined(BOARD_MY_MACHINE)
