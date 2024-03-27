@@ -26,6 +26,10 @@
 
 #ifdef I2C_PORT
 
+#ifndef I2C_KHZ
+#define I2C_KHZ 400
+#endif
+
 #ifdef I2C1_ALT_PINMAP
   #define I2C1_SCL_PIN 6
   #define I2C1_SDA_PIN 7
@@ -41,9 +45,18 @@
 
 static uint8_t keycode = 0;
 static keycode_callback_ptr keypad_callback = NULL;
+
 static I2C_HandleTypeDef i2c_port = {
     .Instance = I2CPORT,
-    .Init.Timing = 0x20303E5D,
+#if I2C_KHZ == 100
+    .Init.Timing = 0x307075B1,
+#elif I2C_KHZ == 400
+    .Init.Timing = 0x00B03FDB,
+#elif I2C_KHZ == 1000
+    .Init.Timing = 0x0050174F,
+#else
+    #error "I2C speed not defined"
+#endif
     .Init.OwnAddress1 = 0,
     .Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT,
     .Init.DualAddressMode = I2C_DUALADDRESS_DISABLE,

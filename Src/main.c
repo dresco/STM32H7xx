@@ -316,9 +316,10 @@ void SystemClock_Config(void)
       Error_Handler();
     }
 
-    PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_SPI123 | RCC_PERIPHCLK_SPI45;
-    PeriphClkInitStruct.Spi123ClockSelection = RCC_SPI123CLKSOURCE_PLL;
-    PeriphClkInitStruct.Spi45ClockSelection  = RCC_SPI45CLKSOURCE_PLL2;
+    PeriphClkInitStruct.PeriphClockSelection  = RCC_PERIPHCLK_SPI123 | RCC_PERIPHCLK_SPI45 | RCC_PERIPHCLK_I2C123;
+    PeriphClkInitStruct.Spi123ClockSelection  = RCC_SPI123CLKSOURCE_PLL;
+    PeriphClkInitStruct.Spi45ClockSelection   = RCC_SPI45CLKSOURCE_PLL2;
+    PeriphClkInitStruct.I2c1235ClockSelection = RCC_I2C123CLKSOURCE_D2PCLK1;
 
 #if RTC_ENABLE
     PeriphClkInitStruct.PeriphClockSelection = PeriphClkInitStruct.PeriphClockSelection | RCC_PERIPHCLK_RTC;
