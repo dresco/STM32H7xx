@@ -37,6 +37,10 @@
 #include "main.h"
 #include "pwm.h"
 
+#if defined(MCP3221_ENABLE)
+#define I2C_ENABLE 1
+#endif
+
 #include "grbl/driver_opts.h"
 
 #define DIGITAL_OUT(port, bit, on) { port->BSRR = (on) ? (bit) : ((bit) << 16); }

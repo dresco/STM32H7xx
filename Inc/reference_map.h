@@ -144,7 +144,7 @@
 // Define driver spindle pins
 
 #define AUXOUTPUT0_PORT         GPIOB
-#define AUXOUTPUT0_PIN          9
+#define AUXOUTPUT0_PIN          11
 #define AUXOUTPUT1_PORT         GPIOE
 #define AUXOUTPUT1_PIN          2
 #define AUXOUTPUT2_PORT         GPIOF

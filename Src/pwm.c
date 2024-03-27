@@ -86,10 +86,12 @@ static const pwm_signal_t pwm_pin[] = {
         .port = GPIOE, .pin = 6, .timer = timer(15), .ccr = &timerCCR(15, 2), .ccmr = &timerCCMR(15, 1), .af = timerAF(15, 4),
         .en = timerCCEN(2, ), .pol = timerCCP(2, ), .ois = timerCR2OIS(2, ), .ocm = timerOCM(1, 2), .ocmc = timerOCM(1, 2)
     },
+#if !(I2C_ENABLE && I2C_PORT == 1)
     {
         .port = GPIOB, .pin = 9, .timer = timer(17), .ccr = &timerCCR(17, 1), .ccmr = &timerCCMR(17, 1), .af = timerAF(17, 1),
         .en = timerCCEN(1, ), .pol = timerCCP(1, ), .ois = timerCR2OIS(1, ), .ocm = timerOCM(1, 1), .ocmc = timerOCM(1, 1)
     }
+#endif
 };
 
 uint_fast8_t n_claimed = 0;
