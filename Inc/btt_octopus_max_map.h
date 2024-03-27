@@ -119,19 +119,26 @@
 #define M5_ENABLE_PIN               5       // EN for M5 motor
 #endif
 
-// Define spindle enable, direction, and PWM output pins.
+#define AUXOUTPUT0_PORT             GPIOA   // Spindle PWM - FAN4
+#define AUXOUTPUT0_PIN              1
+#define AUXOUTPUT1_PORT             GPIOA   // Spindle direction - FAN1
+#define AUXOUTPUT1_PIN              5
+#define AUXOUTPUT2_PORT             GPIOA   // Spindle enable - FAN0
+#define AUXOUTPUT2_PIN              6
+
+// Define driver spindle pins.
 #if DRIVER_SPINDLE_ENABLE
-#define SPINDLE_ENABLE_PORT         GPIOA
-#define SPINDLE_ENABLE_PIN          6       // FAN0
+#define SPINDLE_ENABLE_PORT         AUXOUTPUT2_PORT
+#define SPINDLE_ENABLE_PIN          AUXOUTPUT2_PIN
+#if DRIVER_SPINDLE_PWM_ENABLE
+#define SPINDLE_PWM_PORT            AUXOUTPUT0_PORT
+#define SPINDLE_PWM_PIN             AUXOUTPUT0_PIN
 #endif
 #if DRIVER_SPINDLE_DIR_ENABLE
-#define SPINDLE_DIRECTION_PORT      GPIOA
-#define SPINDLE_DIRECTION_PIN       5       // FAN1
+#define SPINDLE_DIRECTION_PORT      AUXOUTPUT1_PORT
+#define SPINDLE_DIRECTION_PIN       AUXOUTPUT1_PIN
 #endif
-#if DRIVER_SPINDLE_PWM_ENABLE
-#define SPINDLE_PWM_PORT            GPIOA
-#define SPINDLE_PWM_PIN             1       // Fan4 PWM
-#endif
+#endif //DRIVER_SPINDLE_ENABLE
 
 // Define flood and mist coolant enable output pins.
 #define COOLANT_FLOOD_PORT          GPIOF
