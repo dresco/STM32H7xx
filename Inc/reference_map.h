@@ -29,10 +29,12 @@
 
 
 #define SERIAL_PORT    32   // GPIOD: TX = 8, RX = 9
-#define SERIAL1_PORT    1   // GPIOC: TX = 6, RX = 7
+#define SERIAL1_PORT    1   // GPIOA: TX = 9, RX = 10
 #define I2C_PORT        1   // GPIOB: SCL = 8, SDA = 9
 #define SPI_PORT        3   // GPIOC: SCK = 10, MISO - 11, MOSI - 12
 #define IS_NUCLEO_BOB
+
+#define ETH_PINOUT      1   // PA1, PA2, PA7, PB13, PC1, PC4, PC5, PG11, PG13
 
 // Define stepper driver enable/disable output pin.
 #define STEPPERS_ENABLE_PORT    GPIOF

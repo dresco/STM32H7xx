@@ -103,6 +103,11 @@ static const io_stream_t *serial2Init(uint32_t baud_rate);
 #define UART0_RX_PIN 7
 #define UART0_PORT GPIOB
 #define UART0_AF GPIO_AF7_USART1
+#elif SERIAL_PORT == 12
+#define UART0_TX_PIN 14
+#define UART0_RX_PIN 15
+#define UART0_PORT GPIOB
+#define UART0_AF GPIO_AF4_USART1
 #elif SERIAL_PORT == 2
 #define UART0_TX_PIN 2
 #define UART0_RX_PIN 3
@@ -192,6 +197,11 @@ static const io_stream_t *serial2Init(uint32_t baud_rate);
 #define UART1_RX_PIN 7
 #define UART1_PORT GPIOB
 #define UART1_AF GPIO_AF7_USART1
+#elif SERIAL1_PORT == 12
+#define UART1_TX_PIN 14
+#define UART1_RX_PIN 15
+#define UART1_PORT GPIOB
+#define UART1_AF GPIO_AF4_USART1
 #elif SERIAL1_PORT == 2
 #define UART1_TX_PIN 2
 #define UART1_RX_PIN 3
@@ -281,6 +291,11 @@ static const io_stream_t *serial2Init(uint32_t baud_rate);
 #define UART2_RX_PIN 7
 #define UART2_PORT GPIOB
 #define UART2_AF GPIO_AF7_USART1
+#elif SERIAL2_PORT == 12
+#define UART2_TX_PIN 14
+#define UART2_RX_PIN 15
+#define UART2_PORT GPIOB
+#define UART2_AF GPIO_AF4_USART1
 #elif SERIAL2_PORT == 2
 #define UART2_TX_PIN 2
 #define UART2_RX_PIN 3

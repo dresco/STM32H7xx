@@ -25,6 +25,7 @@
 
 1  - GPIOA: TX =  9, RX = 10
 11 - GPIOB: TX =  6, RX =  7
+12 - GPIOB: TX = 14, RX = 15
 2  - GPIOA: TX =  2, RX =  3 - Nucleo-144: cannot be used with ethernet enabled
 21 - GPIOD: TX =  5, RX =  6
 3  - GPIOB: TX = 10, RX = 11 - Nucleo-144: cannot be used with ethernet enabled

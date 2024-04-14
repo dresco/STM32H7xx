@@ -210,7 +210,7 @@ void SystemClock_Config(void)
     PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL1VCOWIDE;
     PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
 
-#else // Common configuration for H743 WeAct and BTT boards with 25MHz crystals
+#else // Common configuration for all other H743 boards with 25MHz crystals
 #define FLASH_LATENCY FLASH_LATENCY_4
 
 #if RTC_ENABLE
@@ -240,7 +240,7 @@ void SystemClock_Config(void)
     PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL2VCOWIDE;
     PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
 
-#endif // H743 WeAct Mini and BTT SKR3
+#endif // H743 other boards
 
 #elif defined (STM32H723xx)
 
@@ -274,7 +274,7 @@ void SystemClock_Config(void)
     PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL1VCOWIDE;
     PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
 
-#else  // Common configuration for H723 WeAct and BTT boards with 25MHz crystals
+#else  // Common configuration for all other H723 boards with 25MHz crystals
 #define FLASH_LATENCY FLASH_LATENCY_3
 
 #if RTC_ENABLE
@@ -304,7 +304,7 @@ void SystemClock_Config(void)
     PeriphClkInitStruct.PLL2.PLL2VCOSEL = RCC_PLL1VCOWIDE;
     PeriphClkInitStruct.PLL2.PLL2FRACN = 0;
 
-#endif // STM32H723xx BTT SKR3
+#endif // STM32H723xx other boards
 #endif // STM32H723xx
 
     /** Initializes the RCC Oscillators according to the specified parameters

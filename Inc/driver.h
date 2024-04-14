@@ -112,6 +112,8 @@
   #include "protoneer_3.xx_map.h"
 #elif defined(BOARD_GENERIC_UNO)
   #include "uno_map.h"
+#elif defined(BOARD_DRESCO_OCTAVE)
+  #include "dresco_octave_map.h"
 #elif defined(BOARD_BTT_SKR_30)
   #include "btt_skr_v3.0_map.h"
 #elif defined(BOARD_BTT_OCTOPUS_MAX)
@@ -166,22 +168,6 @@
 #define PULSE2_TIMER_CLKEN          timerCLKEN(PULSE2_TIMER_N)
 #define PULSE2_TIMER_IRQn           timerINT(PULSE2_TIMER_N)
 #define PULSE2_TIMER_IRQHandler     timerHANDLER(PULSE2_TIMER_N)
-
-#if ETHERNET_ENABLE
-
-    /**ETH GPIO Configuration
-    PC1     ------> ETH_MDC
-    PA1     ------> ETH_REF_CLK
-    PA2     ------> ETH_MDIO
-    PA7     ------> ETH_CRS_DV
-    PC4     ------> ETH_RXD0
-    PC5     ------> ETH_RXD1
-    PB11     ------> ETH_TX_EN
-    PB12     ------> ETH_TXD0
-    PB13     ------> ETH_TXD1
-    */
-
-#endif
 
 #if defined(AUXOUTPUT0_PWM_PORT) || defined(AUXOUTPUT1_PWM_PORT) ||\
      defined(AUXOUTPUT0_ANALOG_PORT) || defined( AUXOUTPUT1_ANALOG_PORT) ||\
