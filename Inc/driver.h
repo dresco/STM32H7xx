@@ -297,6 +297,11 @@
 //#error SD card plugin not supported!
 //#endif
 
+#if LITTLEFS_ENABLE
+#undef SPIFLASH_ENABLE
+#define SPIFLASH_ENABLE 1
+#endif
+
 #ifndef STEP_PINMODE
 #define STEP_PINMODE PINMODE_OUTPUT
 #endif

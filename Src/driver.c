@@ -51,6 +51,15 @@
 #include "sdmmc.h"
 #endif
 
+#if SPIFLASH_ENABLE
+#include "spiflash.h"
+#endif
+
+#if LITTLEFS_ENABLE
+#include "littlefs_hal.h"
+#include "sdcard/fs_littlefs.h"
+#endif
+
 #if USB_SERIAL_CDC
 #include "usb_serial.h"
 #endif
@@ -1939,6 +1948,14 @@ static bool driver_setup (settings_t *settings)
     sdmmc_init();
     sdcard_init();
 
+#endif
+
+#if SPIFLASH_ENABLE
+    spiflash_init();
+#endif
+
+#if LITTLEFS_ENABLE
+    fs_littlefs_mount("/littlefs", stm32_littlefs_hal());
 #endif
 
 #if SPINDLE_ENCODER_ENABLE

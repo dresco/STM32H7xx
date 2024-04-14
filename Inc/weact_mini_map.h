@@ -30,7 +30,10 @@
 #define BOARD_NAME "WeAct Mini H743"
 #define BOARD_URL "https://github.com/WeActStudio/MiniSTM32H7xx"
 
-#define SERIAL_PORT  1   // GPIOA: TX =  9, RX = 10
+#define SERIAL_PORT  1     // GPIOA: TX =  9, RX = 10
+
+#define SPIFLASH_PINOUT 1  // CS = PB6, CLK = PB2, IO0 = PD11, IO1 = PD12, IO2 = PE2, IO3 = PD13
+#define SPIFLASH_SIZE   64 // 64 Mb = 8 MB
 
 #define HAS_BOARD_INIT
 
