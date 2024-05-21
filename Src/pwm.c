@@ -39,6 +39,10 @@ static const pwm_signal_t pwm_pin[] = {
     },
 #endif
     {
+        .port = GPIOA, .pin = 1, .timer = timer(2), .ccr = &timerCCR(2, 2), .ccmr = &timerCCMR(2, 1), .af = timerAF(2, 1),
+        .en = timerCCEN(2, ), .pol = timerCCP(2, ), .ois = timerCR2OIS(2, ), .ocm = timerOCM(1, 2), .ocmc = timerOCM(1, 2)
+    },
+    {
         .port = GPIOA, .pin = 8, .timer = timer(1), .ccr = &timerCCR(1, 1), .ccmr = &timerCCMR(1, 1), .af = timerAF(1, 1),
         .en = timerCCEN(1, ), .pol = timerCCP(1, ), .ois = timerCR2OIS(1, ), .ocm = timerOCM(1, 1), .ocmc = timerOCM(1, 1)
     },
