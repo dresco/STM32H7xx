@@ -30,22 +30,61 @@
 #define I2C_KHZ 400
 #endif
 
-#ifdef I2C1_ALT_PINMAP
-  #define I2C1_SCL_PIN 6
-  #define I2C1_SDA_PIN 7
-#else
-  #define I2C1_SCL_PIN 8
-  #define I2C1_SDA_PIN 9
-#endif
-
 #define I2Cport(p) I2CportI(p)
 #define I2CportI(p) I2C ## p
+#define I2CportCLK(p) I2CportCLKI(p)
+#define I2CportCLKI(p) __HAL_RCC_I2C ## p ## _CLK_ENABLE
+#define I2CportAF(p) I2CportAFI(p)
+#define I2CportAFI(p) GPIO_AF4_I2C ## p
+#define I2CportEvt(p, e) I2CportEvtI(p, e)
+#define I2CportEvtI(p, e) I2C ## p ## _ ## e ## _IRQn
+#define I2CportHandler(p, e) I2CportHandlerI(p, e)
+#define I2CportHandlerI(p, e) I2C ## p ## _ ## e ## _IRQHandler
 
 #define I2CPORT I2Cport(I2C_PORT)
+#define I2C_IRQEVT I2CportEvt(I2C_PORT, EV)
+#define I2C_IRQERR I2CportEvt(I2C_PORT, ER)
+#define I2C_IRQEVT_Handler I2CportHandler(I2C_PORT, EV)
+#define I2C_IRQERR_Handler I2CportHandler(I2C_PORT, ER)
+#define I2C_CLKENA I2CportCLK(I2C_PORT)
+#define I2C_GPIO_AF I2CportAF(I2C_PORT)
+
+#define I2C_EV_IRQHandler HAL_I2C_EV_IRQHandler
+#define I2C_ER_IRQHandler HAL_I2C_ER_IRQHandler
+
+#if I2C_PORT == 1
+
+#ifdef I2C1_ALT_PINMAP
+  #define I2C_SCL_PIN 6
+  #define I2C_SDA_PIN 7
+#else
+  #define I2C_SCL_PIN 8
+  #define I2C_SDA_PIN 9
+#endif
+#define I2C_GPIO GPIOB
+
+#elif I2C_PORT == 2
+
+#define I2C_SCL_PIN 10
+#define I2C_SDA_PIN 11
+#define I2C_GPIO GPIOB
+
+#elif I2C_PORT == 3
+
+#define I2C_SCL_PIN 7
+#define I2C_SDA_PIN 8
+#define I2C_GPIO GPIOH
+
+#elif I2C_PORT == 4
+
+#define I2C_SCL_PIN 12
+#define I2C_SDA_PIN 13
+#define I2C_GPIO GPIOD
+
+#endif
 
 static uint8_t keycode = 0;
 static keycode_callback_ptr keypad_callback = NULL;
-
 static I2C_HandleTypeDef i2c_port = {
     .Instance = I2CPORT,
 #if I2C_KHZ == 100
@@ -74,99 +113,56 @@ void i2c_init (void)
 
     init_ok = true;
 
-#if I2C_PORT == 1
     GPIO_InitTypeDef GPIO_InitStruct = {
-        .Pin = (1 << I2C1_SCL_PIN)|(1 << I2C1_SDA_PIN),
+        .Pin = (1 << I2C_SCL_PIN)|(1 << I2C_SDA_PIN),
         .Mode = GPIO_MODE_AF_OD,
         .Pull = GPIO_PULLUP,
         .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
-        .Alternate = GPIO_AF4_I2C1
+        .Alternate = I2C_GPIO_AF
     };
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_Init(I2C_GPIO, &GPIO_InitStruct);
 
-    __HAL_RCC_I2C1_CLK_ENABLE();
+    I2C_CLKENA();
 
+#ifdef I2C_FASTMODE
+    HAL_FMPI2C_Init(&i2c_port);
+    HAL_FMPI2CEx_ConfigAnalogFilter(&i2c_port, FMPI2C_ANALOGFILTER_ENABLE);
+#else
     HAL_I2C_Init(&i2c_port);
+#endif
 
-    HAL_NVIC_EnableIRQ(I2C1_EV_IRQn);
-    HAL_NVIC_EnableIRQ(I2C1_ER_IRQn);
+    HAL_NVIC_EnableIRQ(I2C_IRQEVT);
+    HAL_NVIC_EnableIRQ(I2C_IRQERR);
 
     static const periph_pin_t scl = {
         .function = Output_SCK,
         .group = PinGroup_I2C,
-        .port = GPIOB,
-        .pin = I2C1_SCL_PIN,
+        .port = I2C_GPIO,
+        .pin = I2C_SCL_PIN,
         .mode = { .mask = PINMODE_OD }
     };
 
     static const periph_pin_t sda = {
         .function = Bidirectional_SDA,
         .group = PinGroup_I2C,
-        .port = GPIOB,
-        .pin = I2C1_SDA_PIN,
+        .port = I2C_GPIO,
+        .pin = I2C_SDA_PIN,
         .mode = { .mask = PINMODE_OD }
     };
-#endif
-
-#if I2C_PORT == 2
-    GPIO_InitTypeDef GPIO_InitStruct = {
-        .Pin = GPIO_PIN_10|GPIO_PIN_11,
-        .Mode = GPIO_MODE_AF_OD,
-        .Pull = GPIO_PULLUP,
-        .Speed = GPIO_SPEED_FREQ_VERY_HIGH,
-        .Alternate = GPIO_AF4_I2C2
-    };
-    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
-    __HAL_RCC_I2C2_CLK_ENABLE();
-
-    HAL_I2C_Init(&i2c_port);
-
-    HAL_NVIC_EnableIRQ(I2C2_EV_IRQn);
-    HAL_NVIC_EnableIRQ(I2C2_ER_IRQn);
-
-    static const periph_pin_t scl = {
-        .function = Output_SCK,
-        .group = PinGroup_I2C,
-        .port = GPIOB,
-        .pin = 10,
-        .mode = { .mask = PINMODE_OD }
-    };
-
-    static const periph_pin_t sda = {
-        .function = Bidirectional_SDA,
-        .group = PinGroup_I2C,
-        .port = GPIOB,
-        .pin = 11,
-        .mode = { .mask = PINMODE_OD }
-    };
-#endif
 
     hal.periph_port.register_pin(&scl);
     hal.periph_port.register_pin(&sda);
 }
 
-#if I2C_PORT == 1
-void I2C1_EV_IRQHandler(void)
+void I2C_IRQEVT_Handler (void)
 {
-  HAL_I2C_EV_IRQHandler(&i2c_port);
+    I2C_EV_IRQHandler(&i2c_port);
 }
 
-void I2C1_ER_IRQHandler(void)
+void I2C_IRQERR_Handler (void)
 {
-  HAL_I2C_ER_IRQHandler(&i2c_port);
+    I2C_ER_IRQHandler(&i2c_port);
 }
-#else
-void I2C2_EV_IRQHandler(void)
-{
-  HAL_I2C_EV_IRQHandler(&i2c_port);
-}
-
-void I2C2_ER_IRQHandler(void)
-{
-  HAL_I2C_ER_IRQHandler(&i2c_port);
-}
-#endif
 
 #endif
 

@@ -3,20 +3,20 @@
 
   Part of grblHAL driver for STM32H7xx
 
-  Copyright (c) 2020-2022 Terje Io
+  Copyright (c) 2020-2024 Terje Io
 
-  Grbl is free software: you can redistribute it and/or modify
+  grblHAL is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Grbl is distributed in the hope that it will be useful,
+  grblHAL is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
+  along with grblHAL. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "main.h"
@@ -86,8 +86,7 @@ void spi_init (void)
             .pin = 7,
             .mode = { .mask = PINMODE_NONE }
         };
-#endif
-#if SPI_PORT == 2
+#elif SPI_PORT == 2
         __HAL_RCC_SPI2_CLK_ENABLE();
 
         GPIO_InitTypeDef GPIO_InitStruct = {
@@ -122,8 +121,7 @@ void spi_init (void)
             .pin = 15,
             .mode = { .mask = PINMODE_NONE }
         };
-#endif
-#if SPI_PORT == 3
+#elif SPI_PORT == 3
         __HAL_RCC_SPI3_CLK_ENABLE();
 
         GPIO_InitTypeDef GPIO_InitStruct = {
@@ -158,8 +156,7 @@ void spi_init (void)
             .pin = 12,
             .mode = { .mask = PINMODE_NONE }
         };
-#endif
-#if SPI_PORT == 4
+#elif SPI_PORT == 4
         __HAL_RCC_SPI4_CLK_ENABLE();
 
         GPIO_InitTypeDef GPIO_InitStruct = {

@@ -396,9 +396,9 @@ static probe_state_t probe = {
 };
 #endif
 
-#if I2C_STROBE_BIT || SPI_IRQ_BIT
+#if defined(I2C_STROBE_PIN) || SPI_IRQ_BIT
 
-#if I2C_STROBE_BIT
+#if defined(I2C_STROBE_PIN)
 static driver_irq_handler_t i2c_strobe = { .type = IRQ_I2C_Strobe };
 #endif
 
@@ -412,7 +412,7 @@ static bool irq_claim (irq_type_t irq, uint_fast8_t id, irq_callback_ptr handler
 
     switch(irq) {
 
-#if I2C_STROBE_BIT
+#if defined(I2C_STROBE_PIN)
         case IRQ_I2C_Strobe:
             if((ok = i2c_strobe.callback == NULL))
                 i2c_strobe.callback = handler;
@@ -433,7 +433,7 @@ static bool irq_claim (irq_type_t irq, uint_fast8_t id, irq_callback_ptr handler
     return ok;
 }
 
-#endif // I2C_STROBE_BIT || SPI_IRQ_BIT
+#endif // defined(I2C_STROBE_PIN) || SPI_IRQ_BIT
 
 #include "grbl/stepdir_map.h"
 
@@ -499,7 +499,7 @@ static void stepperEnable (axes_signals_t enable)
 // Starts stepper driver ISR timer and forces a stepper driver interrupt callback
 static void stepperWakeUp (void)
 {
-    stepperEnable((axes_signals_t){AXES_BITMASK});
+    hal.stepper.enable((axes_signals_t){AXES_BITMASK});
 
     STEPPER_TIMER->ARR = hal.f_step_timer / 500; // ~2ms delay to allow drivers time to wake up
     STEPPER_TIMER->EGR = TIM_EGR_UG;
@@ -2084,6 +2084,23 @@ bool driver_init (void)
     __HAL_RCC_GPIOF_CLK_ENABLE();
     __HAL_RCC_GPIOG_CLK_ENABLE();
 
+#ifdef MPG_MODE_PIN
+
+ // Drive MPG mode input pin low until setup complete
+
+    GPIO_InitTypeDef GPIO_Init = {
+        .Speed = GPIO_SPEED_FREQ_HIGH,
+        .Mode = GPIO_MODE_OUTPUT_PP,
+        .Pin = 1 << MPG_MODE_PIN,
+        .Mode = GPIO_MODE_OUTPUT_PP
+    };
+
+    DIGITAL_OUT(MPG_MODE_PORT, 1 << MPG_MODE_PIN, 0);
+
+    HAL_GPIO_Init(MPG_MODE_PORT, &GPIO_Init);
+
+#endif
+
     uint32_t latency;
     RCC_ClkInitTypeDef clock_cfg;
 
@@ -2095,7 +2112,7 @@ bool driver_init (void)
     hal.info = "STM32H743";
 #endif
 
-    hal.driver_version = "240402";
+    hal.driver_version = "240522";
     hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
