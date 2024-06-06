@@ -14,6 +14,8 @@ build_flags =
   -I FATFS/Target
   -I FATFS/App
   -I Middlewares/Third_Party/FatFs/src
+  -Wl,-u,_printf_float
+  -Wl,-u,_scanf_float
 lib_deps =
   bluetooth
   grbl
@@ -72,8 +74,6 @@ build_flags =
   -I Middlewares/Third_Party/LwIP/src/include/netif
   -I Middlewares/Third_Party/LwIP/src/include/lwip
   -I Drivers/BSP/Components/lan8742
-  # Floating point support for printf, required for WebUI v3
-  -Wl,-u,_printf_float
 lib_deps =
    LWIP/Target
    networking
