@@ -64,7 +64,7 @@ void spi_init (void)
         HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
         static const periph_pin_t sck = {
-            .function = Output_SCK,
+            .function = Output_SPICLK,
             .group = PinGroup_SPI,
             .port = GPIOA,
             .pin = 5,
@@ -99,7 +99,7 @@ void spi_init (void)
         HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
         static const periph_pin_t sck = {
-            .function = Output_SCK,
+            .function = Output_SPICLK,
             .group = PinGroup_SPI,
             .port = GPIOB,
             .pin = 13,
@@ -134,7 +134,7 @@ void spi_init (void)
         HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
         static const periph_pin_t sck = {
-            .function = Output_SCK,
+            .function = Output_SPICLK,
             .group = PinGroup_SPI,
             .port = GPIOC,
             .pin = 10,
@@ -169,7 +169,7 @@ void spi_init (void)
         HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
         static const periph_pin_t sck = {
-            .function = Output_SCK,
+            .function = Output_SPICLK,
             .group = PinGroup_SPI,
             .port = GPIOE,
             .pin = 12,
