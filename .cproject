@@ -46,7 +46,6 @@
 									<listOptionValue builtIn="false" value="NUCLEO_H743"/>
 									<listOptionValue builtIn="false" value="ETHERNET_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="TCP_ECHOSERVER_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="BOARD_REFERENCE"/>
 									<listOptionValue builtIn="false" value="HTTP_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="WEBUI_ENABLE=1"/>
@@ -172,7 +171,6 @@
 									<listOptionValue builtIn="false" value="NUCLEO_H743"/>
 									<listOptionValue builtIn="false" value="ETHERNET_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="TCP_ECHOSERVER_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="BOARD_REFERENCE"/>
 									<listOptionValue builtIn="false" value="HTTP_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="WEBUI_ENABLE=1"/>
@@ -302,7 +300,6 @@
 									<listOptionValue builtIn="false" value="USB_SERIAL_CDC=1"/>
 									<listOptionValue builtIn="false" value="HSE_VALUE=25000000"/>
 									<listOptionValue builtIn="false" value="SDCARD_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="BOARD_BTT_SKR_30"/>
 									<listOptionValue builtIn="false" value="TRINAMIC_ENABLE=2209"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
@@ -420,7 +417,6 @@
 									<listOptionValue builtIn="false" value="USB_SERIAL_CDC=1"/>
 									<listOptionValue builtIn="false" value="HSE_VALUE=25000000"/>
 									<listOptionValue builtIn="false" value="SDCARD_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="BOARD_BTT_SKR_30"/>
 									<listOptionValue builtIn="false" value="TRINAMIC_ENABLE=2209"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
@@ -541,7 +537,6 @@
 									<listOptionValue builtIn="false" value="USB_SERIAL_CDC=1"/>
 									<listOptionValue builtIn="false" value="HSE_VALUE=25000000"/>
 									<listOptionValue builtIn="false" value="SDCARD_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="BOARD_BTT_SKR_30"/>
 									<listOptionValue builtIn="false" value="TRINAMIC_ENABLE=2209"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
@@ -659,7 +654,6 @@
 									<listOptionValue builtIn="false" value="USB_SERIAL_CDC=1"/>
 									<listOptionValue builtIn="false" value="HSE_VALUE=25000000"/>
 									<listOptionValue builtIn="false" value="SDCARD_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="BOARD_BTT_SKR_30"/>
 									<listOptionValue builtIn="false" value="TRINAMIC_ENABLE=2209"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
@@ -777,7 +771,6 @@
 									<listOptionValue builtIn="false" value="USB_SERIAL_CDC=1"/>
 									<listOptionValue builtIn="false" value="HSE_VALUE=25000000"/>
 									<listOptionValue builtIn="false" value="SDCARD_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="BOARD_BTT_SKR_30"/>
 									<listOptionValue builtIn="false" value="TRINAMIC_ENABLE=2209"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
@@ -896,7 +889,6 @@
 									<listOptionValue builtIn="false" value="USB_SERIAL_CDC=1"/>
 									<listOptionValue builtIn="false" value="HSE_VALUE=25000000"/>
 									<listOptionValue builtIn="false" value="SDCARD_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="BOARD_BTT_SKR_30"/>
 									<listOptionValue builtIn="false" value="TRINAMIC_ENABLE=2209"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
@@ -1016,7 +1008,6 @@
 									<listOptionValue builtIn="false" value="HSE_VALUE=8000000"/>
 									<listOptionValue builtIn="false" value="ETHERNET_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="TCP_ECHOSERVER_ENABLE=0"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="BOARD_REFERENCE"/>
 									<listOptionValue builtIn="false" value="HTTP_ENABLE=0"/>
 									<listOptionValue builtIn="false" value="WEBUI_ENABLE=0"/>
@@ -1142,7 +1133,6 @@
 									<listOptionValue builtIn="false" value="USE_HAL_DRIVER"/>
 									<listOptionValue builtIn="false" value="USB_SERIAL_CDC=1"/>
 									<listOptionValue builtIn="false" value="HSE_VALUE=25000000"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="TRINAMIC_ENABLE=5160"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="STM32H723xx"/>
@@ -1260,7 +1250,6 @@
 									<listOptionValue builtIn="false" value="USE_HAL_DRIVER"/>
 									<listOptionValue builtIn="false" value="USB_SERIAL_CDC=1"/>
 									<listOptionValue builtIn="false" value="HSE_VALUE=25000000"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="TRINAMIC_ENABLE=5160"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="STM32H723xx"/>
@@ -1383,7 +1372,6 @@
 									<listOptionValue builtIn="false" value="USB_SERIAL_CDC=1"/>
 									<listOptionValue builtIn="false" value="HSE_VALUE=25000000"/>
 									<listOptionValue builtIn="false" value="SDCARD_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="RTC_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="BOARD_WEACT_MINI"/>
@@ -1503,7 +1491,6 @@
 									<listOptionValue builtIn="false" value="USB_SERIAL_CDC=1"/>
 									<listOptionValue builtIn="false" value="HSE_VALUE=25000000"/>
 									<listOptionValue builtIn="false" value="SDCARD_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="RTC_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="BOARD_WEACT_MINI"/>
@@ -1626,7 +1613,6 @@
 									<listOptionValue builtIn="false" value="USB_SERIAL_CDC=1"/>
 									<listOptionValue builtIn="false" value="HSE_VALUE=25000000"/>
 									<listOptionValue builtIn="false" value="SDCARD_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="STM32H723xx"/>
 									<listOptionValue builtIn="false" value="BOARD_WEACT_MINI"/>
@@ -1747,7 +1733,6 @@
 									<listOptionValue builtIn="false" value="USB_SERIAL_CDC=1"/>
 									<listOptionValue builtIn="false" value="HSE_VALUE=25000000"/>
 									<listOptionValue builtIn="false" value="SDCARD_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="STM32H723xx"/>
 									<listOptionValue builtIn="false" value="BOARD_WEACT_MINI"/>
@@ -1871,7 +1856,6 @@
 									<listOptionValue builtIn="false" value="USE_HAL_DRIVER"/>
 									<listOptionValue builtIn="false" value="USB_SERIAL_CDC=1"/>
 									<listOptionValue builtIn="false" value="HSE_VALUE=25000000"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="STM32H723xx"/>
 									<listOptionValue builtIn="false" value="BOARD_BTT_OCTOPUS_MAX"/>
@@ -1989,7 +1973,6 @@
 									<listOptionValue builtIn="false" value="USE_HAL_DRIVER"/>
 									<listOptionValue builtIn="false" value="HSE_VALUE=8000000"/>
 									<listOptionValue builtIn="false" value="SDCARD_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="STM32H723xx"/>
 									<listOptionValue builtIn="false" value="RTC_ENABLE=1"/>
@@ -2118,7 +2101,6 @@
 									<listOptionValue builtIn="false" value="USB_SERIAL_CDC=1"/>
 									<listOptionValue builtIn="false" value="HSE_VALUE=25000000"/>
 									<listOptionValue builtIn="false" value="SDCARD_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="STM32H723xx"/>
 									<listOptionValue builtIn="false" value="RTC_ENABLE=1"/>
@@ -2248,7 +2230,6 @@
 									<listOptionValue builtIn="false" value="USB_SERIAL_CDC=1"/>
 									<listOptionValue builtIn="false" value="HSE_VALUE=25000000"/>
 									<listOptionValue builtIn="false" value="SDCARD_ENABLE=1"/>
-									<listOptionValue builtIn="false" value="BLOCK_BUFFER_SIZE=1024"/>
 									<listOptionValue builtIn="false" value="L1_CACHE_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="STM32H723xx"/>
 									<listOptionValue builtIn="false" value="RTC_ENABLE=1"/>
