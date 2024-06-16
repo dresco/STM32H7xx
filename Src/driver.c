@@ -101,6 +101,7 @@
 #include "grbl/spindle_sync.h"
 
 #define RPM_TIMER_RESOLUTION 1
+#define RPM_TIMER_COUNT RPM_TIMER->CNT
 
 static spindle_data_t spindle_data;
 static spindle_sync_t spindle_tracker;
@@ -2020,8 +2021,16 @@ static bool driver_setup (settings_t *settings)
     RPM_TIMER->CR1 |= TIM_CR1_CEN;
 
     RPM_COUNTER_CLKEN();
-//    RPM_COUNTER->SMCR = TIM_SMCR_SMS_0|TIM_SMCR_SMS_1|TIM_SMCR_SMS_2|TIM_SMCR_ETF_2|TIM_SMCR_ETF_3|TIM_SMCR_TS_0|TIM_SMCR_TS_1|TIM_SMCR_TS_2;
+
+#if SPINDLE_ENCODER_CLK == 1 // External clock mode 1 (TI1FP1 pin)
+    RPM_COUNTER->SMCR = TIM_SMCR_SMS_0|TIM_SMCR_SMS_1|TIM_SMCR_SMS_2|TIM_SMCR_ETF_2|TIM_SMCR_ETF_3|TIM_SMCR_TS_0|TIM_SMCR_TS_2;
+#elif SPINDLE_ENCODER_CLK == 2 // External clock mode 2 (ETR pin)
     RPM_COUNTER->SMCR = TIM_SMCR_ECE;
+#else
+    #error Spindle encoder clock mode not defined
+#endif
+
+
     RPM_COUNTER->PSC = 0;
     RPM_COUNTER->ARR = 65535;
     RPM_COUNTER->DIER = TIM_DIER_CC1IE;
@@ -2030,7 +2039,7 @@ static bool driver_setup (settings_t *settings)
 
     GPIO_Init.Mode = GPIO_MODE_AF_PP;
     GPIO_Init.Pin = SPINDLE_PULSE_BIT;
-    GPIO_Init.Pull = GPIO_NOPULL;
+    GPIO_Init.Pull = GPIO_PULLUP;
     GPIO_Init.Speed = GPIO_SPEED_FREQ_LOW;
     GPIO_Init.Alternate = GPIO_AF2_TIM3;
     HAL_GPIO_Init(SPINDLE_PULSE_PORT, &GPIO_Init);

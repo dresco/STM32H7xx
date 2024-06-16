@@ -214,12 +214,13 @@
 #define MOTOR_FAULT_PIN             AUXINPUT5_PIN
 #endif
 
-// Spindle encoder pins.
+// Spindle encoder pins (index pin that must be interrupt capable).
 #if SPINDLE_ENCODER_ENABLE
-#define SPINDLE_INDEX_PORT          GPIOB
-#define SPINDLE_INDEX_PIN           4
-#define SPINDLE_PULSE_PORT          GPIOG
-#define SPINDLE_PULSE_PIN           14
+#define SPINDLE_INDEX_PORT          GPIOG
+#define SPINDLE_INDEX_PIN           14
+#define SPINDLE_PULSE_PORT          GPIOB
+#define SPINDLE_PULSE_PIN           4
+#define SPINDLE_ENCODER_CLK         1
 #endif
 
 #define CAN_PORT                    GPIOD
