@@ -3,20 +3,20 @@
 
   Part of grblHAL
 
-  Copyright (c) 2021-2023 Terje Io
+  Copyright (c) 2021-2024 Terje Io
 
-  Grbl is free software: you can redistribute it and/or modify
+  grblHAL is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Grbl is distributed in the hope that it will be useful,
+  grblHAL is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
+  along with grblHAL. If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "driver.h"
@@ -93,8 +93,15 @@ static void report_options (bool newopt)
             hal.stream.write(",SSDP");
 #endif
     } else {
+
+        network_info_t *network = networking_get_info();
+
+        hal.stream.write("[MAC:");
+        hal.stream.write(network->mac);
+        hal.stream.write("]" ASCII_EOL);
+
         hal.stream.write("[IP:");
-        hal.stream.write(IPAddress);
+        hal.stream.write(network->status.ip);
         hal.stream.write("]" ASCII_EOL);
 
         if(active_stream == StreamType_Telnet || active_stream == StreamType_WebSocket) {
@@ -141,7 +148,7 @@ network_info_t *networking_get_info (void)
             ip4addr_ntoa_r(netif_ip_netmask4(netif), info.status.mask, IP4ADDR_STRLEN_MAX);
         }
 
-        sprintf(info.mac, MAC_FORMAT_STRING, netif->hwaddr[0], netif->hwaddr[1], netif->hwaddr[2], netif->hwaddr[3], netif->hwaddr[4], netif->hwaddr[5]);
+        strcpy(info.mac, networking_mac_to_string(netif->hwaddr));
     }
 
 #if MQTT_ENABLE
@@ -381,6 +388,18 @@ static char *ethernet_get_ip (setting_id_t setting);
 static status_code_t ethernet_set_services (setting_id_t setting, uint_fast16_t int_value);
 static uint32_t ethernet_get_services (setting_id_t id);
 
+#ifdef HAS_MAC_SETTING
+static status_code_t ethernet_set_mac (setting_id_t setting, char *value)
+{
+	return networking_string_to_mac(value, ethernet.mac) ? Status_OK : Status_InvalidStatement;
+}
+
+static char *ethernet_get_mac (setting_id_t setting)
+{
+    return networking_mac_to_string(ethernet.mac);
+}
+#endif
+
 static const setting_group_detail_t ethernet_groups [] = {
     { Group_Root, Group_Networking, "Networking" }
 };
@@ -392,6 +411,9 @@ static const setting_detail_t ethernet_settings[] = {
     { Setting_IpAddress, Group_Networking, "IP Address", NULL, Format_IPv4, NULL, NULL, NULL, Setting_NonCoreFn, ethernet_set_ip, ethernet_get_ip, NULL, { .reboot_required = On } },
     { Setting_Gateway, Group_Networking, "Gateway", NULL, Format_IPv4, NULL, NULL, NULL, Setting_NonCoreFn, ethernet_set_ip, ethernet_get_ip, NULL, { .reboot_required = On } },
     { Setting_NetMask, Group_Networking, "Netmask", NULL, Format_IPv4, NULL, NULL, NULL, Setting_NonCoreFn, ethernet_set_ip, ethernet_get_ip, NULL, { .reboot_required = On } },
+#ifdef HAS_MAC_SETTING
+    { Setting_NetworkMAC, Group_Networking, "MAC Address", NULL , Format_String, "x(17)", "17", "17", Setting_NonCoreFn, ethernet_set_mac, ethernet_get_mac, NULL, { .allow_null = On, .reboot_required = On } },
+#endif
     { Setting_TelnetPort, Group_Networking, "Telnet port", NULL, Format_Int16, "####0", "1", "65535", Setting_NonCore, &ethernet.telnet_port, NULL, NULL, { .reboot_required = On } },
 #if FTP_ENABLE
     { Setting_FtpPort, Group_Networking, "FTP port", NULL, Format_Int16, "####0", "1", "65535", Setting_NonCore, &ethernet.ftp_port, NULL, NULL, { .reboot_required = On } },
@@ -417,6 +439,9 @@ static const setting_descr_t ethernet_settings_descr[] = {
     { Setting_IpAddress, "Static IP address." },
     { Setting_Gateway, "Static gateway address." },
     { Setting_NetMask, "Static netmask." },
+#ifdef HAS_MAC_SETTING
+    { Setting_NetworkMAC, "Optional MAC address. Tip: get from an unused device, e.g an old router." },
+#endif
     { Setting_TelnetPort, "(Raw) Telnet port number listening for incoming connections." },
 #if FTP_ENABLE
     { Setting_FtpPort, "FTP port number listening for incoming connections." },
@@ -559,6 +584,10 @@ void ethernet_settings_restore (void)
 #else
     if(ip4addr_aton("255.255.255.0", &addr) == 1)
         set_addr(ethernet.mask, &addr);
+#endif
+
+#ifdef HAS_MAC_SETTING
+    bmac_eth_get(ethernet.mac);
 #endif
 
     ethernet.ftp_port = NETWORK_FTP_PORT;

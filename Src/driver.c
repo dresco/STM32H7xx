@@ -1848,6 +1848,60 @@ void setPeriphPinDescription (const pin_function_t function, const pin_group_t g
     } while(ppin);
 }
 
+
+#if ETHERNET_ENABLE
+
+uint32_t crc32_bitwise(const void* data, size_t length)
+{
+  const uint32_t polynomial = 0xEDB88320;
+  uint32_t crc = 0xFFFFFFFF;
+  unsigned char* current = (unsigned char*) data;
+  while (length--)
+  {
+    crc ^= *current++;
+    for (unsigned int j = 0; j < 8; j++)
+      if (crc & 1)
+        crc = (crc >> 1) ^ polynomial;
+      else
+        crc =  crc >> 1;
+  }
+  return ~crc;
+}
+
+bool bmac_eth_get (uint8_t mac[6])
+{
+#if defined(_WIZCHIP_)
+    // WizNet OUI prefix
+    mac[0] = 0x00;
+    mac[1] = 0x08;
+    mac[2] = 0xDC;
+#else
+    // ST OUI prefix
+    mac[0] = 0x00;
+    mac[1] = 0x80;
+    mac[2] = 0xE1;
+#endif
+
+    // Set LAA bit
+    mac[0] |= 0x02;
+
+    // Get 96 bit unique device identifier
+    uint32_t uid[3];
+    uid[0] = HAL_GetUIDw0();
+    uid[1] = HAL_GetUIDw1();
+    uid[2] = HAL_GetUIDw2();
+
+    // Generate 32bit CRC from 96 bit UID
+    uint32_t crc = crc32_bitwise(uid, 12);
+
+    // Copy first 24bits of the CRC into the MAC address
+    memcpy(&mac[3], &crc, 3);
+
+    return true;
+}
+
+#endif // ETHERNET_ENABLE
+
 // Initializes MCU peripherals for Grbl use
 static bool driver_setup (settings_t *settings)
 {
@@ -2112,7 +2166,7 @@ bool driver_init (void)
     hal.info = "STM32H743";
 #endif
 
-    hal.driver_version = "240522";
+    hal.driver_version = "240624";
     hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
