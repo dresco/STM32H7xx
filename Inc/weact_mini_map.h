@@ -112,16 +112,20 @@
 #define AUXINPUT0_PORT              GPIOA
 #define AUXINPUT0_PIN               7
 
+#define AUXINPUT1_PORT              GPIOA
+#define AUXINPUT1_PIN               15
+
 #if SAFETY_DOOR_ENABLE
 #define SAFETY_DOOR_PORT            AUXINPUT0_PORT
 #define SAFETY_DOOR_PIN             AUXINPUT0_PIN
 #endif
 
-#define CONTROL_INMODE              GPIO_SINGLE
+#if PROBE_ENABLE
+#define PROBE_PORT                  AUXINPUT1_PORT
+#define PROBE_PIN                   AUXINPUT1_PIN
+#endif
 
-// Define probe switch input pin.
-#define PROBE_PORT                  GPIOA
-#define PROBE_PIN                   15                         // Z probe
+#define CONTROL_INMODE              GPIO_SINGLE
 
 #if TRINAMIC_UART_ENABLE
 

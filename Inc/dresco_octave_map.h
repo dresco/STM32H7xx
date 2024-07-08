@@ -193,22 +193,26 @@
 #define AUXINPUT2_PIN               13
 #define AUXINPUT3_PORT              GPIOD
 #define AUXINPUT3_PIN               10
-#define AUXINPUT4_PORT              GPIOF
-#define AUXINPUT4_PIN               0
+#define AUXINPUT4_PORT              GPIOD
+#define AUXINPUT4_PIN               12
+#define AUXINPUT5_PORT              GPIOF
+#define AUXINPUT5_PIN               0
 
 #if SAFETY_DOOR_ENABLE
 #define SAFETY_DOOR_PORT            AUXINPUT0_PORT
 #define SAFETY_DOOR_PIN             AUXINPUT0_PIN
 #endif
 
-#if MOTOR_FAULT_ENABLE
-#define MOTOR_FAULT_PORT            AUXINPUT4_PORT
-#define MOTOR_FAULT_PIN             AUXINPUT4_PIN
+// Define probe switch input pin.
+#if PROBE_ENABLE
+#define PROBE_PORT                  AUXINPUT4_PORT
+#define PROBE_PIN                   AUXINPUT4_PIN
 #endif
 
-// Define probe switch input pin.
-#define PROBE_PORT                  GPIOD
-#define PROBE_PIN                   12
+#if MOTOR_FAULT_ENABLE
+#define MOTOR_FAULT_PORT            AUXINPUT5_PORT
+#define MOTOR_FAULT_PIN             AUXINPUT5_PIN
+#endif
 
 // Spindle encoder pins.
 #if SPINDLE_ENCODER_ENABLE
