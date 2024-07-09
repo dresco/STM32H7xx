@@ -354,6 +354,11 @@ void SystemClock_Config(void)
 #endif
 #endif //SPIFLASH_ENABLE
 
+#ifdef CAN_PORT
+    PeriphClkInitStruct.PeriphClockSelection = PeriphClkInitStruct.PeriphClockSelection | RCC_PERIPHCLK_FDCAN;
+    PeriphClkInitStruct.FdcanClockSelection = RCC_FDCANCLKSOURCE_PLL;
+#endif //CAN_PORT
+
 #if SDCARD_ENABLE
     PeriphClkInitStruct.PeriphClockSelection = PeriphClkInitStruct.PeriphClockSelection | RCC_PERIPHCLK_SDMMC;
 #ifdef NUCLEO_SLOW_SDMMC_CLOCK
