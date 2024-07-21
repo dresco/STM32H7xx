@@ -93,7 +93,7 @@ bool can_add_filter (uint32_t id, uint32_t mask, bool ext_id, can_rx_ptr callbac
 
     sFilterConfig.FilterIndex = index;
 
-    printf("can_add_filter(), adding new filter - id:%lu, idx:%u\n", id, index);
+    //debug_printf("can_add_filter(), adding new filter - id:%lu, idx:%u\n", id, index);
 
     rx_callbacks[index++] = callback;
 
@@ -132,7 +132,7 @@ bool can_start (uint32_t baud, can_rx_enqueue_fn callback)
     PLL1_ClocksTypeDef pll1_clocks;
     HAL_RCCEx_GetPLL1ClockFreq(&pll1_clocks);
     uint32_t pll1_q_freq = pll1_clocks.PLL1_Q_Frequency;
-    printf("can_start(), PLL1_Q frequency: %lu\n", pll1_q_freq);
+    debug_printf("can_start(), PLL1_Q frequency: %lu\n", pll1_q_freq);
 
     switch (pll1_q_freq) {
 
@@ -182,7 +182,7 @@ bool can_start (uint32_t baud, can_rx_enqueue_fn callback)
     }
 
     if (unknown_rate) {
-        printf("can_start(), error - unable to calculate bit timings\n");
+        debug_printf("can_start(), error - unable to calculate bit timings\n");
         return(0);
     }
 
@@ -295,7 +295,7 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
                  * point outside of the valid array..
                  */
                 if (RxHeader.FilterIndex > CAN_MAX_FILTERS) {
-                    printf("HAL_FDCAN_RxFifo0Callback(), unexpected message received - id:%lu, idx:%lu\n",
+                    debug_printf("HAL_FDCAN_RxFifo0Callback(), unexpected message received - id:%lu, idx:%lu\n",
                             RxHeader.Identifier, RxHeader.FilterIndex);
                     return;
                 }
@@ -306,8 +306,8 @@ void HAL_FDCAN_RxFifo0Callback(FDCAN_HandleTypeDef *hfdcan, uint32_t RxFifo0ITs)
                  * would just end up dropping messages somewhere else (i.e. in the CAN RX fifo)..
                  */
 
-                printf("HAL_FDCAN_RxFifo0Callback(), adding new msg to RX queue - id:%lu, idx:%lu\n",
-                        RxHeader.Identifier, RxHeader.FilterIndex);
+                //debug_printf("HAL_FDCAN_RxFifo0Callback(), adding new msg to RX queue - id:%lu, idx:%lu\n",
+                //        RxHeader.Identifier, RxHeader.FilterIndex);
 
                 message.id = RxHeader.Identifier;
                 // DLC has to be right shifted by 16bits for the FDCAN driver

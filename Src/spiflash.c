@@ -115,7 +115,7 @@ static int xSPI_ReadBytes(const flash_cmd_t *cmd, uint32_t offset, uint8_t *data
 {
     xSPI_CmdTypeDef xspi_cmd;
 
-    //printf("RB %x 0x%08lx %p %d\n", cmd->cmd, offset, data, len);
+    //debug_printf("RB %x 0x%08lx %p %d\n", cmd->cmd, offset, data, len);
 
     xSPI_(SetCmd)(&xspi_cmd, cmd, offset, (uint8_t *) data, len);
 
@@ -185,7 +185,7 @@ static int xSPI_WriteBytes(const flash_cmd_t *cmd, uint32_t address, const uint8
 {
     xSPI_CmdTypeDef xspi_cmd;
 
-    //printf("WB %x 0x%08lx %p %d\n", cmd->cmd, address, data, len);
+    //debug_printf("WB %x 0x%08lx %p %d\n", cmd->cmd, address, data, len);
 
     xSPI_(SetCmd)(&xspi_cmd, cmd, address, (uint8_t *) data, len);
 
@@ -249,7 +249,7 @@ static int xSPI_PageProgram(uint32_t address, const uint8_t *buffer, size_t buff
 {
     assert(buffer_size <= 256);
 
-    //printf("PP cmd=%02X addr=0x%lx buf=%p len=%d\n", (*CMD(PP)).cmd, address, buffer, buffer_size);
+    //debug_printf("PP cmd=%02X addr=0x%lx buf=%p len=%d\n", (*CMD(PP)).cmd, address, buffer, buffer_size);
 
     if (xSPI_WriteBytes(CMD(PP), address, buffer, buffer_size) != SPIFLASH_OK) {
         return SPIFLASH_ERROR;
@@ -454,7 +454,7 @@ static int W25Qxx_Init()
     if (xSPI_ReadBytes(CMD(RDID), 0, &jedec_id.u8[0], 3) != SPIFLASH_OK) {
         return SPIFLASH_ERROR;
     }
-    printf("JEDEC_ID: %02X %02X %02X\n", jedec_id.u8[0], jedec_id.u8[1], jedec_id.u8[2]);
+    debug_printf("JEDEC_ID: %02X %02X %02X\n", jedec_id.u8[0], jedec_id.u8[1], jedec_id.u8[2]);
 
     if (xSPI_ReadBytes(CMD(RDSR1), 0, &sr1, 1) != SPIFLASH_OK) {
         return SPIFLASH_ERROR;
@@ -465,11 +465,11 @@ static int W25Qxx_Init()
     if (xSPI_ReadBytes(CMD(RDSR3), 0, &sr3, 1) != SPIFLASH_OK) {
         return SPIFLASH_ERROR;
     }
-    printf("Winbond SR1: %02X SR2: %02X SR3: %02X\n", sr1, sr2, sr3);
+    debug_printf("Winbond SR1: %02X SR2: %02X SR3: %02X\n", sr1, sr2, sr3);
 
     // Check/clear SR1 write protect bits
     if (sr1 & WB_SR1_PROTECT_MASK) {
-        printf("Clearing SR1 write protect bits\n");
+        //debug_printf("Clearing SR1 write protect bits\n");
 
         // Clear SR1 register, BUSY & WEL are status only bits (not changeable)
         sr1 = 0;
@@ -489,7 +489,7 @@ static int W25Qxx_Init()
             return SPIFLASH_ERROR;
         }
         if (sr1 & WB_SR1_PROTECT_MASK) {
-            printf("SR1: %02X, change failed\n", sr1);
+            //debug_printf("SR1: %02X, change failed\n", sr1);
             return SPIFLASH_ERROR;
         }
 
@@ -499,11 +499,11 @@ static int W25Qxx_Init()
     if ((sr2 & WB_SR2_PROTECT_MASK) || !(sr2 & WB_SR2_QE_MASK)) {
 
         if (sr2 & WB_SR2_PROTECT_MASK) {
-            printf("Clearing SR2 write protect bits\n");
+            //debug_printf("Clearing SR2 write protect bits\n");
         }
 
         if (!(sr2 & WB_SR2_QE_MASK)) {
-            printf("Setting SR2 Quad Enable bit\n");
+            //debug_printf("Setting SR2 Quad Enable bit\n");
         }
 
            // Clear SR2 register, set just Quad Enable bit
@@ -525,7 +525,7 @@ static int W25Qxx_Init()
             return SPIFLASH_ERROR;
         }
         if ((sr2 & WB_SR2_PROTECT_MASK) || !(sr2 & WB_SR2_QE_MASK)) {
-            printf("SR2: %02X, change failed\n", sr2);
+            //debug_printf("SR2: %02X, change failed\n", sr2);
             return SPIFLASH_ERROR;
         }
     }
@@ -534,11 +534,11 @@ static int W25Qxx_Init()
     if ((sr3 & WB_SR3_PROTECT_MASK) || ((sr3 & WB_SR3_DRV_MASK) != WB_SR3_DRV_MATCH)) {
 
         if (sr3 & WB_SR3_PROTECT_MASK) {
-            printf("Clearing SR3 write protect bits\n");
+            //debug_printf("Clearing SR3 write protect bits\n");
         }
 
         if ((sr3 & WB_SR3_DRV_MASK) != WB_SR3_DRV_MATCH) {
-            printf("Setting SR3 Drive Strength bits\n");
+            //debug_printf("Setting SR3 Drive Strength bits\n");
         }
 
            // Clear SR3 register, set just Drive Strength bits
@@ -560,7 +560,7 @@ static int W25Qxx_Init()
             return SPIFLASH_ERROR;
         }
         if ((sr3 & WB_SR3_PROTECT_MASK) || ((sr3 & WB_SR3_DRV_MASK) != WB_SR3_DRV_MATCH)) {
-            printf("SR3: %02X, change failed\n", sr3);
+            //debug_printf("SR3: %02X, change failed\n", sr3);
             return SPIFLASH_ERROR;
         }
     }
