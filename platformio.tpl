@@ -9,6 +9,7 @@ src_dir = Src
 [common]
 build_flags =
   -I .
+  -I boards
   -D L1_CACHE_ENABLE=1
   -D OVERRIDE_MY_MACHINE
   -I FATFS/Target
@@ -17,6 +18,7 @@ build_flags =
   -Wl,-u,_printf_float
   -Wl,-u,_scanf_float
 lib_deps =
+  boards
   bluetooth
   grbl
   eeprom

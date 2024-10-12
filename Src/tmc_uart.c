@@ -1,25 +1,25 @@
 /*
-  tmc_uart.c - driver code for STM32F4xx ARM processors
+  tmc_uart.c - driver code for STM32H7xx ARM processors
 
   Part of grblHAL
 
-  Copyright (c) 2021-2022 fitch22, Terje Io
+  Copyright (c) 2021-2024 fitch22, Terje Io
 
   Some software serial code is ported from Arduino.  Credit belongs to the many
   authors that contributed to that project.
 
-  Grbl is free software: you can redistribute it and/or modify
+  grblHAL is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation, either version 3 of the License, or
   (at your option) any later version.
 
-  Grbl is distributed in the hope that it will be useful,
+  grblHAL is distributed in the hope that it will be useful,
   but WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
   GNU General Public License for more details.
 
   You should have received a copy of the GNU General Public License
-  along with Grbl.  If not, see <http://www.gnu.org/licenses/>.
+  along with grblHAL.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include "driver.h"
@@ -28,9 +28,6 @@
 
 #include "trinamic/common.h"
 
-#ifndef TMC_UART_TIMER_N
-#define TMC_UART_TIMER_N        7
-#endif
 #define TMC_UART_TIMER          timer(TMC_UART_TIMER_N)
 #define TMC_UART_IRQn           timerINT(TMC_UART_TIMER_N)
 #define TMC_UART_IRQHandler     timerHANDLER(TMC_UART_TIMER_N)

@@ -40,12 +40,20 @@ static settings_changed_ptr settings_changed;
 static void (*ppi_spindle_on)(spindle_ptrs_t *spindle) = NULL;
 static void (*ppi_spindle_off)(void) = NULL;
 static spindle_ptrs_t *ppi_spindle = NULL;
+static hal_timer_t ppi_timer;
+
+static void spindlePulseOff (void *context)
+{
+    ppi_spindle_off();
+}
 
 static void spindlePulseOn (uint_fast16_t pulse_length)
 {
+    hal.timer.start(ppi_timer, pulse_length);
+/*
     PPI_TIMER->ARR = pulse_length;
     PPI_TIMER->EGR = TIM_EGR_UG;
-    PPI_TIMER->CR1 |= TIM_CR1_CEN;
+    PPI_TIMER->CR1 |= TIM_CR1_CEN; */
     ppi_spindle_on(ppi_spindle);
 }
 
@@ -192,7 +200,7 @@ static bool spindleConfig (spindle_ptrs_t *spindle)
                 if(ppi_spindle == spindle)
                     ppi_spindle = NULL;
                 spindle->pulse_on = NULL;
-            } else {
+            } else if(ppi_timer) {
                 spindle->pulse_on = spindlePulseOn;
                 ppi_spindle = spindle;
                 ppi_spindle_on = spindle_on;
@@ -205,10 +213,6 @@ static bool spindleConfig (spindle_ptrs_t *spindle)
             spindle->pulse_on = NULL;
             spindle->set_state = spindleSetState;
         }
-
-#if SPINDLE_ENCODER_ENABLE
-        spindle->cap.at_speed = spindle->get_data == hal.spindle_data.get; // TODO: remove, set by core code?
-#endif
     } else // PWM output not available
         spindle->set_state = spindleSetState;
 
@@ -281,7 +285,7 @@ inline static void spindle1_on (spindle_ptrs_t *spindle)
 inline static void spindle1_dir (bool ccw)
 {
 #ifdef SPINDLE1_DIRECTION_PIN
-    DIGITAL_OUT(SPINDLE_DIRECTION_PORT, SPINDLE_DIRECTION_BIT, ccw ^ spindle_config->cfg.invert.ccw);
+    DIGITAL_OUT(SPINDLE1_DIRECTION_PORT, SPINDLE1_DIRECTION_BIT, ccw ^ spindle_config->cfg.invert.ccw);
 #else
     UNUSED(ccw);
 #endif
@@ -290,7 +294,7 @@ inline static void spindle1_dir (bool ccw)
 // Start or stop spindle
 static void spindle1SetState (spindle_ptrs_t *spindle, spindle_state_t state, float rpm)
 {
-    if (!state.on)
+    if (!state.on || rpm == 0.0f)
         spindle1_off();
     else {
         spindle1_dir(state.ccw);
@@ -360,17 +364,6 @@ static void spindle1SetStateVariable (spindle_ptrs_t *spindle, spindle_state_t s
     spindle1SetSpeed(spindle, state.on || (state.ccw && spindle->context.pwm->flags.cloned)
                               ? spindle->context.pwm->compute_value(spindle->context.pwm, rpm, false)
                               : spindle->context.pwm->off_value);
-
-#if SPINDLE_ENCODER_ENABLE
-    if(spindle->context.pwm->settings->at_speed_tolerance > 0.0f) {
-        float tolerance = rpm * spindle->context.pwm->settings->at_speed_tolerance / 100.0f;
-        spindle_data.rpm_low_limit = rpm - tolerance;
-        spindle_data.rpm_high_limit = rpm + tolerance;
-    }
-    spindle_data.state_programmed.on = state.on;
-    spindle_data.state_programmed.ccw = state.ccw;
-    spindle_data.rpm_programmed = spindle_data.rpm = rpm;
-#endif
 }
 
 static bool spindle1Config (spindle_ptrs_t *spindle)
@@ -394,7 +387,7 @@ static bool spindle1Config (spindle_ptrs_t *spindle)
             pwm_config(&spindle1_timer, prescaler, spindle1_pwm.period, spindle_config->cfg.invert.pwm);
 
 #if PPI_ENABLE
-            if(ppi_spindle == NULL) {
+            if(ppi_spindle == NULL && ppi_timer) {
                 spindle->pulse_on = spindlePulseOn;
                 ppi_spindle = spindle;
                 ppi_spindle_on = spindle1_on;
@@ -409,10 +402,6 @@ static bool spindle1Config (spindle_ptrs_t *spindle)
             spindle->pulse_on = NULL;
             spindle->set_state = spindle1SetState;
         }
-
-#if SPINDLE_ENCODER_ENABLE
-        spindle->cap.at_speed = spindle->get_data == spindleGetData;
-#endif
     } else // PWM output not available
         spindle->set_state = spindle1SetState;
 
@@ -530,6 +519,11 @@ void driver_spindles_init (void)
 
     static const spindle_ptrs_t spindle = {
         .type = SpindleType_PWM,
+#if DRIVER_SPINDLE_DIR_ENABLE
+        .ref_id = SPINDLE_PWM0,
+#else
+        .ref_id = SPINDLE_PWM0_NODIR,
+#endif
         .config = spindleConfig,
         .set_state = spindleSetStateVariable,
         .get_state = spindleGetState,
@@ -556,6 +550,11 @@ void driver_spindles_init (void)
 
     static const spindle_ptrs_t spindle = {
         .type = SpindleType_Basic,
+#if DRIVER_SPINDLE_DIR_ENABLE
+        .ref_id = SPINDLE_ONOFF0_DIR,
+#else
+        .ref_id = SPINDLE_ONOFF0,
+#endif
         .set_state = spindleSetState,
         .get_state = spindleGetState,
         .cap = {
@@ -578,6 +577,11 @@ void driver_spindles_init (void)
 
     static const spindle_ptrs_t spindle1 = {
         .type = SpindleType_PWM,
+#if DRIVER_SPINDLE1_DIR_ENABLE
+        .ref_id = SPINDLE_PWM1,
+#else
+        .ref_id = SPINDLE_PWM1_NODIR,
+#endif
         .config = spindle1Config,
         .update_pwm = spindle1SetSpeed,
         .set_state = spindle1SetStateVariable,
@@ -606,6 +610,11 @@ void driver_spindles_init (void)
 
    static const spindle_ptrs_t spindle1 = {
        .type = SpindleType_Basic,
+#if DRIVER_SPINDLE1_DIR_ENABLE
+        .ref_id = SPINDLE_ONOFF1_DIR,
+#else
+        .ref_id = SPINDLE_ONOFF1,
+#endif
        .set_state = spindle1SetState,
        .get_state = spindle1GetState,
        .cap = {
@@ -628,36 +637,17 @@ void driver_spindles_init (void)
 
 #if PPI_ENABLE
 
-    uint32_t latency;
-    RCC_ClkInitTypeDef clock_cfg;
+    static timer_cfg_t cfg = {
+        .single_shot = On,
+        .timeout_callback = spindlePulseOff
+    };
 
-    HAL_RCC_GetClockConfig(&clock_cfg, &latency);
-
-    // Single-shot 1 us per tick
-    PPI_TIMER_CLKEN();
-    PPI_TIMER->CR1 |= TIM_CR1_OPM|TIM_CR1_DIR|TIM_CR1_CKD_1|TIM_CR1_ARPE|TIM_CR1_URS;
-    PPI_TIMER->PSC = HAL_RCC_GetPCLK1Freq() * TIMER_CLOCK_MUL(clock_cfg.APB1CLKDivider) / 1000000UL - 1;
-    PPI_TIMER->SR &= ~(TIM_SR_UIF|TIM_SR_CC1IF);
-    PPI_TIMER->CNT = 0;
-    PPI_TIMER->DIER |= TIM_DIER_UIE;
-
-    HAL_NVIC_EnableIRQ(PPI_TIMER_IRQn);
-
-    ppi_init();
+    if((ppi_timer = hal.timer.claim((timer_cap_t){ .periodic = Off }, 1000))) {
+        hal.timer.configure(ppi_timer, &cfg);
+        ppi_init();
+    }
 
 #endif
 }
-
-#if PPI_ENABLE
-
-// PPI timer interrupt handler
-void PPI_TIMER_IRQHandler (void)
-{
-    PPI_TIMER->SR = ~TIM_SR_UIF; // clear UIF flag;
-
-    ppi_spindle_off();
-}
-
-#endif
 
 #endif // DRIVER_SPINDLE_ENABLE || DRIVER_SPINDLE1_ENABLE

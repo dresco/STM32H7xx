@@ -113,6 +113,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup743"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="USB_DEVICE"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -238,6 +239,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup743"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="USB_DEVICE"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -359,6 +361,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup743"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="USB_DEVICE"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -476,6 +479,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup743"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="USB_DEVICE"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -597,6 +601,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="USB_DEVICE_H723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -714,6 +719,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="USB_DEVICE_H723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -831,6 +837,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="USB_DEVICE_H723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -948,6 +955,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup743"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="USB_DEVICE"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -1077,6 +1085,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup743"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="USB_DEVICE_H723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -1194,6 +1203,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="USB_DEVICE_H723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -1311,6 +1321,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="USB_DEVICE_H723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -1433,6 +1444,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup743"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="USB_DEVICE"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -1551,6 +1563,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup743"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="USB_DEVICE"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -1675,6 +1688,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="USB_DEVICE_H723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -1795,6 +1809,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="USB_DEVICE_H723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -1917,6 +1932,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="USB_DEVICE_H723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -2040,6 +2056,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="USB_DEVICE_H723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -2172,6 +2189,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="USB_DEVICE_H723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>
@@ -2301,6 +2319,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="Startup723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="USB_DEVICE_H723"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="bluetooth"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="boards"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="eeprom"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="fans"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="grbl"/>

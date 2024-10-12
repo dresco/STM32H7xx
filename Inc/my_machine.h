@@ -51,6 +51,7 @@
 //#define SPINDLE1_ENABLE         SPINDLE_PWM0
 //#define SPINDLE2_ENABLE         SPINDLE_NONE
 //#define SPINDLE3_ENABLE         SPINDLE_NONE
+//#define SPINDLE_OFFSET          1 // Uncomment to enable settings for laser spindle XY-offset.
 // **********************
 //#define MODBUS_ENABLE           1 // Set to 1 for auto direction, 2 for direction signal on auxillary output pin.
 //#define WEBUI_ENABLE            3 // Enable ESP3D-WEBUI plugin along with networking and SD card plugins.
@@ -59,12 +60,11 @@
 //#define ETHERNET_ENABLE         1 // Ethernet streaming. Uses networking plugin.
 //#define BLUETOOTH_ENABLE        2 // Set to 2 for HC-05 module. Uses Bluetooth plugin.
 //#define SDCARD_ENABLE           1 // Run gcode programs from SD card. Set to 2 to enable YModem upload.
-//#define MPG_ENABLE              1 // Enable MPG interface. Requires a serial port and means to switch between normal and MPG mode.
-                                    // 1: Mode switching is by handshake pin input unless the keypad plugin is enabled in mode 2 which
-                                    //    uses mode switching by the CMD_MPG_MODE_TOGGLE (0x8B) command character.
-                                    // 2: Mode switching is by the CMD_MPG_MODE_TOGGLE command character. The keypad plugin is not required.
+//#define MPG_ENABLE              1 // Enable MPG interface. Requires a serial stream and means to switch between normal and MPG mode.
+                                    // 1: Mode switching is by handshake pin.
+                                    // 2: Mode switching is by the CMD_MPG_MODE_TOGGLE (0x8B) command character.
 //#define KEYPAD_ENABLE           1 // 1: uses a I2C keypad for input.
-                                    // 2: uses a serial port for input. If MPG_ENABLE is set to 1 the serial stream is shared with the MPG.
+                                    // 2: uses a serial stream for input. If MPG_ENABLE is set > 0 the serial stream is shared with the MPG.
 //#define ODOMETER_ENABLE         1 // Odometer plugin.
 //#define PPI_ENABLE              1 // Laser PPI plugin. To be completed.
 //#define LASER_COOLANT_ENABLE    1 // Laser coolant plugin. To be completed.
@@ -82,6 +82,14 @@
 //#define EEPROM_IS_FRAM          1 // Uncomment when EEPROM is enabled and chip is FRAM, this to remove write delay.
 //#define ESTOP_ENABLE            0 // When enabled only real-time report requests will be executed when the reset pin is asserted.
                                     // NOTE: if left commented out the default setting is determined from COMPATIBILITY_LEVEL.
+//#define MCP3221_ENABLE       0x4D // Enable MCP3221 I2C ADC input with address 0x4D (0b01001101).
+//#define RGB_LED_ENABLE          2 // Set to 1 to enable strip length settings $536 and $537, set to 2 to also enable M150 LED strip control.
+//#define PWM_SERVO_ENABLE        1 // Enable PWM servo support, requires at least one PWM capable auxillary output.
+//#define BLTOUCH_ENABLE          1 // Enable BLTouch support. Requires and claims one PWM servo output.
+//#define EVENTOUT_ENABLE         1 // Enable binding events (triggers) to control auxillary outputs.
+
+//#define SPINDLE_SYNC_ENABLE           1 // Plasma (THC) plugin. To be completed.
+
 // Optional control signals:
 // These will be assigned to aux input pins. Use the $pins command to check which pins are assigned.
 // NOTE: If not enough pins are available assignment will silently fail.

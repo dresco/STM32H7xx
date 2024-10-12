@@ -43,11 +43,15 @@
 
 #include "grbl/driver_opts.h"
 
+#include "timers.h"
+
 #define DIGITAL_OUT(port, bit, on) { port->BSRR = (on) ? (bit) : ((bit) << 16); }
 #define DIGITAL_IN(port, bit) (!!(port->IDR & (bit)))
 
 #define timer(t) timerN(t)
 #define timerN(t) TIM ## t
+#define timerBase(t) timerbase(t)
+#define timerbase(t) TIM ## t ## _BASE
 #define timerINT(t) timerint(t)
 #define timerint(t) TIM ## t ## _IRQn
 #define timerHANDLER(t) timerhandler(t)
@@ -79,7 +83,7 @@
 #define usartCLKEN(t) usartclken(t)
 #define usartclken(t) __HAL_RCC_USART ## t ## _CLK_ENABLE
 
-#define TIMER_CLOCK_MUL(d) (d == RCC_HCLK_DIV1 ? 1 : 2)
+#define TIMER_CLOCK_MUL(d) (d == RCC_HCLK_DIV1 ? 1 : (d == RCC_HCLK_DIV2 ? 2 : (d == RCC_HCLK_DIV4 ? 4 : 8)))
 
 // Define GPIO output mode options
 
@@ -109,23 +113,23 @@
 #endif
 
 #if defined(BOARD_PROTONEER_3XX)
-  #include "protoneer_3.xx_map.h"
+  #include "boards/protoneer_3.xx_map.h"
 #elif defined(BOARD_GENERIC_UNO)
-  #include "uno_map.h"
+  #include "boards/uno_map.h"
 #elif defined(BOARD_DRESCO_OCTAVE)
-  #include "dresco_octave_map.h"
+  #include "boards/dresco_octave_map.h"
 #elif defined(BOARD_BTT_SKR_30)
-  #include "btt_skr_v3.0_map.h"
+  #include "boards/btt_skr_v3.0_map.h"
 #elif defined(BOARD_BTT_OCTOPUS_MAX)
-  #include "btt_octopus_max_map.h"
+  #include "boards/btt_octopus_max_map.h"
 #elif defined(BOARD_WEACT_MINI)
-  #include "weact_mini_map.h"
+  #include "boards/weact_mini_map.h"
 #elif defined(BOARD_REFERENCE)
-  #include "reference_map.h"
+  #include "boards/reference_map.h"
 #elif defined(BOARD_MY_MACHINE)
-  #include "my_machine_map.h"
+  #include "boards/my_machine_map.h"
 #else // default board
-  #include "generic_map.h"
+  #include "boards/generic_map.h"
 #endif
 
 #if DRIVER_SPINDLE_ENABLE && !defined(SPINDLE_ENABLE_PIN)
@@ -152,22 +156,18 @@
 // Define timer allocations.
 
 #define STEPPER_TIMER_N             5
+#define STEPPER_TIMER_BASE          timerBase(STEPPER_TIMER_N)
 #define STEPPER_TIMER               timer(STEPPER_TIMER_N)
 #define STEPPER_TIMER_CLKEN         timerCLKEN(STEPPER_TIMER_N)
 #define STEPPER_TIMER_IRQn          timerINT(STEPPER_TIMER_N)
 #define STEPPER_TIMER_IRQHandler    timerHANDLER(STEPPER_TIMER_N)
 
 #define PULSE_TIMER_N               4
+#define PULSE_TIMER_BASE            timerBase(PULSE_TIMER_N)
 #define PULSE_TIMER                 timer(PULSE_TIMER_N)
 #define PULSE_TIMER_CLKEN           timerCLKEN(PULSE_TIMER_N)
 #define PULSE_TIMER_IRQn            timerINT(PULSE_TIMER_N)
 #define PULSE_TIMER_IRQHandler      timerHANDLER(PULSE_TIMER_N)
-
-#define PULSE2_TIMER_N              7
-#define PULSE2_TIMER                timer(PULSE2_TIMER_N)
-#define PULSE2_TIMER_CLKEN          timerCLKEN(PULSE2_TIMER_N)
-#define PULSE2_TIMER_IRQn           timerINT(PULSE2_TIMER_N)
-#define PULSE2_TIMER_IRQHandler     timerHANDLER(PULSE2_TIMER_N)
 
 #if defined(AUXOUTPUT0_PWM_PORT) || defined(AUXOUTPUT1_PWM_PORT) ||\
      defined(AUXOUTPUT0_ANALOG_PORT) || defined( AUXOUTPUT1_ANALOG_PORT) ||\
@@ -177,23 +177,36 @@
 #define AUX_ANALOG 0
 #endif
 
+#if SPINDLE_ENCODER_ENABLE
+
 #define RPM_COUNTER_N               3
+#define RPM_COUNTER_BASE            timerBase(RPM_COUNTER_N)
 #define RPM_COUNTER                 timer(RPM_COUNTER_N)
 #define RPM_COUNTER_CLKEN           timerCLKEN(RPM_COUNTER_N)
 #define RPM_COUNTER_IRQn            timerINT(RPM_COUNTER_N)
 #define RPM_COUNTER_IRQHandler      timerHANDLER(RPM_COUNTER_N)
 
 #define RPM_TIMER_N                 2
+#define RPM_TIMER_BASE              timerBase(RPM_TIMER_N)
 #define RPM_TIMER                   timer(RPM_TIMER_N)
 #define RPM_TIMER_CLKEN             timerCLKEN(RPM_TIMER_N)
 #define RPM_TIMER_IRQn              timerINT(RPM_TIMER_N)
 #define RPM_TIMER_IRQHandler        timerHANDLER(RPM_TIMER_N)
 
-#define PPI_TIMER_N                 2
-#define PPI_TIMER                   timer(PPI_TIMER_N)
-#define PPI_TIMER_CLKEN             timerCLKEN(PPI_TIMER_N)
-#define PPI_TIMER_IRQn              timerINT(PPI_TIMER_N)
-#define PPI_TIMER_IRQHandler        timerHANDLER(PPI_TIMER_N)
+#endif
+
+#if TRINAMIC_UART_ENABLE
+#ifndef TMC_UART_TIMER_N
+#define TMC_UART_TIMER_N        7
+#endif
+#define TMC_UART_TIMER_BASE         timerBase(TMC_UART_TIMER_N)
+#endif
+
+#define IS_TIMER_CLAIMED(INSTANCE) (((INSTANCE) == STEPPER_TIMER_BASE) || \
+                                    ((INSTANCE) == PULSE_TIMER_BASE) || \
+                                    ((INSTANCE) == RPM_TIMER_BASE) || \
+                                    ((INSTANCE) == RPM_COUNTER_BASE) || \
+                                    ((INSTANCE) == TMC_UART_TIMER_BASE))
 
 // Adjust STEP_PULSE_LATENCY to get accurate step pulse length when required, e.g if using high step rates.
 // The default value is calibrated for 10 microseconds length.
