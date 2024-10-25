@@ -122,6 +122,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -248,6 +249,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -370,6 +372,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -488,6 +491,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -610,6 +614,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -728,6 +733,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -846,6 +852,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -964,6 +971,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -1094,6 +1102,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -1212,6 +1221,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -1330,6 +1340,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -1454,6 +1465,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -1573,6 +1585,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -1698,6 +1711,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -1819,6 +1833,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -1941,6 +1956,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -2065,6 +2081,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -2199,6 +2216,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
@@ -2329,6 +2347,7 @@
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="networking"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="openpnp"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plasma"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="plugins"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="sdcard"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="spindle"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="sourcePath" name="trinamic"/>
