@@ -296,6 +296,14 @@
 //#error SD card plugin not supported!
 //#endif
 
+#ifndef L1_CACHE_ENABLE
+#define L1_CACHE_ENABLE 1
+#endif
+
+#ifndef USE_SPI_DMA
+#define USE_SPI_DMA 1
+#endif
+
 #if LITTLEFS_ENABLE
 #undef SPIFLASH_ENABLE
 #define SPIFLASH_ENABLE 1
