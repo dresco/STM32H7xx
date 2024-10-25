@@ -38,3 +38,6 @@
 [submodule "plasma"]
 	path = plasma
 	url = https://github.com/grblHAL/Plugin_plasma
+[submodule "plugins"]
+	path = plugins
+	url = https://github.com/grblHAL/Plugins_misc
