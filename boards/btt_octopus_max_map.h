@@ -35,8 +35,6 @@
 #define I2C_PORT                    2       // GPIOB: SCL = 10, SDA = 11
 #define SPI_PORT                    4       // GPIOE: SCK = 12, MISO = 13, MOSI = 14
 
-#define HAS_BOARD_INIT
-
 // Motor Reference:
 // Motor-1: X-axis
 // Motor-2: Y-axis

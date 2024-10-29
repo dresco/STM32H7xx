@@ -32,8 +32,6 @@
 
 #define SERIAL_PORT  1   // GPIOA: TX =  9, RX = 10
 
-#define HAS_BOARD_INIT
-
 // Define step pulse output pins.
 #define X_STEP_PORT                 GPIOD
 #define X_STEP_PIN                  4                   // X

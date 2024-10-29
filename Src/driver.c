@@ -2482,13 +2482,13 @@ bool driver_init (void)
     hal.info = "STM32H743";
 #endif
 
-    hal.driver_version = "241025";
+    hal.driver_version = "241029";
     hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
 #endif
 #ifdef BOARD_URL
-    hal.board = BOARD_URL;
+    hal.board_url = BOARD_URL;
 #endif
     hal.driver_setup = driver_setup;
     hal.f_mcu = HAL_RCC_GetHCLKFreq() / 1000000UL * (clock_cfg.AHBCLKDivider == 0 ? 1 : 2);
@@ -2689,6 +2689,15 @@ bool driver_init (void)
 
 #ifdef HAS_BOARD_INIT
     board_init();
+#endif
+
+#if TRINAMIC_SPI_ENABLE
+  extern void if_init (uint8_t motors, axes_signals_t enabled);
+  trinamic_driver_if_t driver_if = {.on_drivers_init = if_init};
+  trinamic_if_init(&driver_if);
+#elif TRINAMIC_UART_ENABLE
+    extern void tmc_uart_init (void);
+    tmc_uart_init();
 #endif
 
 #ifdef NEOPIXEL_SPI

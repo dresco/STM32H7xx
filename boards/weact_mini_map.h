@@ -35,8 +35,6 @@
 #define SPIFLASH_PINOUT 1  // CS = PB6, CLK = PB2, IO0 = PD11, IO1 = PD12, IO2 = PE2, IO3 = PD13
 #define SPIFLASH_SIZE   64 // 64 Mb = 8 MB
 
-#define HAS_BOARD_INIT
-
 // Define step pulse output pins.
 #define X_STEP_PORT                 GPIOB
 #define X_STEP_PIN                  10                  // X
