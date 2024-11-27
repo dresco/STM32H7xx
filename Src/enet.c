@@ -21,7 +21,7 @@
 
 #include "driver.h"
 
-#if ETHERNET_ENABLE
+#if ETHERNET_ENABLE && !defined(_WIZCHIP_)
 
 #include <math.h>
 #include <stdio.h>

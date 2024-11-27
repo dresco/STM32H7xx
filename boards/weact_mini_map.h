@@ -160,4 +160,16 @@
 
 #endif
 
+// WIZnet WS550 testing
+#if ETHERNET_ENABLE && defined(_WIZCHIP_)
+#undef SPI_ENABLE
+#define SPI_PORT     1              // GPIOA, SCK_PIN = 5, MISO_PIN = 6, MOSI_PIN = 7
+#define SPI_IRQ_PORT GPIOA
+#define SPI_IRQ_PIN  2
+#define SPI_CS_PORT  GPIOA
+#define SPI_CS_PIN   3
+#define SPI_RST_PORT GPIOA
+#define SPI_RST_PIN  4
+#endif
+
 // EOF

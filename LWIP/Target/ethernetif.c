@@ -35,7 +35,7 @@
 /* USER CODE BEGIN 0 */
 #include "networking/networking.h"
 
-#if ETHERNET_ENABLE || WIFI_ENABLE
+#if ETHERNET_ENABLE && !defined(_WIZCHIP_)
 
 /* USER CODE END 0 */
 

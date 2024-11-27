@@ -58,6 +58,7 @@
 //#define WEBUI_AUTH_ENABLE       1 // Enable ESP3D-WEBUI authentication.
 //#define WEBUI_INFLASH           1 // Store WebUI files in flash instead of on SD card.
 //#define ETHERNET_ENABLE         1 // Ethernet streaming. Uses networking plugin.
+//#define _WIZCHIP_            5500 // Enables ethernet via WIZnet breakout connected via SPI. Set to 5500 for W5500 chip, 5105 for W5100S.
 //#define BLUETOOTH_ENABLE        2 // Set to 2 for HC-05 module. Uses Bluetooth plugin.
 //#define SDCARD_ENABLE           1 // Run gcode programs from SD card. Set to 2 to enable YModem upload.
 //#define MPG_ENABLE              1 // Enable MPG interface. Requires a serial stream and means to switch between normal and MPG mode.
