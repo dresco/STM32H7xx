@@ -14,12 +14,13 @@
     "digital_in": 7,
     "digital_out": 8,
     "analog_in": 2,
+    "probe": 1,
     "safety_door": 1,
     "estop": 1,
-    "probe": 1,
     "mpg_mode": 1,
     "sdcard": 1,
     "ethernet": 1,
+    "wiznet": 1,
     "plugins": [
       { "id": "spindle" },
       { "id": "modbus" },
@@ -34,7 +35,8 @@
       { "id": "laser_coolant" },
       { "id": "fans" },
       { "id": "openpnp" },
-      { "id": "bluetooth" }
+      { "id": "bluetooth" },
+      { "id": "embroidery" }
     ]
   },
   "symbols": {
@@ -42,7 +44,22 @@
     "BLOCK_BUFFER_DYNAMIC": ""
   },
   "symbols_networking": {
-    "TCP_ECHOSERVER_ENABLE": 1
+    "TCP_ECHOSERVER_ENABLE": 1,
+    "TCP_MSS": 1460,
+    "TCP_SND_BUF": 5840,
+    "MEM_SIZE": 28672,
+    "LWIP_NUM_NETIF_CLIENT_DATA": 2,
+    "LWIP_IGMP": 1,
+    "LWIP_MDNS": 1,
+    "LWIP_MDNS_RESPONDER": 1,
+    "MDNS_MAX_SERVICES": 8,
+    "LWIP_HTTPD_CUSTOM_FILES": 0,
+    "LWIP_HTTPD_DYNAMIC_HEADERS": 1,
+    "LWIP_HTTPD_DYNAMIC_FILE_READ": 1,
+    "LWIP_HTTPD_SUPPORT_V09": 0,
+    "LWIP_HTTPD_SUPPORT_11_KEEPALIVE": 1,
+    "LWIP_HTTPD_SUPPORT_POST": 1,
+    "HTTPD_LIMIT_SENDING_TO_2MSS": 0
   },
   "boards": [
     {

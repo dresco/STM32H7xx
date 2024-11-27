@@ -51,13 +51,10 @@
 #define LWIP_DHCP 1
 /*----- Default value in ETH configuration GUI in CubeMx: 1524 -----*/
 #define ETH_RX_BUFFER_SIZE 1536
-/*----- Default Value for LWIP_IGMP: 0 ---*/
-#define LWIP_IGMP 1
 /*----- Value in opt.h for NO_SYS: 0 -----*/
 #define NO_SYS 1
 /*----- Value in opt.h for SYS_LIGHTWEIGHT_PROT: 1 -----*/
 #define SYS_LIGHTWEIGHT_PROT 0
-
 /*----- Value in opt.h for MEM_ALIGNMENT: 1 -----*/
 /*
  * todo: benchmark.
@@ -69,9 +66,6 @@
 #else
 #define MEM_ALIGNMENT 4
 #endif
-
-/*----- Default Value for MEM_SIZE: 1600 ---*/
-#define MEM_SIZE (28*1024)
 
 /*----- Default Value for H7 devices: 0x30044000 -----*/
 #define LWIP_RAM_HEAP_POINTER 0x24004000
@@ -96,19 +90,11 @@
 /*----- Value in opt.h for LWIP_NETIF_LINK_CALLBACK: 0 -----*/
 #define LWIP_NETIF_LINK_CALLBACK 1
 /*----- Value in opt.h for LWIP_NETCONN: 1 -----*/
-/*----- Default Value for LWIP_NUM_NETIF_CLIENT_DATA: 0 ---*/
-#define LWIP_NUM_NETIF_CLIENT_DATA 2
 #define LWIP_NETCONN 0
 /*----- Value in opt.h for LWIP_SOCKET: 1 -----*/
 #define LWIP_SOCKET 0
 /*----- Value in opt.h for RECV_BUFSIZE_DEFAULT: INT_MAX -----*/
 #define RECV_BUFSIZE_DEFAULT 2000000000
-/*----- Default Value for LWIP_MDNS: 0 ---*/
-#define LWIP_MDNS 1
-/*----- Default Value for LWIP_MDNS_RESPONDER: 0 ---*/
-#define LWIP_MDNS_RESPONDER 1
-/*----- Default Value for MDNS_MAX_SERVICES: 0 ---*/
-#define MDNS_MAX_SERVICES 8
 /*----- Value in opt.h for LWIP_STATS: 1 -----*/
 #define LWIP_STATS 0
 /*----- Value in opt.h for CHECKSUM_GEN_IP: 1 -----*/
@@ -139,21 +125,12 @@
    ---------- TCP tuning options ----------
    ----------------------------------------
 */
-#define TCP_SND_BUF             (4*TCP_MSS)
-
 
 /*
    ---------------------------------------
    ------------ HTTPD options ------------
    ---------------------------------------
 */
- #define LWIP_HTTPD_CUSTOM_FILES         0
- #define LWIP_HTTPD_DYNAMIC_HEADERS      1
- #define LWIP_HTTPD_DYNAMIC_FILE_READ    1
- #define LWIP_HTTPD_SUPPORT_V09          0
- #define LWIP_HTTPD_SUPPORT_11_KEEPALIVE 1
- #define LWIP_HTTPD_SUPPORT_POST         1
- #define HTTPD_LIMIT_SENDING_TO_2MSS     0
 
 /*
    ---------------------------------------
