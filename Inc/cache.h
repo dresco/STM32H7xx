@@ -24,7 +24,12 @@
 #ifndef __CACHE_H__
 #define __CACHE_H__
 
+#ifndef align_up
+#define align_up(num, align) (((num) + ((align)-1)) & ~((align)-1))
+#endif
+
+bool  is_cache_aligned(void *ptr, uint32_t len);
 void* cache_aligned_calloc(size_t num, size_t size);
-void cache_aligned_free(void* ptr);
+void  cache_aligned_free(void* ptr);
 
 #endif

@@ -154,6 +154,9 @@ static input_signal_t inputpin[] = {
 #if SPINDLE_SYNC_ENABLE
     { .id = Input_SpindleIndex,   .port = SPINDLE_INDEX_PORT, .pin = SPINDLE_INDEX_PIN,   .group = PinGroup_SpindleIndex },
 #endif
+#ifdef SPI_IRQ_PORT
+    { .id = Input_SPIIRQ,         .port = SPI_IRQ_PORT,       .pin = SPI_IRQ_PIN,         .group = PinGroup_SPI },
+#endif
 // Aux input pins must be consecutive in this array
 #ifdef AUXINPUT0_PIN
     { .id = Input_Aux0,           .port = AUXINPUT0_PORT,     .pin = AUXINPUT0_PIN,       .group = PinGroup_AuxInput },
@@ -334,6 +337,12 @@ static output_signal_t outputpin[] = {
 #ifdef SD_CS_PORT
     { .id = Output_SdCardCS,           .port = SD_CS_PORT,             .pin = SD_CS_PIN,             .group = PinGroup_SdCard },
 #endif
+#ifdef SPI_CS_PORT
+    { .id = Output_SPICS,              .port = SPI_CS_PORT,            .pin = SPI_CS_PIN,            .group = PinGroup_SPI },
+#endif
+#ifdef SPI_RST_PORT
+    { .id = Output_SPIRST,             .port = SPI_RST_PORT,           .pin = SPI_RST_PIN,           .group = PinGroup_SPI },
+#endif
 #ifdef AUXOUTPUT0_PORT
     { .id = Output_Aux0,               .port = AUXOUTPUT0_PORT,        .pin = AUXOUTPUT0_PIN,        .group = PinGroup_AuxOutput },
 #endif
@@ -428,7 +437,7 @@ static bool irq_claim (irq_type_t irq, uint_fast8_t id, irq_callback_ptr handler
             break;
 #endif
 
-#ifdef SPI_IRQ_BIT
+#if SPI_IRQ_BIT
         case IRQ_SPI:
             if((ok = spi_irq.callback == NULL))
                 spi_irq.callback = handler;
@@ -2001,6 +2010,11 @@ void settings_changed (settings_t *settings, settings_changed_flags_t changed)
                     input->mode.irq_mode = limit_fei.v ? IRQ_Mode_Falling : IRQ_Mode_Rising;
                     break;
 
+                case Input_SPIIRQ:
+                    input->mode.pull_mode = true;
+                    input->mode.irq_mode = IRQ_Mode_Falling;
+                    break;
+
                 case Input_SpindleIndex:
                     input->mode.pull_mode = PullMode_Up;
                     input->mode.irq_mode = IRQ_Mode_Falling;
@@ -2482,7 +2496,7 @@ bool driver_init (void)
     hal.info = "STM32H743";
 #endif
 
-    hal.driver_version = "241029";
+    hal.driver_version = "241127";
     hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
@@ -2528,7 +2542,7 @@ bool driver_init (void)
 
     hal.irq_enable = __enable_irq;
     hal.irq_disable = __disable_irq;
-#if I2C_STROBE_ENABLE
+#if I2C_STROBE_ENABLE || defined(SPI_IRQ_PIN)
     hal.irq_claim = irq_claim;
 #endif
     hal.set_bits_atomic = bitsSetAtomic;

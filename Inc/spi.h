@@ -27,5 +27,7 @@ void spi_set_max_speed (void);
 uint32_t spi_set_speed (uint32_t prescaler);
 uint8_t spi_get_byte (void);
 uint8_t spi_put_byte (uint8_t byte);
+void spi_write (uint8_t *data, uint16_t len);
+void spi_read (uint8_t *data, uint16_t len);
 
 #endif
