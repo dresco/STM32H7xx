@@ -53,7 +53,7 @@
 //#define SPINDLE3_ENABLE         SPINDLE_NONE
 //#define SPINDLE_OFFSET          1 // Uncomment to enable settings for laser spindle XY-offset.
 // **********************
-//#define MODBUS_ENABLE           1 // Set to 1 for auto direction, 2 for direction signal on auxillary output pin.
+//#define MODBUS_ENABLE           1 // Set to 1 for auto direction, 2 for direction signal on auxiliary output pin.
 //#define WEBUI_ENABLE            3 // Enable ESP3D-WEBUI plugin along with networking and SD card plugins.
 //#define WEBUI_AUTH_ENABLE       1 // Enable ESP3D-WEBUI authentication.
 //#define WEBUI_INFLASH           1 // Store WebUI files in flash instead of on SD card.
@@ -84,11 +84,12 @@
                                     // NOTE: if left commented out the default setting is determined from COMPATIBILITY_LEVEL.
 //#define MCP3221_ENABLE       0x4D // Enable MCP3221 I2C ADC input with address 0x4D (0b01001101).
 //#define RGB_LED_ENABLE          2 // Set to 1 to enable strip length settings $536 and $537, set to 2 to also enable M150 LED strip control.
-//#define PWM_SERVO_ENABLE        1 // Enable PWM servo support, requires at least one PWM capable auxillary output.
-//#define BLTOUCH_ENABLE          1 // Enable BLTouch support. Requires and claims one PWM servo output.
-//#define EVENTOUT_ENABLE         1 // Enable binding events (triggers) to control auxillary outputs.
-
-//#define SPINDLE_SYNC_ENABLE           1 // Plasma (THC) plugin. To be completed.
+//#define PWM_SERVO_ENABLE        1 // Enable M280 PWM servo support, requires at least one PWM capable auxiliary output.
+//#define BLTOUCH_ENABLE          1 // Enable M401/M402 BLTouch support. Requires and claims one auxiliary PWM servo output.
+//#define EVENTOUT_ENABLE         1 // Enable binding events (triggers) to control auxiliary outputs.
+//#define ESP_AT_ENABLE           1 // Enable support for Telnet communication via UART connected ESP32 running ESP-AT.
+//#define FEED_OVERRIDE_ENABLE    1 // Enable M200 feed override control.
+//#define HOMING_PULLOFF_ENABLE   1 // Enable per axis homing pulloff distance settings.
 
 // Optional control signals:
 // These will be assigned to aux input pins. Use the $pins command to check which pins are assigned.
