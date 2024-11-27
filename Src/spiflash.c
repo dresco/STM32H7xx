@@ -33,6 +33,7 @@
 
 #include "driver.h"
 #include <stdio.h>
+#include <assert.h>
 
 #if SPIFLASH_ENABLE
 

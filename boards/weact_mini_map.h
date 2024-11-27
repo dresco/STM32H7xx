@@ -27,7 +27,7 @@
 #error "This board has STM32H7xx processor with a 25MHz crystal, select a corresponding build!"
 #endif
 
-#define BOARD_NAME "WeAct Mini H743"
+#define BOARD_NAME "WeAct Mini H7xx"
 #define BOARD_URL "https://github.com/WeActStudio/MiniSTM32H7xx"
 
 #define SERIAL_PORT  1     // GPIOA: TX =  9, RX = 10
