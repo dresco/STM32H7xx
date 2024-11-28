@@ -200,6 +200,17 @@ static dtimer_t timers[] = {
         }
     },
 #endif
+#ifdef TIM16
+    {
+        .timer = TIM16,
+        .irq = TIM16_IRQn,
+        .resolution = IS_TIM_32B_COUNTER_INSTANCE(TIM16) ? Timer_32bit : Timer_16bit,
+        .cap = {
+          .comp1 = IS_TIM_CC1_INSTANCE(TIM16),
+          .comp2 = IS_TIM_CC2_INSTANCE(TIM16)
+        }
+    },
+#endif
 #ifdef TIM17
     {
         .timer = TIM17,
@@ -339,11 +350,19 @@ uint32_t timer_clk_enable (TIM_TypeDef *timer)
 #endif
 #ifdef TIM15
             case (uint32_t)TIM15:
+                apb2_clock = true;
                 __HAL_RCC_TIM15_CLK_ENABLE();
+                break;
+#endif
+#ifdef TIM16
+            case (uint32_t)TIM16:
+                apb2_clock = true;
+                __HAL_RCC_TIM16_CLK_ENABLE();
                 break;
 #endif
 #ifdef TIM17
             case (uint32_t)TIM17:
+                apb2_clock = true;
                 __HAL_RCC_TIM17_CLK_ENABLE();
                 break;
 #endif
@@ -704,6 +723,22 @@ void TIM15_IRQHandler (void)
 }
 
 #endif // TIM15
+
+#ifdef TIM16
+
+enum {
+  TIM16_TIDX = LAST_TIDX,
+  TIM16_IDX
+};
+#undef LAST_TIDX
+#define LAST_TIDX TIM16_IDX
+
+void TIM16_IRQHandler (void)
+{
+    _irq_handler(TIM16, &timers[TIM16_IDX].cfg);
+}
+
+#endif // TIM16
 
 #ifdef TIM17
 

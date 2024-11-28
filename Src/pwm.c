@@ -94,8 +94,28 @@ static const pwm_signal_t pwm_pin[] = {
     {
         .port = GPIOB, .pin = 9, .timer = timer(17), .ccr = &timerCCR(17, 1), .ccmr = &timerCCMR(17, 1), .af = timerAF(17, 1),
         .en = timerCCEN(1, ), .pol = timerCCP(1, ), .ois = timerCR2OIS(1, ), .ocm = timerOCM(1, 1), .ocmc = timerOCM(1, 1)
-    }
+    },
 #endif
+    {
+        .port = GPIOE, .pin = 9, .timer = timer(1), .ccr = &timerCCR(1, 1), .ccmr = &timerCCMR(1, 1), .af = timerAF(1, 1),
+        .en = timerCCEN(1, ), .pol = timerCCP(1, ), .ois = timerCR2OIS(1, ), .ocm = timerOCM(1, 1), .ocmc = timerOCM(1, 1)
+    },
+    {
+        .port = GPIOF, .pin = 6, .timer = timer(16), .ccr = &timerCCR(16, 1), .ccmr = &timerCCMR(16, 1), .af = timerAF(16, 1),
+        .en = timerCCEN(1, ), .pol = timerCCP(1, ), .ois = timerCR2OIS(1, ), .ocm = timerOCM(1, 1), .ocmc = timerOCM(1, 1)
+    },
+    {
+        .port = GPIOF, .pin = 7, .timer = timer(17), .ccr = &timerCCR(17, 1), .ccmr = &timerCCMR(17, 1), .af = timerAF(17, 1),
+        .en = timerCCEN(1, ), .pol = timerCCP(1, ), .ois = timerCR2OIS(1, ), .ocm = timerOCM(1, 1), .ocmc = timerOCM(1, 1)
+    },
+    {
+        .port = GPIOF, .pin = 8, .timer = timer(16), .ccr = &timerCCR(16, 1), .ccmr = &timerCCMR(16, 1), .af = timerAF(16, 1),
+        .en = timerCCEN(1, N), .pol = timerCCP(1, N), .ois = timerCR2OIS(1, N), .ocm = timerOCM(1, 1), .ocmc = timerOCM(1, 1)
+    },
+    {
+        .port = GPIOF, .pin = 9, .timer = timer(17), .ccr = &timerCCR(17, 1), .ccmr = &timerCCMR(17, 1), .af = timerAF(17, 1),
+        .en = timerCCEN(1, N), .pol = timerCCP(1, N), .ois = timerCR2OIS(1, N), .ocm = timerOCM(1, 1), .ocmc = timerOCM(1, 1)
+    },
 };
 
 uint_fast8_t n_claimed = 0;

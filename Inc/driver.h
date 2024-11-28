@@ -122,6 +122,8 @@
   #include "boards/btt_skr_v3.0_map.h"
 #elif defined(BOARD_BTT_OCTOPUS_MAX)
   #include "boards/btt_octopus_max_map.h"
+#elif defined(BOARD_BTT_MANTA_M8P)
+  #include "boards/btt_manta_m8p_v2_map.h"
 #elif defined(BOARD_WEACT_MINI)
   #include "boards/weact_mini_map.h"
 #elif defined(BOARD_REFERENCE)
