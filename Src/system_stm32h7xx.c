@@ -58,6 +58,7 @@
   #define HSI_VALUE    ((uint32_t)64000000) /*!< Value of the Internal oscillator in Hz*/
 #endif /* HSI_VALUE */
 
+volatile uint32_t _bootflag __attribute__((section(".dtcmdata")));
 
 /**
   * @}
@@ -304,6 +305,55 @@ void SystemInit (void)
    */
   extern uint32_t g_pfnVectors[];
   SCB->VTOR = (uint32_t) g_pfnVectors;
+
+  /*
+   * Boot flag support for DFU bootloader entry
+   */
+  if (_bootflag == 0xDEADBEEF) {
+
+    _bootflag = 0x0;       // Reset trigger
+    _bootflag = _bootflag; // Read back data to flush ECC before system reset
+
+    uint32_t i=0;
+    void (*SysMemBootJump)(void);
+
+    /* Set the address of the entry point to bootloader */
+       volatile uint32_t BootAddr = 0x1FF09800;
+
+    /* Disable all interrupts */
+       __disable_irq();
+
+    /* Disable Systick timer */
+       SysTick->CTRL = 0;
+
+    /* Set the clock to the default state */
+       HAL_RCC_DeInit();
+
+    /* Clear Interrupt Enable Register & Interrupt Pending Register */
+       for (i=0;i<8;i++)
+       {
+      NVIC->ICER[i]=0xFFFFFFFF;
+      NVIC->ICPR[i]=0xFFFFFFFF;
+       }
+
+    /* Re-enable all interrupts */
+       __enable_irq();
+
+    /* Set up the jump to booloader address + 4 */
+       SysMemBootJump = (void (*)(void)) (*((uint32_t *) ((BootAddr + 4))));
+
+    /* Set the main stack pointer to the bootloader stack */
+       __set_MSP(*(uint32_t *)BootAddr);
+
+    /* Call the function to jump to bootloader location */
+       SysMemBootJump();
+
+    /* Jump is done successfully */
+       while (1)
+       {
+        /* Code should never reach this loop */
+       }
+  }
 
 #endif /*DUAL_CORE && CORE_CM4*/
 

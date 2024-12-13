@@ -192,6 +192,15 @@ SECTIONS
 
   } >RAM_D1_DMA AT> FLASH
 
+  /*
+   * Define another data section in DTCM RAM.
+   * First use is for boot flags (DFU, USB-Serial passthru).
+   */
+  .dtcmdata (NOLOAD) :
+  {
+    . = ALIGN(4);
+  } >DTCMRAM
+
   /* Remove information from the standard libraries */
   /DISCARD/ :
   {

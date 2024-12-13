@@ -379,6 +379,8 @@ static output_signal_t outputpin[] = {
 #endif
 };
 
+extern volatile uint32_t _bootflag __attribute__((section(".dtcmdata")));
+
 extern __IO uint32_t uwTick, cycle_count;
 static uint32_t systick_safe_read = 0, cycles2us_factor = 0;
 static uint32_t aux_irq = 0;
@@ -2441,6 +2443,39 @@ static bool get_rtc_time (struct tm *time)
 
 #endif
 
+#if USB_SERIAL_CDC
+
+static status_code_t enter_dfu (sys_state_t state, char *args)
+{
+    report_message("Entering DFU Bootloader", Message_Warning);
+    hal.delay_ms(100, NULL);
+
+    __disable_irq();
+    _bootflag = 0xDEADBEEF;
+    _bootflag = _bootflag; // Read back data to flush ECC before system reset
+    __disable_irq();
+    NVIC_SystemReset();
+
+    return Status_OK;
+}
+
+const sys_command_t boot_command_list[] = {
+    {"DFU", enter_dfu, { .noargs = On }, { .str = "enter DFU bootloader" } }
+};
+
+static sys_commands_t boot_commands = {
+    .n_commands = sizeof(boot_command_list) / sizeof(sys_command_t),
+    .commands = boot_command_list
+};
+
+static void onReportOptions (bool newopt)
+{
+    if(!newopt)
+        hal.stream.write("[PLUGIN:Bootloader Entry v0.02]" ASCII_EOL);
+}
+
+#endif
+
 uint32_t get_free_mem (void)
 {
     extern uint8_t _end; /* Symbol defined in the linker script */
@@ -2496,7 +2531,7 @@ bool driver_init (void)
     hal.info = "STM32H743";
 #endif
 
-    hal.driver_version = "241208";
+    hal.driver_version = "241213";
     hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
@@ -2701,6 +2736,12 @@ bool driver_init (void)
     enet_init();
 #endif
 
+#if USB_SERIAL_CDC
+    // register $DFU bootloader command
+    grbl.on_report_options = onReportOptions;
+    system_register_commands(&boot_commands);
+#endif
+
 #ifdef HAS_BOARD_INIT
     board_init();
 #endif
@@ -2717,6 +2758,25 @@ bool driver_init (void)
 #ifdef NEOPIXEL_SPI
     extern void neopixel_init (void);
     neopixel_init();
+#endif
+
+#if USB_SERIAL_CDC && ESP_AT_ENABLE
+
+    #include "grbl/stream_passthru.h"
+
+    bool enterpt;
+
+    if((enterpt = _bootflag == 0xFEEDC0DE)) {
+        _bootflag = 0x0;    // Reset trigger
+
+        // Reduce USB IRQ priority to lower than the UART port!
+        HAL_NVIC_DisableIRQ(OTG_HS_IRQn);
+        HAL_NVIC_SetPriority(OTG_HS_IRQn, 1, 0);
+        HAL_NVIC_EnableIRQ(OTG_HS_IRQn);
+    }
+
+    stream_passthru_init(0, 115200, enterpt);
+
 #endif
 
 #include "grbl/plugins_init.h"
@@ -3109,6 +3169,20 @@ void EXTI15_10_IRQHandler(void)
             aux_pin_irq(ifg & aux_irq);
 #endif
     }
+}
+
+#endif
+
+#if USB_SERIAL_CDC && ESP_AT_ENABLE
+
+#include "grbl/stream_passthru.h"
+
+void stream_passthru_enter (void)
+{
+    __disable_irq();
+    _bootflag = 0xFEEDC0DE;
+    _bootflag = _bootflag; // Read back data to flush ECC before system reset
+    NVIC_SystemReset();
 }
 
 #endif
