@@ -151,6 +151,48 @@
       }
     },
     {
+      "name": "BTT Scylla H723",
+      "symbol": "BOARD_BTT_SCYLLA",
+      "URL": "https://github.com/bigtreetech",
+      "MAP": "boards/btt_scylla_map.h",
+      "caps": {
+        "axes": 4,
+        "safety_door": 1,
+        "serial_ports": 2,
+        "trinamic_spi_cs": 1,
+        "pio_board": "generic_stm32h723vg",
+        "ldscript": "STM32H723VGTX_FLASH.ld"
+      },
+      "symbols" : {
+        "STM32H723xx": "",
+        "HSE_VALUE": 25000000
+      },
+      "pio_env" : {
+        "name": "usb_h723"
+      }
+    },
+    {
+      "name": "BTT Scylla H723 (bootloader)",
+      "symbol": "BOARD_BTT_SCYLLA",
+      "URL": "https://github.com/bigtreetech",
+      "MAP": "boards/btt_scylla_map.h",
+      "caps": {
+        "axes": 4,
+        "safety_door": 1,
+        "serial_ports": 2,
+        "trinamic_spi_cs": 1,
+        "pio_board": "generic_stm32h723vg",
+        "ldscript": "STM32H723VGTX_FLASH_BL.ld"
+      },
+      "symbols" : {
+        "STM32H723xx": "",
+        "HSE_VALUE": 25000000
+      },
+      "pio_env" : {
+        "name": "usb_h723"
+      }
+    },
+    {
       "name": "BTT Octopus MAX 3 H723",
       "symbol": "BOARD_BTT_OCTOPUS_MAX",
       "URL": "https://github.com/bigtreetech/Octopus-Max-EZ",

@@ -8,6 +8,7 @@ This is a port of [grblHAL](https://www.github.com/grblhAL) for the STM32H7xx se
 - [WeAct MiniSTM32H7xx  (H743 & H723)](https://github.com/WeActTC/MiniSTM32H7xx)
 - [BTT SKR 3 EZ (H743 & H723)](https://www.biqu.equipment/products/bigtreetech-btt-skr-3-ez-control-board-mainboard-for-3d-printer)
 - [BTT Octopus Max EZ](https://biqu.equipment/products/bigtreetech-btt-octopusmax-ez-for-3d-printer)
+- [BTT Scylla](https://biqu.equipment/products/bigtreetech-scylla-v1-0)
 
 ## Building
 
@@ -26,4 +27,4 @@ Note that the PlatformIO builds are currently using a custom download url for th
 PlatformIO builds for a number of configurations are run automatically as a GitHub Action on each push to the master branch. For convenience, the resulting firmwares are archived in the artifacts for each run, and can be found under the Actions tab on the GitHub repo (these files remain available for 90 days).
 
 ---
-2024-05-22
+2024-12-19
