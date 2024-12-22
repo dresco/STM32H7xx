@@ -38,6 +38,7 @@
 
 #define TRINAMIC_SOFT_SPI
 #define MODBUS_RTU_STREAM           1   // Use SERIAL1_PORT definition
+#define COPROC_STREAM               0   // Use SERIAL_PORT definition
 
 // Motor Reference:
 // Motor-1: X-axis

@@ -29,6 +29,7 @@ lib_deps =
   trinamic
   odometer
   openpnp
+  plugins
   sdcard
   spindle
   webui
