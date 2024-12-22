@@ -32,7 +32,9 @@
 #include "serial.h"
 
 #define AUX_DEVICES // until all drivers are converted?
-#define AUX_CONTROLS_OUT
+#ifndef AUX_CONTROLS
+#define AUX_CONTROLS (AUX_CONTROL_SPINDLE|AUX_CONTROL_COOLANT)
+#endif
 
 #include "grbl/protocol.h"
 #include "grbl/motor_pins.h"
@@ -327,12 +329,6 @@ static output_signal_t outputpin[] = {
 #endif
 #ifdef MOTOR_UARTM5_PIN
     { .id = Bidirectional_MotorUARTM5, .port = MOTOR_UARTM5_PORT,      .pin = MOTOR_UARTM5_PIN,      .group = PinGroup_MotorUART },
-#endif
-#ifdef COOLANT_FLOOD_PIN
-    { .id = Output_CoolantFlood,       .port = COOLANT_FLOOD_PORT,     .pin = COOLANT_FLOOD_PIN,     .group = PinGroup_Coolant },
-#endif
-#ifdef COOLANT_MIST_PIN
-    { .id = Output_CoolantMist,        .port = COOLANT_MIST_PORT,      .pin = COOLANT_MIST_PIN,      .group = PinGroup_Coolant },
 #endif
 #ifdef SD_CS_PORT
     { .id = Output_SdCardCS,           .port = SD_CS_PORT,             .pin = SD_CS_PIN,             .group = PinGroup_SdCard },
@@ -1705,7 +1701,9 @@ static void onSpindleProgrammed (spindle_ptrs_t *spindle, spindle_state_t state,
 static void coolantSetState (coolant_state_t mode)
 {
     mode.value ^= settings.coolant.invert.mask;
+#ifdef COOLANT_FLOOD_PIN
     DIGITAL_OUT(COOLANT_FLOOD_PORT, COOLANT_FLOOD_BIT, mode.flood);
+#endif
 #ifdef COOLANT_MIST_PIN
     DIGITAL_OUT(COOLANT_MIST_PORT, COOLANT_MIST_BIT, mode.mist);
 #endif
@@ -1714,9 +1712,11 @@ static void coolantSetState (coolant_state_t mode)
 // Returns coolant state in a coolant_state_t variable
 static coolant_state_t coolantGetState (void)
 {
-    coolant_state_t state = (coolant_state_t){settings.coolant.invert.mask};
+    coolant_state_t state = { .mask = settings.coolant.invert.mask };
 
+#ifdef COOLANT_FLOOD_PIN
     state.flood = (COOLANT_FLOOD_PORT->IDR & COOLANT_FLOOD_BIT) != 0;
+#endif
 #ifdef COOLANT_MIST_PIN
     state.mist  = (COOLANT_MIST_PORT->IDR & COOLANT_MIST_BIT) != 0;
 #endif
@@ -2489,10 +2489,6 @@ uint32_t get_free_mem (void)
 // Initialize HAL pointers, setup serial comms and enable EEPROM
 // NOTE: grblHAL is not yet configured (from EEPROM data), driver_setup() will be called when done
 
-#if DRIVER_SPINDLE_ENABLE ||  DRIVER_SPINDLE1_ENABLE
-extern bool aux_out_claim_explicit (aux_ctrl_out_t *aux_ctrl);
-#endif
-
 bool driver_init (void)
 {
     __HAL_RCC_GPIOA_CLK_ENABLE();
@@ -2531,7 +2527,7 @@ bool driver_init (void)
     hal.info = "STM32H743";
 #endif
 
-    hal.driver_version = "241213";
+    hal.driver_version = "241217";
     hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
@@ -2631,12 +2627,7 @@ bool driver_init (void)
 #if SPINDLE_SYNC_ENABLE
     hal.driver_cap.spindle_sync = On;
 #endif
-#ifdef COOLANT_FLOOD_PIN
-    hal.coolant_cap.flood = On;
-#endif
-#ifdef COOLANT_MIST_PIN
-    hal.coolant_cap.mist = On;
-#endif
+    hal.coolant_cap.bits = COOLANT_ENABLE;
     hal.driver_cap.software_debounce = On;
     hal.driver_cap.step_pulse_delay = On;
     hal.driver_cap.amass_level = 3;
@@ -2719,9 +2710,11 @@ bool driver_init (void)
     aux_ctrl_claim_ports(aux_claim_explicit, NULL);
 #endif
 
+    extern bool aux_out_claim_explicit (aux_ctrl_out_t *aux_ctrl);
+    aux_ctrl_claim_out_ports(aux_out_claim_explicit, NULL);
+
 #if DRIVER_SPINDLE_ENABLE ||  DRIVER_SPINDLE1_ENABLE
     extern void driver_spindles_init (void);
-    aux_ctrl_claim_out_ports(aux_out_claim_explicit, NULL);
     driver_spindles_init();
 #endif
 

@@ -211,7 +211,7 @@ void neopixel_init (void)
         __HAL_RCC_SPI1_CLK_ENABLE();
 
         GPIO_InitTypeDef GPIO_InitStruct = {
-            .Pin = GPIO_PIN5|GPIO_PIN_7,
+            .Pin = GPIO_PIN_5|GPIO_PIN_7,
             .Mode = GPIO_MODE_AF_PP,
             .Pull = GPIO_NOPULL,
             .Speed = GPIO_SPEED_FREQ_HIGH,

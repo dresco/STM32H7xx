@@ -129,11 +129,14 @@ Z-Limit      A4
 #define AUXOUTPUT3_PORT         GPIOG // D1
 #define AUXOUTPUT3_PIN          14
 #endif
+#define AUXOUTPUT4_PORT         GPIOF // A3 - coolant flood
+#define AUXOUTPUT4_PIN          3
 
 #if DRIVER_SPINDLE_ENABLE
 #define SPINDLE_ENABLE_PORT     AUXOUTPUT2_PORT
 #define SPINDLE_ENABLE_PIN      AUXOUTPUT2_PIN
-#if DRIVER_SPINDLE_PWM_ENABLE
+#endif
+#if DRIVER_SPINDLE_ENABLE & SPINDLE_PWM
 #define SPINDLE_PWM_PORT        AUXOUTPUT1_PORT
 #define SPINDLE_PWM_PIN         AUXOUTPUT1_PIN
 #endif
@@ -141,11 +144,20 @@ Z-Limit      A4
 #define SPINDLE_DIRECTION_PORT  AUXOUTPUT0_PORT
 #define SPINDLE_DIRECTION_PIN   AUXOUTPUT0_PIN
 #endif
-#endif // DRIVER_SPINDLE_ENABLE
 
 // Define flood and mist coolant enable output pins.
-#define COOLANT_FLOOD_PORT      GPIOF // A3
-#define COOLANT_FLOOD_PIN       3
+#if COOLANT_ENABLE & COOLANT_FLOOD
+#define COOLANT_FLOOD_PORT      AUXOUTPUT4_PORT
+#define COOLANT_FLOOD_PIN       AUXOUTPUT4_PIN
+#endif
+#if COOLANT_ENABLE & COOLANT_MIST
+#undef COOLANT_ENABLE
+#ifdef COOLANT_FLOOD_PIN
+#define COOLANT_ENABLE COOLANT_FLOOD
+#else
+#define COOLANT_ENABLE 0
+#endif
+#endif
 
 // Define user-control CONTROLs (cycle start, reset, feed hold) input pins.
 #define RESET_PORT              GPIOF // A5

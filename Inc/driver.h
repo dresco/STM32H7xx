@@ -41,6 +41,8 @@
 #define I2C_ENABLE 1
 #endif
 
+#define OPTS_POSTPROCESSING
+
 #include "grbl/driver_opts.h"
 
 #include "timers.h"
@@ -219,11 +221,7 @@
 
 // End configuration
 
-#if EEPROM_ENABLE == 0
-#define FLASH_ENABLE 1
-#else
-#define FLASH_ENABLE 0
-#endif
+#include "grbl/driver_opts2.h"
 
 #ifndef I2C_PORT
 #define I2C_PORT 2 // GPIOB, SCL_PIN = 10, SDA_PIN = 11
@@ -232,60 +230,6 @@
 #ifndef SPI_PORT
 #define SPI_PORT 1
 #endif
-
-#if USB_SERIAL_CDC && defined(SERIAL_PORT)
-#define SP0 1
-#else
-#define SP0 0
-#endif
-
-#ifdef SERIAL1_PORT
-#define SP1 1
-#else
-#define SP1 0
-#endif
-
-#ifdef SERIAL2_PORT
-#define SP2 1
-#else
-#define SP2 0
-#endif
-
-#if MODBUS_ENABLE
-#define MODBUS_TEST 1
-#else
-#define MODBUS_TEST 0
-#endif
-
-#if KEYPAD_ENABLE == 2 && MPG_ENABLE == 0
-#define KEYPAD_TEST 1
-#else
-#define KEYPAD_TEST 0
-#endif
-
-#if (MODBUS_TEST + KEYPAD_TEST + (BLUETOOTH_ENABLE ? 1 : 0)) > (SP0 + SP1 + SP2)
-#error "Too many options that uses a serial port are enabled!"
-#endif
-
-#undef SP0
-#undef SP1
-#undef SP2
-#undef MODBUS_TEST
-#undef KEYPAD_TEST
-
-#if MPG_MODE == 1 && !defined(MPG_MODE_PIN)
-#error "MPG_MODE_PIN must be defined!"
-#endif
-
-
-#if TRINAMIC_ENABLE
-  #include "motors/trinamic.h"
-  #ifndef TRINAMIC_MIXED_DRIVERS
-    #define TRINAMIC_MIXED_DRIVERS 1
-  #endif
-#endif
-
-// End configuration
 
 #if KEYPAD_ENABLE == 1 && !defined(I2C_STROBE_PORT)
 #error Keypad plugin not supported!

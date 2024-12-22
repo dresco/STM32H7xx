@@ -63,13 +63,13 @@ static void spindlePulseOn (uint_fast16_t pulse_length)
 
 static spindle_id_t spindle_id = -1;
 
-#if DRIVER_SPINDLE_PWM_ENABLE
+#if DRIVER_SPINDLE_ENABLE & SPINDLE_PWM
 
 static bool pwmEnabled = false;
 static spindle_pwm_t spindle_pwm;
 static pwm_signal_t spindle_timer = {0};
 
-#endif // DRIVER_SPINDLE_PWM_ENABLE
+#endif // DRIVER_SPINDLE_ENABLE & SPINDLE_PWM
 
 // Static spindle (off, on cw & on ccw)
 
@@ -113,7 +113,7 @@ static void spindleSetState (spindle_ptrs_t *spindle, spindle_state_t state, flo
 
 // Variable spindle control functions
 
-#if DRIVER_SPINDLE_PWM_ENABLE
+#if DRIVER_SPINDLE_ENABLE & SPINDLE_PWM
 
 // Sets spindle speed
 static void spindleSetSpeed (spindle_ptrs_t *spindle, uint_fast16_t pwm_value)
@@ -221,7 +221,7 @@ static bool spindleConfig (spindle_ptrs_t *spindle)
     return true;
 }
 
-#endif // DRIVER_SPINDLE_PWM_ENABLE
+#endif // DRIVER_SPINDLE_ENABLE & SPINDLE_PWM
 
 // Returns spindle state in a spindle_state_t variable
 static spindle_state_t spindleGetState (spindle_ptrs_t *spindle)
@@ -254,13 +254,13 @@ static spindle_state_t spindleGetState (spindle_ptrs_t *spindle)
 static spindle_id_t spindle1_id = -1;
 static spindle1_pwm_settings_t *spindle_config;
 
-#if DRIVER_SPINDLE1_PWM_ENABLE
+#if DRIVER_SPINDLE1_ENABLE & SPINDLE_PWM
 
 static bool pwm1Enabled = false;
 static spindle_pwm_t spindle1_pwm;
 static pwm_signal_t spindle1_timer = {0};
 
-#endif // DRIVER_SPINDLE1_PWM_ENABLE
+#endif // DRIVER_SPINDLE1_ENABLE & SPINDLE_PWM
 
 // Static spindle (off, on cw & on ccw)
 
@@ -304,7 +304,7 @@ static void spindle1SetState (spindle_ptrs_t *spindle, spindle_state_t state, fl
 
 // Variable spindle control functions
 
-#if DRIVER_SPINDLE1_PWM_ENABLE
+#if DRIVER_SPINDLE1_ENABLE & SPINDLE_PWM
 
 // Sets spindle speed
 static void spindle1SetSpeed (spindle_ptrs_t *spindle, uint_fast16_t pwm_value)
@@ -410,7 +410,7 @@ static bool spindle1Config (spindle_ptrs_t *spindle)
     return true;
 }
 
-#endif // DRIVER_SPINDLE_PWM_ENABLE
+#endif // DRIVER_SPINDLE_ENABLE & SPINDLE_PWM
 
 // Returns spindle state in a spindle_state_t variable
 static spindle_state_t spindle1GetState (spindle_ptrs_t *spindle)
@@ -436,7 +436,7 @@ static spindle_state_t spindle1GetState (spindle_ptrs_t *spindle)
     return state;
 }
 
-#if DRIVER_SPINDLE1_PWM_ENABLE
+#if DRIVER_SPINDLE1_ENABLE & SPINDLE_PWM
 
 static void spindle1_settings_changed (spindle1_pwm_settings_t *settings)
 {
@@ -452,7 +452,7 @@ static void settingsChanged (settings_t *settings, settings_changed_flags_t chan
 {
     settings_changed(settings, changed);
 
-#if DRIVER_SPINDLE_PWM_ENABLE
+#if DRIVER_SPINDLE_ENABLE & SPINDLE_PWM
     if(changed.spindle) {
         spindleConfig(spindle_get_hal(spindle_id, SpindleHAL_Configured));
         if(spindle_id == spindle_get_default())
@@ -467,7 +467,7 @@ static void settingsChanged (settings_t *settings, settings_changed_flags_t chan
 bool aux_out_claim_explicit (aux_ctrl_out_t *aux_ctrl)
 {
 
-#if DRIVER_SPINDLE_PWM_ENABLE
+#if DRIVER_SPINDLE_ENABLE & SPINDLE_PWM
     if(aux_ctrl->function == Output_SpindlePWM) {
         const pwm_signal_t *pwm_timer;
         if((pwm_timer = pwm_claim(aux_ctrl->port, aux_ctrl->pin)))
@@ -479,7 +479,7 @@ bool aux_out_claim_explicit (aux_ctrl_out_t *aux_ctrl)
     }
 #endif
 
-#if DRIVER_SPINDLE1_PWM_ENABLE
+#if DRIVER_SPINDLE1_ENABLE & SPINDLE_PWM
     if(aux_ctrl->function == Output_Spindle1PWM) {
         const pwm_signal_t *pwm_timer;
         if((pwm_timer = pwm_claim(aux_ctrl->port, aux_ctrl->pin)))
@@ -493,13 +493,13 @@ bool aux_out_claim_explicit (aux_ctrl_out_t *aux_ctrl)
 
     if(ioport_claim(Port_Digital, Port_Output, &aux_ctrl->aux_port, NULL)) {
         ioport_assign_out_function(aux_ctrl, &((output_signal_t *)aux_ctrl->output)->id);
-#if DRIVER_SPINDLE_PWM_ENABLE
+#if DRIVER_SPINDLE_ENABLE & SPINDLE_PWM
         if(aux_ctrl->function == Output_SpindlePWM) {
             ((output_signal_t *)aux_ctrl->output)->mode.pwm = On;
             pwm_enable(&spindle_timer);
         }
 #endif
-#if DRIVER_SPINDLE1_PWM_ENABLE
+#if DRIVER_SPINDLE1_ENABLE & SPINDLE_PWM
         if(aux_ctrl->function == Output_Spindle1PWM) {
             ((output_signal_t *)aux_ctrl->output)->mode.pwm = On;
             pwm_enable(&spindle1_timer);
@@ -515,11 +515,11 @@ void driver_spindles_init (void)
 {
 #if DRIVER_SPINDLE_ENABLE && defined(SPINDLE_ENABLE_PIN)
 
- #if DRIVER_SPINDLE_PWM_ENABLE
+ #if DRIVER_SPINDLE_ENABLE & SPINDLE_PWM
 
     static const spindle_ptrs_t spindle = {
         .type = SpindleType_PWM,
-#if DRIVER_SPINDLE_DIR_ENABLE
+#if DRIVER_SPINDLE_ENABLE & SPINDLE_DIR
         .ref_id = SPINDLE_PWM0,
 #else
         .ref_id = SPINDLE_PWM0_NODIR,
@@ -537,7 +537,7 @@ void driver_spindles_init (void)
             .variable = On,
             .laser = On,
             .pwm_invert = On,
-  #if DRIVER_SPINDLE_DIR_ENABLE
+  #if DRIVER_SPINDLE_ENABLE & SPINDLE_DIR
             .direction = On
   #endif
         }
@@ -550,7 +550,7 @@ void driver_spindles_init (void)
 
     static const spindle_ptrs_t spindle = {
         .type = SpindleType_Basic,
-#if DRIVER_SPINDLE_DIR_ENABLE
+#if DRIVER_SPINDLE_ENABLE & SPINDLE_DIR
         .ref_id = SPINDLE_ONOFF0_DIR,
 #else
         .ref_id = SPINDLE_ONOFF0,
@@ -559,7 +559,7 @@ void driver_spindles_init (void)
         .get_state = spindleGetState,
         .cap = {
             .gpio_controlled = On,
-  #if DRIVER_SPINDLE_DIR_ENABLE
+  #if DRIVER_SPINDLE_ENABLE & SPINDLE_DIR
             .direction = On
   #endif
         }
@@ -573,15 +573,15 @@ void driver_spindles_init (void)
 
 #if DRIVER_SPINDLE1_ENABLE && defined(SPINDLE1_ENABLE_PIN)
 
- #if DRIVER_SPINDLE1_PWM_ENABLE
+ #if DRIVER_SPINDLE1_ENABLE & SPINDLE_PWM
 
     static const spindle_ptrs_t spindle1 = {
         .type = SpindleType_PWM,
-#if DRIVER_SPINDLE1_DIR_ENABLE
+  #if DRIVER_SPINDLE1_ENABLE & SPINDLE_DIR
         .ref_id = SPINDLE_PWM1,
-#else
+  #else
         .ref_id = SPINDLE_PWM1_NODIR,
-#endif
+  #endif
         .config = spindle1Config,
         .update_pwm = spindle1SetSpeed,
         .set_state = spindle1SetStateVariable,
@@ -593,7 +593,7 @@ void driver_spindles_init (void)
             .laser = On,
             .pwm_invert = On,
             .rpm_range_locked = On,
-  #if DRIVER_SPINDLE1_DIR_ENABLE
+  #if DRIVER_SPINDLE1_ENABLE & SPINDLE_DIR
             .direction = On
   #endif
         }
@@ -610,16 +610,16 @@ void driver_spindles_init (void)
 
    static const spindle_ptrs_t spindle1 = {
        .type = SpindleType_Basic,
-#if DRIVER_SPINDLE1_DIR_ENABLE
+  #if DRIVER_SPINDLE1_ENABLE & SPINDLE_DIR
         .ref_id = SPINDLE_ONOFF1_DIR,
-#else
+  #else
         .ref_id = SPINDLE_ONOFF1,
-#endif
+  #endif
        .set_state = spindle1SetState,
        .get_state = spindle1GetState,
        .cap = {
            .gpio_controlled = On,
-  #if DRIVER_SPINDLE1_DIR_ENABLE
+  #if DRIVER_SPINDLE1_ENABLE & SPINDLE_DIR
            .direction = On
   #endif
        }
@@ -628,7 +628,7 @@ void driver_spindles_init (void)
    if((spindle_config = spindle1_settings_add(false)) && (spindle1_id = spindle_register(&spindle1, DRIVER_SPINDLE1_NAME)) != -1)
        spindle1_settings_register(spindle1.cap, NULL);
 
-#endif
+ #endif
 
 #endif // DRIVER_SPINDLE1_ENABLE
 

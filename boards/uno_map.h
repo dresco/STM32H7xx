@@ -134,11 +134,21 @@ Z-Limit      D12
 #define AUXOUTPUT3_PIN          9
 #endif
 #endif
+#if N_ABC_MOTORS
+#define AUXOUTPUT4_PORT         GPIOF // A4 - coolant flood
+#define AUXOUTPUT4_PIN          5
+#else
+#define AUXOUTPUT4_PORT         GPIOF // A3 - coolant flood
+#define AUXOUTPUT4_PIN          3
+#define AUXOUTPUT5_PORT         GPIOF // A4 - coolant mist
+#define AUXOUTPUT5_PIN          3
+#endif
 
 #if DRIVER_SPINDLE_ENABLE
 #define SPINDLE_ENABLE_PORT     AUXOUTPUT2_PORT
 #define SPINDLE_ENABLE_PIN      AUXOUTPUT2_PIN
-#if DRIVER_SPINDLE_PWM_ENABLE && defined(AUXOUTPUT1_PIN)
+#endif
+#if DRIVER_SPINDLE_ENABLE & SPINDLE_PWM && defined(AUXOUTPUT1_PIN)
 #define SPINDLE_PWM_PORT        AUXOUTPUT1_PORT
 #define SPINDLE_PWM_PIN         AUXOUTPUT1_PIN
 #endif
@@ -146,7 +156,24 @@ Z-Limit      D12
 #define SPINDLE_DIRECTION_PORT  AUXOUTPUT0_PORT
 #define SPINDLE_DIRECTION_PIN   AUXOUTPUT0_PIN
 #endif
-#endif // DRIVER_SPINDLE_ENABLE
+
+// Define flood and mist coolant enable output pins.
+#if COOLANT_ENABLE & COOLANT_FLOOD
+#define COOLANT_FLOOD_PORT      AUXOUTPUT4_PORT
+#define COOLANT_FLOOD_PIN       AUXOUTPUT4_PIN
+#endif
+#if COOLANT_ENABLE & COOLANT_MIST
+#ifdef AUXOUTPUT5_PIN
+#define COOLANT_MIST_PORT      AUXOUTPUT5_PORT
+#define COOLANT_MIST_PIN       AUXOUTPUT5_PIN
+#else
+#undef COOLANT_ENABLE
+#ifdef COOLANT_FLOOD_PIN
+#define COOLANT_ENABLE COOLANT_FLOOD
+#else
+#define COOLANT_ENABLE 0
+#endif
+#endif
 
 // Define flood and mist coolant enable output pins.
 #if N_ABC_MOTORS
