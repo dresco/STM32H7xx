@@ -170,6 +170,8 @@
         "safety_door": 1,
         "serial_ports": 2,
         "trinamic_spi_cs": 1,
+        "trinamic": 5160,
+        "trinamic_r_sense": 50,
         "pio_board": "generic_stm32h723vg",
         "ldscript": "STM32H723VGTX_FLASH.ld"
       },
@@ -191,6 +193,8 @@
         "safety_door": 1,
         "serial_ports": 2,
         "trinamic_spi_cs": 1,
+        "trinamic": 5160,
+        "trinamic_r_sense": 50,
         "pio_board": "generic_stm32h723vg",
         "ldscript": "STM32H723VGTX_FLASH_BL.ld"
       },
