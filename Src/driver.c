@@ -2440,6 +2440,8 @@ static bool get_rtc_time (struct tm *time)
 
 #if USB_SERIAL_CDC
 
+static on_report_options_ptr on_report_options;
+
 static status_code_t enter_dfu (sys_state_t state, char *args)
 {
     report_message("Entering DFU Bootloader", Message_Warning);
@@ -2465,6 +2467,8 @@ static sys_commands_t boot_commands = {
 
 static void onReportOptions (bool newopt)
 {
+    on_report_options(newopt);
+
     if(!newopt)
         hal.stream.write("[PLUGIN:Bootloader Entry v0.02]" ASCII_EOL);
 }
@@ -2748,6 +2752,7 @@ bool driver_init (void)
 
 #if USB_SERIAL_CDC
     // register $DFU bootloader command
+    on_report_options = grbl.on_report_options;
     grbl.on_report_options = onReportOptions;
     system_register_commands(&boot_commands);
 #endif
