@@ -3,7 +3,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2021-2024 Terje Io
+  Copyright (c) 2021-2025 Terje Io
 
   grblHAL is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -313,6 +313,9 @@ bool enet_start (void)
         grbl.on_execute_realtime = enet_poll;
 
         memcpy(&network, &ethernet, sizeof(network_settings_t));
+#ifdef HAS_MAC_SETTING
+        memcpy(&ethif.hwaddr, &network.mac, 6);
+#endif
 
         if(network.telnet_port == 0)
             network.telnet_port = NETWORK_TELNET_PORT;
@@ -335,10 +338,10 @@ bool enet_start (void)
             netif_add(&ethif, NULL, NULL, NULL, NULL, &ethernetif_init, &ethernet_input);
 
         netif_set_default(&ethif);
+        netif_set_up(&ethif);
         netif_set_link_callback(netif_default, link_status_callback);
         netif_set_status_callback(netif_default, netif_status_callback);
 
-        // Invoke the link & interface callback functions once manually, as not necessarily triggered on startup
         link_status_callback(netif_default);
         netif_status_callback(netif_default);
 
@@ -380,106 +383,6 @@ static inline void set_addr (char *ip, ip4_addr_t *addr)
 {
     memcpy(ip, addr, sizeof(ip4_addr_t));
 }
-
-static void ethernet_settings_load (void);
-static void ethernet_settings_restore (void);
-static status_code_t ethernet_set_ip (setting_id_t setting, char *value);
-static char *ethernet_get_ip (setting_id_t setting);
-static status_code_t ethernet_set_services (setting_id_t setting, uint_fast16_t int_value);
-static uint32_t ethernet_get_services (setting_id_t id);
-
-#ifdef HAS_MAC_SETTING
-static status_code_t ethernet_set_mac (setting_id_t setting, char *value)
-{
-	return networking_string_to_mac(value, ethernet.mac) ? Status_OK : Status_InvalidStatement;
-}
-
-static char *ethernet_get_mac (setting_id_t setting)
-{
-    return networking_mac_to_string(ethernet.mac);
-}
-#endif
-
-static const setting_group_detail_t ethernet_groups [] = {
-    { Group_Root, Group_Networking, "Networking" }
-};
-
-static const setting_detail_t ethernet_settings[] = {
-    { Setting_NetworkServices, Group_Networking, "Network Services", NULL, Format_Bitfield, netservices, NULL, NULL, Setting_NonCoreFn, ethernet_set_services, ethernet_get_services, NULL, { .reboot_required = On } },
-    { Setting_Hostname, Group_Networking, "Hostname", NULL, Format_String, "x(64)", NULL, "64", Setting_NonCore, ethernet.hostname, NULL, NULL, { .reboot_required = On } },
-    { Setting_IpMode, Group_Networking, "IP Mode", NULL, Format_RadioButtons, "Static,DHCP,AutoIP", NULL, NULL, Setting_NonCore, &ethernet.ip_mode, NULL, NULL, { .reboot_required = On } },
-    { Setting_IpAddress, Group_Networking, "IP Address", NULL, Format_IPv4, NULL, NULL, NULL, Setting_NonCoreFn, ethernet_set_ip, ethernet_get_ip, NULL, { .reboot_required = On } },
-    { Setting_Gateway, Group_Networking, "Gateway", NULL, Format_IPv4, NULL, NULL, NULL, Setting_NonCoreFn, ethernet_set_ip, ethernet_get_ip, NULL, { .reboot_required = On } },
-    { Setting_NetMask, Group_Networking, "Netmask", NULL, Format_IPv4, NULL, NULL, NULL, Setting_NonCoreFn, ethernet_set_ip, ethernet_get_ip, NULL, { .reboot_required = On } },
-#ifdef HAS_MAC_SETTING
-    { Setting_NetworkMAC, Group_Networking, "MAC Address", NULL , Format_String, "x(17)", "17", "17", Setting_NonCoreFn, ethernet_set_mac, ethernet_get_mac, NULL, { .allow_null = On, .reboot_required = On } },
-#endif
-    { Setting_TelnetPort, Group_Networking, "Telnet port", NULL, Format_Int16, "####0", "1", "65535", Setting_NonCore, &ethernet.telnet_port, NULL, NULL, { .reboot_required = On } },
-#if FTP_ENABLE
-    { Setting_FtpPort, Group_Networking, "FTP port", NULL, Format_Int16, "####0", "1", "65535", Setting_NonCore, &ethernet.ftp_port, NULL, NULL, { .reboot_required = On } },
-#endif
-#if HTTP_ENABLE
-    { Setting_HttpPort, Group_Networking, "HTTP port", NULL, Format_Int16, "####0", "1", "65535", Setting_NonCore, &ethernet.http_port, NULL, NULL, { .reboot_required = On } },
-#endif
-    { Setting_WebSocketPort, Group_Networking, "Websocket port", NULL, Format_Int16, "####0", "1", "65535", Setting_NonCore, &ethernet.websocket_port, NULL, NULL, { .reboot_required = On } },
-#if MQTT_ENABLE
-    { Setting_MQTTBrokerIpAddress, Group_Networking, "MQTT broker IP Address", NULL, Format_IPv4, NULL, NULL, NULL, Setting_NonCoreFn, ethernet_set_ip, ethernet_get_ip, NULL, { .reboot_required = On } },
-    { Setting_MQTTBrokerPort, Group_Networking, "MQTT broker port", NULL, Format_Int16, "####0", "1", "65535", Setting_NonCore, &ethernet.mqtt.port, NULL, NULL, { .reboot_required = On } },
-    { Setting_MQTTBrokerUserName, Group_Networking, "MQTT broker username", NULL, Format_String, "x(32)", NULL, "32", Setting_NonCore, &ethernet.mqtt.user, NULL, NULL, { .allow_null = On } },
-    { Setting_MQTTBrokerPassword, Group_Networking, "MQTT broker password", NULL, Format_Password, "x(32)", NULL, "32", Setting_NonCore, &ethernet.mqtt.password, NULL, NULL, { .allow_null = On } },
-#endif
-};
-
-#ifndef NO_SETTINGS_DESCRIPTIONS
-
-static const setting_descr_t ethernet_settings_descr[] = {
-    { Setting_NetworkServices, "Network services/protocols to enable." },
-    { Setting_Hostname, "Network hostname." },
-    { Setting_IpMode, "IP Mode." },
-    { Setting_IpAddress, "Static IP address." },
-    { Setting_Gateway, "Static gateway address." },
-    { Setting_NetMask, "Static netmask." },
-#ifdef HAS_MAC_SETTING
-    { Setting_NetworkMAC, "Optional MAC address. Tip: get from an unused device, e.g an old router." },
-#endif
-    { Setting_TelnetPort, "(Raw) Telnet port number listening for incoming connections." },
-#if FTP_ENABLE
-    { Setting_FtpPort, "FTP port number listening for incoming connections." },
-#endif
-#if HTTP_ENABLE
-    { Setting_HttpPort, "HTTP port number listening for incoming connections." },
-#endif
-    { Setting_WebSocketPort, "Websocket port number listening for incoming connections."
-                             "\\nNOTE: WebUI requires this to be HTTP port number + 1."
-    },
-#if MQTT_ENABLE
-    { Setting_MQTTBrokerIpAddress, "IP address for remote MQTT broker. Set to 0.0.0.0 to disable connection." },
-    { Setting_MQTTBrokerPort, "Remote MQTT broker portnumber." },
-    { Setting_MQTTBrokerUserName, "Remote MQTT broker username." },
-    { Setting_MQTTBrokerPassword, "Remote MQTT broker password." },
-#endif
-};
-
-#endif
-
-static void ethernet_settings_save (void)
-{
-    hal.nvs.memcpy_to_nvs(nvs_address, (uint8_t *)&ethernet, sizeof(network_settings_t), true);
-}
-
-static setting_details_t setting_details = {
-    .groups = ethernet_groups,
-    .n_groups = sizeof(ethernet_groups) / sizeof(setting_group_detail_t),
-    .settings = ethernet_settings,
-    .n_settings = sizeof(ethernet_settings) / sizeof(setting_detail_t),
-#ifndef NO_SETTINGS_DESCRIPTIONS
-    .descriptions = ethernet_settings_descr,
-    .n_descriptions = sizeof(ethernet_settings_descr) / sizeof(setting_descr_t),
-#endif
-    .save = ethernet_settings_save,
-    .load = ethernet_settings_load,
-    .restore = ethernet_settings_restore
-};
 
 static status_code_t ethernet_set_ip (setting_id_t setting, char *value)
 {
@@ -562,6 +465,84 @@ static uint32_t ethernet_get_services (setting_id_t id)
     return (uint32_t)ethernet.services.mask;
 }
 
+#ifdef HAS_MAC_SETTING
+
+static status_code_t ethernet_set_mac (setting_id_t setting, char *value)
+{
+    return networking_string_to_mac(value, ethernet.mac) ? Status_OK : Status_InvalidStatement;
+}
+
+static char *ethernet_get_mac (setting_id_t setting)
+{
+    return networking_mac_to_string(ethernet.mac);
+}
+
+#endif
+
+static const setting_group_detail_t ethernet_groups [] = {
+    { Group_Root, Group_Networking, "Networking" }
+};
+
+static const setting_detail_t ethernet_settings[] = {
+    { Setting_NetworkServices, Group_Networking, "Network Services", NULL, Format_Bitfield, netservices, NULL, NULL, Setting_NonCoreFn, ethernet_set_services, ethernet_get_services, NULL, { .reboot_required = On } },
+    { Setting_Hostname, Group_Networking, "Hostname", NULL, Format_String, "x(64)", NULL, "64", Setting_NonCore, ethernet.hostname, NULL, NULL, { .reboot_required = On } },
+    { Setting_IpMode, Group_Networking, "IP Mode", NULL, Format_RadioButtons, "Static,DHCP,AutoIP", NULL, NULL, Setting_NonCore, &ethernet.ip_mode, NULL, NULL, { .reboot_required = On } },
+    { Setting_IpAddress, Group_Networking, "IP Address", NULL, Format_IPv4, NULL, NULL, NULL, Setting_NonCoreFn, ethernet_set_ip, ethernet_get_ip, NULL, { .reboot_required = On } },
+    { Setting_Gateway, Group_Networking, "Gateway", NULL, Format_IPv4, NULL, NULL, NULL, Setting_NonCoreFn, ethernet_set_ip, ethernet_get_ip, NULL, { .reboot_required = On } },
+    { Setting_NetMask, Group_Networking, "Netmask", NULL, Format_IPv4, NULL, NULL, NULL, Setting_NonCoreFn, ethernet_set_ip, ethernet_get_ip, NULL, { .reboot_required = On } },
+#ifdef HAS_MAC_SETTING
+    { Setting_NetworkMAC, Group_Networking, "MAC Address", NULL, Format_String, "x(17)", "17", "17", Setting_NonCoreFn, ethernet_set_mac, ethernet_get_mac, NULL, { .allow_null = On, .reboot_required = On } },
+#endif
+    { Setting_TelnetPort, Group_Networking, "Telnet port", NULL, Format_Int16, "####0", "1", "65535", Setting_NonCore, &ethernet.telnet_port, NULL, NULL, { .reboot_required = On } },
+#if FTP_ENABLE
+    { Setting_FtpPort, Group_Networking, "FTP port", NULL, Format_Int16, "####0", "1", "65535", Setting_NonCore, &ethernet.ftp_port, NULL, NULL, { .reboot_required = On } },
+#endif
+#if HTTP_ENABLE
+    { Setting_HttpPort, Group_Networking, "HTTP port", NULL, Format_Int16, "####0", "1", "65535", Setting_NonCore, &ethernet.http_port, NULL, NULL, { .reboot_required = On } },
+#endif
+    { Setting_WebSocketPort, Group_Networking, "Websocket port", NULL, Format_Int16, "####0", "1", "65535", Setting_NonCore, &ethernet.websocket_port, NULL, NULL, { .reboot_required = On } },
+#if MQTT_ENABLE
+    { Setting_MQTTBrokerIpAddress, Group_Networking, "MQTT broker IP Address", NULL, Format_IPv4, NULL, NULL, NULL, Setting_NonCoreFn, ethernet_set_ip, ethernet_get_ip, NULL, { .reboot_required = On } },
+    { Setting_MQTTBrokerPort, Group_Networking, "MQTT broker port", NULL, Format_Int16, "####0", "1", "65535", Setting_NonCore, &ethernet.mqtt.port, NULL, NULL, { .reboot_required = On } },
+    { Setting_MQTTBrokerUserName, Group_Networking, "MQTT broker username", NULL, Format_String, "x(32)", NULL, "32", Setting_NonCore, &ethernet.mqtt.user, NULL, NULL, { .allow_null = On } },
+    { Setting_MQTTBrokerPassword, Group_Networking, "MQTT broker password", NULL, Format_Password, "x(32)", NULL, "32", Setting_NonCore, &ethernet.mqtt.password, NULL, NULL, { .allow_null = On } },
+#endif
+};
+
+#ifndef NO_SETTINGS_DESCRIPTIONS
+
+static const setting_descr_t ethernet_settings_descr[] = {
+    { Setting_NetworkServices, "Network services/protocols to enable." },
+    { Setting_Hostname, "Network hostname." },
+    { Setting_IpMode, "IP Mode." },
+    { Setting_IpAddress, "Static IP address." },
+    { Setting_Gateway, "Static gateway address." },
+    { Setting_NetMask, "Static netmask." },
+    { Setting_TelnetPort, "(Raw) Telnet port number listening for incoming connections." },
+#if FTP_ENABLE
+    { Setting_FtpPort, "FTP port number listening for incoming connections." },
+#endif
+#if HTTP_ENABLE
+    { Setting_HttpPort, "HTTP port number listening for incoming connections." },
+#endif
+    { Setting_WebSocketPort, "Websocket port number listening for incoming connections."
+                             "\\nNOTE: WebUI requires this to be HTTP port number + 1."
+    },
+#if MQTT_ENABLE
+    { Setting_MQTTBrokerIpAddress, "IP address for remote MQTT broker. Set to 0.0.0.0 to disable connection." },
+    { Setting_MQTTBrokerPort, "Remote MQTT broker portnumber." },
+    { Setting_MQTTBrokerUserName, "Remote MQTT broker username." },
+    { Setting_MQTTBrokerPassword, "Remote MQTT broker password." },
+#endif
+};
+
+#endif
+
+static void ethernet_settings_save (void)
+{
+    hal.nvs.memcpy_to_nvs(nvs_address, (uint8_t *)&ethernet, sizeof(network_settings_t), true);
+}
+
 void ethernet_settings_restore (void)
 {
     memset(&ethernet, 0, sizeof(network_settings_t));
@@ -636,6 +617,20 @@ static void stream_changed (stream_type_t type)
 
 bool enet_init (network_settings_t *settings)
 {
+    static setting_details_t setting_details = {
+        .groups = ethernet_groups,
+        .n_groups = sizeof(ethernet_groups) / sizeof(setting_group_detail_t),
+        .settings = ethernet_settings,
+        .n_settings = sizeof(ethernet_settings) / sizeof(setting_detail_t),
+    #ifndef NO_SETTINGS_DESCRIPTIONS
+        .descriptions = ethernet_settings_descr,
+        .n_descriptions = sizeof(ethernet_settings_descr) / sizeof(setting_descr_t),
+    #endif
+        .save = ethernet_settings_save,
+        .load = ethernet_settings_load,
+        .restore = ethernet_settings_restore
+    };
+
     if((nvs_address = nvs_alloc(sizeof(network_settings_t)))) {
 
         on_report_options = grbl.on_report_options;

@@ -4,8 +4,8 @@
 
   Part of grblHAL
 
-  Copyright (c) 2019-2024 Terje Io
-  Copyright (c) 2023-2024 Jon Escombe
+  Copyright (c) 2019-2025 Terje Io
+  Copyright (c) 2023-2025 Jon Escombe
 
   grblHAL is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -111,7 +111,7 @@ static on_spindle_programmed_ptr on_spindle_programmed = NULL;
 #endif // SPINDLE_ENCODER_ENABLE
 
 #if SPINDLE_SYNC_ENABLE
-static spindle_ptrs_t *sync_spindle;
+//static spindle_ptrs_t *sync_spindle;
 static void stepperPulseStartSynchronized (stepper_t *stepper);
 #endif
 
@@ -158,6 +158,9 @@ static input_signal_t inputpin[] = {
 #endif
 #ifdef SPI_IRQ_PORT
     { .id = Input_SPIIRQ,         .port = SPI_IRQ_PORT,       .pin = SPI_IRQ_PIN,         .group = PinGroup_SPI },
+#endif
+#if SDCARD_ENABLE && defined(SD_DETECT_PIN)
+    { .id = Input_SdCardDetect,   .port = SD_DETECT_PORT,     .pin = SD_DETECT_PIN,       .group = PinGroup_SdCard },
 #endif
 // Aux input pins must be consecutive in this array
 #ifdef AUXINPUT0_PIN
@@ -689,13 +692,12 @@ inline static __attribute__((always_inline)) void stepperSetStepOutputs (axes_si
     if(axes.bits) {
 
         uint_fast8_t idx, mask = 1;
-        axes_signals_t step = { .bits = step_out.bits };
 
         step_out.bits ^= settings.steppers.step_invert.bits;
 
         for(idx = 0; idx < N_AXIS; idx++) {
 
-            if((step.bits & mask) && !(axes.bits & mask)) switch(idx) {
+            if(!(axes.bits & mask)) switch(idx) {
 
                 case X_AXIS:
                     DIGITAL_OUT(X_STEP_PORT, X_STEP_BIT, step_out.x);
@@ -1594,7 +1596,7 @@ static bool aux_claim_explicit (aux_ctrl_t *aux_ctrl)
 static spindle_data_t *spindleGetData (spindle_data_request_t request)
 {
     bool stopped;
-    uint32_t step_pulse.length, rpm_timer_delta;
+    uint32_t pulse_length, rpm_timer_delta;
     spindle_encoder_counter_t encoder;
 
 //    while(spindle_encoder.spin_lock);
@@ -1603,15 +1605,15 @@ static spindle_data_t *spindleGetData (spindle_data_request_t request)
 
     memcpy(&encoder, &spindle_encoder.counter, sizeof(spindle_encoder_counter_t));
 
-    step_pulse.length = spindle_encoder.timer.step_pulse.length / spindle_encoder.tics_per_irq;
+    pulse_length = spindle_encoder.timer.pulse_length / spindle_encoder.tics_per_irq;
     rpm_timer_delta = RPM_TIMER->CNT - spindle_encoder.timer.last_pulse;
 
     __enable_irq();
 
     // If no spindle pulses during last 250 ms assume RPM is 0
-    if((stopped = ((step_pulse.length == 0) || (rpm_timer_delta > spindle_encoder.maximum_tt)))) {
+    if((stopped = ((pulse_length == 0) || (rpm_timer_delta > spindle_encoder.maximum_tt)))) {
         spindle_data.rpm = 0.0f;
-        rpm_timer_delta = (uint16_t)(((uint16_t)RPM_COUNTER->CNT - (uint16_t)encoder.last_count)) * step_pulse.length;
+        rpm_timer_delta = (uint16_t)(((uint16_t)RPM_COUNTER->CNT - (uint16_t)encoder.last_count)) * pulse_length;
     }
 
     switch(request) {
@@ -1624,12 +1626,12 @@ static spindle_data_t *spindleGetData (spindle_data_request_t request)
 
         case SpindleData_RPM:
             if(!stopped)
-                spindle_data.rpm = spindle_encoder.rpm_factor / (float)step_pulse.length;
+                spindle_data.rpm = spindle_encoder.rpm_factor / (float)pulse_length;
             break;
 
         case SpindleData_AtSpeed:
             if(!stopped)
-                spindle_data.rpm = spindle_encoder.rpm_factor / (float)step_pulse.length;
+                spindle_data.rpm = spindle_encoder.rpm_factor / (float)pulse_length;
             spindle_data.state_programmed.at_speed = !spindle_data.at_speed_enabled || (spindle_data.rpm >= spindle_data.rpm_low_limit && spindle_data.rpm <= spindle_data.rpm_high_limit);
             spindle_data.state_programmed.encoder_error = spindle_encoder.error_count > 0;
             break;
@@ -1637,7 +1639,7 @@ static spindle_data_t *spindleGetData (spindle_data_request_t request)
         case SpindleData_AngularPosition:
             spindle_data.angular_position = (float)encoder.index_count +
                     ((float)((uint16_t)encoder.last_count - (uint16_t)encoder.last_index) +
-                              (step_pulse.length == 0 ? 0.0f : (float)rpm_timer_delta / (float)step_pulse.length)) *
+                              (pulse_length == 0 ? 0.0f : (float)rpm_timer_delta / (float)pulse_length)) *
                                 spindle_encoder.pulse_distance;
             break;
     }
@@ -1666,7 +1668,7 @@ static void spindleDataReset (void)
     spindle_encoder.timer.last_index =
     spindle_encoder.timer.last_index = RPM_TIMER->CNT;
 
-    spindle_encoder.timer.step_pulse.length =
+    spindle_encoder.timer.pulse_length =
     spindle_encoder.counter.last_count =
     spindle_encoder.counter.last_index =
     spindle_encoder.counter.pulse_count =
@@ -1846,11 +1848,6 @@ void settings_changed (settings_t *settings, settings_changed_flags_t changed)
             spindle_encoder.maximum_tt = 250000UL / RPM_TIMER_RESOLUTION; // 250ms
             spindle_encoder.rpm_factor = (60.0f * 1000000.0f / RPM_TIMER_RESOLUTION) / (float)spindle_encoder.ppr;
             spindleDataReset();
-
-            if(on_spindle_programmed == NULL) {
-                on_spindle_programmed = grbl.on_spindle_programmed;
-                grbl.on_spindle_programmed = onSpindleProgrammed;
-            }
         } else {
             spindle_encoder.ppr = 0;
             hal.spindle_data.reset = NULL;
@@ -2021,6 +2018,14 @@ void settings_changed (settings_t *settings, settings_changed_flags_t changed)
                     input->mode.pull_mode = PullMode_Up;
                     input->mode.irq_mode = IRQ_Mode_Falling;
                     break;
+
+#if SDCARD_ENABLE && defined(SD_DETECT_PIN)
+                case Input_SdCardDetect:
+                    input->mode.pull_mode = PullMode_Up;
+                    input->mode.irq_mode = IRQ_Mode_Change;
+                    input->mode.debounce = On;
+                    break;
+#endif
 
                 default:
                     break;
@@ -2375,6 +2380,11 @@ static bool driver_setup (settings_t *settings)
     enet_start();
 #endif
 
+#if SDCARD_ENABLE && defined(SD_DETECT_PIN)
+    if(!DIGITAL_IN(SD_DETECT_PORT, SD_DETECT_PIN))
+        sdcard_detect(true);
+#endif
+
     return IOInitDone;
 }
 
@@ -2470,7 +2480,7 @@ static void onReportOptions (bool newopt)
     on_report_options(newopt);
 
     if(!newopt)
-        hal.stream.write("[PLUGIN:Bootloader Entry v0.02]" ASCII_EOL);
+        report_plugin("Bootloader Entry", "0.02");
 }
 
 #endif
@@ -2525,8 +2535,7 @@ bool driver_init (void)
 #else
     hal.info = "STM32H743";
 #endif
-
-    hal.driver_version = "241221";
+    hal.driver_version = "250107";
     hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
@@ -2590,11 +2599,11 @@ bool driver_init (void)
 
     HAL_RCC_GetOscConfig(&OscInitStruct);
 
-    if(OscInitStruct.OscillatorType & (RCC_OSCILLATORTYPE_LSI|RCC_OSCILLATORTYPE_LSE)) {
+    if(OscInitStruct.LSIState || OscInitStruct.LSEState) {
 
         RCC_PeriphCLKInitTypeDef PeriphClkInitStruct = {
             .PeriphClockSelection = RCC_PERIPHCLK_RTC,
-            .RTCClockSelection = (OscInitStruct.OscillatorType & RCC_OSCILLATORTYPE_LSI) ? RCC_RTCCLKSOURCE_LSI : RCC_RTCCLKSOURCE_LSE
+            .RTCClockSelection = OscInitStruct.LSEState ? RCC_RTCCLKSOURCE_LSE : RCC_RTCCLKSOURCE_LSI
         };
 
         if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInitStruct) == HAL_OK) {
@@ -2602,9 +2611,15 @@ bool driver_init (void)
             __HAL_RCC_RTC_ENABLE();
 
             if((hal.driver_cap.rtc = HAL_RTC_Init(&hrtc) == HAL_OK)) {
+
+                struct tm time;
+
+                hal.driver_cap.rtc_set = On;
                 hal.rtc.get_datetime = get_rtc_time;
                 hal.rtc.set_datetime = set_rtc_time;
-                // TODO: read the time and set hal.driver_cap.rtc_set if >= core build date?
+
+                if((hal.driver_cap.rtc_set = get_rtc_time(&time)))
+                    hal.driver_cap.rtc_set = ((time.tm_year + 1900) * 10000 + (time.tm_mon + 1) * 100 + time.tm_mday) >= GRBL_BUILD;
             }
         }
     }
@@ -2696,6 +2711,9 @@ bool driver_init (void)
             if(LIMIT_MASK & input->bit)
                 pin_irq[__builtin_ffs(input->bit) - 1] = input;
             limit_inputs.n_pins++;
+        } else if(input->group & PinGroup_SdCard) {
+            if(input->bit & DEVICES_IRQ_MASK)
+                pin_irq[__builtin_ffs(input->bit) - 1] = input;
         }
     }
 
@@ -2868,7 +2886,7 @@ void RPM_COUNTER_IRQHandler (void)
 
     spindle_encoder.counter.pulse_count += (uint16_t)(cval - (uint16_t)spindle_encoder.counter.last_count);
     spindle_encoder.counter.last_count = cval;
-    spindle_encoder.timer.step_pulse.length = tval - spindle_encoder.timer.last_pulse;
+    spindle_encoder.timer.pulse_length = tval - spindle_encoder.timer.last_pulse;
     spindle_encoder.timer.last_pulse = tval;
 
     spindle_encoder.spin_lock = false;
@@ -2883,14 +2901,18 @@ void core_pin_debounce (void *pin)
     if(input->mode.irq_mode == IRQ_Mode_Change ||
          DIGITAL_IN(input->port, input->bit) == (input->mode.irq_mode == IRQ_Mode_Falling ? 0 : 1)) {
 
-        if(input->group & (PinGroup_Control)) {
+        if(input->group & PinGroup_Control) {
             hal.control.interrupt_callback(systemGetState());
         }
         if(input->group & (PinGroup_Limit|PinGroup_LimitMax)) {
             limit_signals_t state = limitsGetState();
-            if(limit_signals_merge(state).value) //TODO: add check for limit switches having same state as when limit_isr were invoked?
+            if(limit_signals_merge(state).value) // TODO: add check for limit switches having same state as when limit_isr were invoked?
                 hal.limits.interrupt_callback(state);
         }
+#if SDCARD_ENABLE && defined(SD_DETECT_PIN)
+        if(input->group & PinGroup_SdCard)
+            sdcard_detect(!DIGITAL_IN(SD_DETECT_PORT, SD_DETECT_PIN)); // TODO: add check for having same state as when isr were invoked?
+#endif
     }
 
     EXTI->IMR1 |= input->bit; // Reenable pin interrupt
@@ -2950,7 +2972,7 @@ void EXTI0_IRQHandler(void)
         __HAL_GPIO_EXTI_CLEAR_IT(ifg);
 #if CONTROL_MASK & (1<<0)
         hal.control.interrupt_callback(systemGetState());
-#elif LIMIT_MASK & (1<<0)
+#elif (LIMIT_MASK|SD_DETECT_BIT) & (1<<0)
         core_pin_irq(ifg);
 #elif SPI_IRQ_BIT & (1<<0)
         if(spi_irq.callback)
@@ -2982,7 +3004,7 @@ void EXTI1_IRQHandler(void)
         __HAL_GPIO_EXTI_CLEAR_IT(ifg);
 #if CONTROL_MASK & (1<<1)
         hal.control.interrupt_callback(systemGetState());
-#elif LIMIT_MASK & (1<<1)
+#elif (LIMIT_MASK|SD_DETECT_BIT) & (1<<1)
         core_pin_irq(ifg);
 #elif SPI_IRQ_BIT & (1<<1)
         if(spi_irq.callback)
@@ -3014,7 +3036,7 @@ void EXTI2_IRQHandler(void)
         __HAL_GPIO_EXTI_CLEAR_IT(ifg);
 #if CONTROL_MASK & (1<<2)
         hal.control.interrupt_callback(systemGetState());
-#elif LIMIT_MASK & (1<<2)
+#elif (LIMIT_MASK|SD_DETECT_BIT) & (1<<2)
         core_pin_irq(ifg);
 #elif SPI_IRQ_BIT & (1<<2)
         if(spi_irq.callback)
@@ -3046,7 +3068,7 @@ void EXTI3_IRQHandler(void)
         __HAL_GPIO_EXTI_CLEAR_IT(ifg);
 #if CONTROL_MASK & (1<<3)
         hal.control.interrupt_callback(systemGetState());
-#elif LIMIT_MASK & (1<<3)
+#elif (LIMIT_MASK|SD_DETECT_BIT) & (1<<3)
         core_pin_irq(ifg);
 #elif SPI_IRQ_BIT & (1<<3)
         if(spi_irq.callback)
@@ -3078,7 +3100,7 @@ void EXTI4_IRQHandler(void)
         __HAL_GPIO_EXTI_CLEAR_IT(ifg);
 #if CONTROL_MASK & (1<<4)
         hal.control.interrupt_callback(systemGetState());
-#elif LIMIT_MASK & (1<<4)
+#elif (LIMIT_MASK|SD_DETECT_BIT) & (1<<4)
         core_pin_irq(ifg);
 #elif SPI_IRQ_BIT & (1<<4)
         if(spi_irq.callback)
@@ -3129,8 +3151,8 @@ void EXTI9_5_IRQHandler(void)
         if(ifg & CONTROL_MASK)
             hal.control.interrupt_callback(systemGetState());
 #endif
-#if LIMIT_MASK & 0x03E0
-        if(ifg & LIMIT_MASK)
+#if (LIMIT_MASK|SD_DETECT_BIT) & 0x03E0
+        if(ifg & (LIMIT_MASK|SD_DETECT_BIT))
             core_pin_irq(ifg);
 #endif
 #if AUXINPUT_MASK & 0x03E0
@@ -3175,8 +3197,8 @@ void EXTI15_10_IRQHandler(void)
         if(ifg & CONTROL_MASK)
             hal.control.interrupt_callback(systemGetState());
 #endif
-#if LIMIT_MASK & 0xFC00
-        if(ifg & LIMIT_MASK)
+#if (LIMIT_MASK|SD_DETECT_BIT) & 0xFC00
+        if(ifg & (LIMIT_MASK|SD_DETECT_BIT))
             core_pin_irq(ifg);
 #endif
 #if AUXINPUT_MASK & 0xFC00

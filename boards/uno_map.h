@@ -3,7 +3,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2021-2024 Terje Io
+  Copyright (c) 2021-2025 Terje Io
 
   grblHAL is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -141,7 +141,7 @@ Z-Limit      D12
 #define AUXOUTPUT4_PORT         GPIOF // A3 - coolant flood
 #define AUXOUTPUT4_PIN          3
 #define AUXOUTPUT5_PORT         GPIOF // A4 - coolant mist
-#define AUXOUTPUT5_PIN          3
+#define AUXOUTPUT5_PIN          5
 #endif
 
 #if DRIVER_SPINDLE_ENABLE
@@ -174,16 +174,6 @@ Z-Limit      D12
 #define COOLANT_ENABLE 0
 #endif
 #endif
-
-// Define flood and mist coolant enable output pins.
-#if N_ABC_MOTORS
-#define COOLANT_FLOOD_PORT      GPIOF // A4
-#define COOLANT_FLOOD_PIN       5
-#else
-#define COOLANT_MIST_PORT       GPIOF // A4
-#define COOLANT_MIST_PIN        5
-#define COOLANT_FLOOD_PORT      GPIOF // A3
-#define COOLANT_FLOOD_PIN       3
 #endif
 
 // Define user-control CONTROLs (cycle start, reset, feed hold) input pins.
