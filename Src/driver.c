@@ -383,7 +383,7 @@ extern volatile uint32_t _bootflag __attribute__((section(".dtcmdata")));
 extern __IO uint32_t uwTick, cycle_count;
 static uint32_t systick_safe_read = 0, cycles2us_factor = 0;
 static uint32_t aux_irq = 0;
-static bool IOInitDone = false, rtc_started = false;
+static bool IOInitDone = false;
 static pin_group_pins_t limit_inputs = {0};
 static delay_t delay = { .ms = 1, .callback = NULL }; // NOTE: initial ms set to 1 for "resetting" systick timer on startup
 static input_signal_t *pin_irq[16] = {0};
@@ -2419,7 +2419,7 @@ static bool set_rtc_time (struct tm *time)
     }
 
 
-    return rtc_started;
+    return hal.driver_cap.rtc_set;
 }
 
 static bool get_rtc_time (struct tm *time)
@@ -2535,7 +2535,7 @@ bool driver_init (void)
 #else
     hal.info = "STM32H743";
 #endif
-    hal.driver_version = "250107";
+    hal.driver_version = "250121";
     hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
