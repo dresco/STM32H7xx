@@ -36,11 +36,15 @@ static struct {
     uint16_t pin;
 } cs[TMC_N_MOTORS_MAX];
 
-// XXXXX replace with something better...
 // aproximates 1.5MHz SPI clock @ 480MHz processor speed
-inline static void delay (void)
+#ifndef TRIMANIC_SPI_DELAY
+#define TRINAMIC_SPI_DELAY 45
+#endif
+
+// XXXXX replace with something better...
+inline static void delay (uint32_t delay)
 {
-    volatile uint32_t dly = 45;
+    volatile uint32_t dly = delay;
 
     while(--dly)
         __ASM volatile ("nop");
@@ -60,10 +64,10 @@ static uint8_t sw_spi_xfer (uint8_t byte)
   do {
     DIGITAL_OUT(TRINAMIC_MOSI_PORT, 1 << TRINAMIC_MOSI_PIN, (byte & msk) != 0);
     msk >>= 1;
-    delay();
+    delay(TRINAMIC_SPI_DELAY);
     res = (res << 1) | DIGITAL_IN(TRINAMIC_MISO_PORT, 1 << TRINAMIC_MISO_PIN);
     DIGITAL_OUT(TRINAMIC_SCK_PORT, 1 << TRINAMIC_SCK_PIN, 1);
-    delay();
+    delay(TRINAMIC_SPI_DELAY);
     if (msk)
       DIGITAL_OUT(TRINAMIC_SCK_PORT, 1 << TRINAMIC_SCK_PIN, 0);
   } while (msk);
@@ -129,7 +133,7 @@ TMC_spi_status_t tmc_spi_read (trinamic_motor_t driver, TMC_spi_datagram_t *data
     spi_put_byte(0);
 
     DIGITAL_OUT(cs[driver.id].port, 1 << cs[driver.id].pin, 1);
-    delay();
+    delay(TRINAMIC_SPI_DELAY*2);
     DIGITAL_OUT(cs[driver.id].port, 1 << cs[driver.id].pin, 0);
 
     status = spi_put_byte(datagram->addr.value);
@@ -139,6 +143,7 @@ TMC_spi_status_t tmc_spi_read (trinamic_motor_t driver, TMC_spi_datagram_t *data
     datagram->payload.data[0] = spi_get_byte();
 
     DIGITAL_OUT(cs[driver.id].port, 1 << cs[driver.id].pin, 1);
+    delay(TRINAMIC_SPI_DELAY*2);
 
     return status;
 }
@@ -157,6 +162,7 @@ TMC_spi_status_t tmc_spi_write (trinamic_motor_t driver, TMC_spi_datagram_t *dat
     spi_put_byte(datagram->payload.data[0]);
 
     DIGITAL_OUT(cs[driver.id].port, 1 << cs[driver.id].pin, 1);
+    delay(TRINAMIC_SPI_DELAY*2);
 
     return status;
 }
