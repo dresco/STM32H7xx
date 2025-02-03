@@ -124,6 +124,8 @@
   #include "boards/btt_skr_v3.0_map.h"
 #elif defined(BOARD_BTT_OCTOPUS_MAX)
   #include "boards/btt_octopus_max_map.h"
+#elif defined(BOARD_BTT_OCTOPUS_PRO)
+  #include "boards/btt_octopus_pro_map.h"
 #elif defined(BOARD_BTT_SCYLLA)
   #include "boards/btt_scylla_map.h"
 #elif defined(BOARD_WEACT_MINI)

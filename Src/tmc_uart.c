@@ -24,7 +24,7 @@
 
 #include "driver.h"
 
-#if TRINAMIC_UART_ENABLE && (defined(BOARD_BTT_SKR_30) || defined(BOARD_WEACT_MINI_H743) || defined(BOARD_BTT_OCTOPUS_MAX))
+#if TRINAMIC_UART_ENABLE
 
 #include "trinamic/common.h"
 
