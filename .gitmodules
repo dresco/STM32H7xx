@@ -41,3 +41,6 @@
 [submodule "plugins"]
 	path = plugins
 	url = https://github.com/grblHAL/Plugins_misc
+[submodule "keypad"]
+	path = keypad
+	url = https://github.com/grblHAL/Plugin_keypad
