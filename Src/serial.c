@@ -87,7 +87,7 @@ static const io_stream_t *serial2Init(uint32_t baud_rate);
 #define UART0_IRQHandler usartHANDLER(SERIAL_PORT)
 #define UART0_CLK_En     usartCLKEN(SERIAL_PORT)
 #endif
-#if SERIAL_PORT == 1 || (SERIAL_PORT >= 10 && SERIAL_PORT < 19) || SERIAL_PORT == 6
+#if SERIAL_PORT == 1 || (SERIAL_PORT >= 10 && SERIAL_PORT < 19) || SERIAL_PORT == 6 || (SERIAL_PORT >= 60 && SERIAL_PORT < 69)
 #define UART0_CLK HAL_RCC_GetPCLK2Freq()
 #else
 #define UART0_CLK HAL_RCC_GetPCLK1Freq()
@@ -181,7 +181,7 @@ static const io_stream_t *serial2Init(uint32_t baud_rate);
 #define UART1_IRQHandler usartHANDLER(SERIAL1_PORT)
 #define UART1_CLK_En     usartCLKEN(SERIAL1_PORT)
 #endif
-#if SERIAL1_PORT == 1 || (SERIAL1_PORT >= 10 && SERIAL1_PORT < 19) || SERIAL1_PORT == 6
+#if SERIAL1_PORT == 1 || (SERIAL1_PORT >= 10 && SERIAL1_PORT < 19) || SERIAL1_PORT == 6 || (SERIAL1_PORT >= 60 && SERIAL1_PORT < 69)
 #define UART1_CLK HAL_RCC_GetPCLK2Freq()
 #else
 #define UART1_CLK HAL_RCC_GetPCLK1Freq()
@@ -275,7 +275,7 @@ static const io_stream_t *serial2Init(uint32_t baud_rate);
 #define UART2_IRQHandler usartHANDLER(SERIAL2_PORT)
 #define UART2_CLK_En     usartCLKEN(SERIAL2_PORT)
 #endif
-#if SERIAL2_PORT == 1 || (SERIAL2_PORT >= 10 && SERIAL2_PORT < 19) || SERIAL2_PORT == 6
+#if SERIAL2_PORT == 1 || (SERIAL2_PORT >= 10 && SERIAL2_PORT < 19) || SERIAL2_PORT == 6 || (SERIAL2_PORT >= 60 && SERIAL2_PORT < 69)
 #define UART2_CLK HAL_RCC_GetPCLK2Freq()
 #else
 #define UART2_CLK HAL_RCC_GetPCLK1Freq()
