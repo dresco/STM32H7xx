@@ -151,7 +151,7 @@ static const io_stream_t *serial2Init(uint32_t baud_rate);
 
 #if SERIAL1_PORT
 
-#if SERIAL_PORT1 == SERIAL_PORT || SERIAL1_PORT == SERIAL2_PORT
+#if SERIAL1_PORT == SERIAL_PORT || SERIAL1_PORT == SERIAL2_PORT
 #error Conflicting use of UART peripherals!
 #endif
 
