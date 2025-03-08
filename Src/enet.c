@@ -74,40 +74,40 @@ static void mqtt_connection_changed (bool connected)
 
 static network_info_t *get_info (const char *interface)
 {
-    static network_info_t info;
+    static network_info_t info = {};
 
-    memcpy(&info.status, &network, sizeof(network_settings_t));
+    if(interface == if_name) {
 
-    strcpy(info.status.ip, IPAddress);
+        memcpy(&info.status, &network, sizeof(network_settings_t));
 
-    if(info.status.ip_mode == IpMode_DHCP) {
-        *info.status.gateway = '\0';
-        *info.status.mask = '\0';
-    }
+        info.interface = (const char *)if_name;
+        info.is_ethernet = true;
+        info.link_up = network_status.link_up;
+        info.mbps = 100;
+        info.status.services = services;
+        *info.mac = *info.status.ip = *info.status.gateway = *info.status.mask = '\0';
 
-    info.interface = (const char *)if_name;
-    info.is_ethernet = true;
-    info.link_up = network_status.link_up;
-    info.mbps = 100;
-    info.status.services = services;
+        struct netif *netif = netif_default; // netif_get_by_index(0);
 
-    struct netif *netif = netif_default; // netif_get_by_index(0);
+        if(netif) {
 
-    if(netif) {
+            if(network_status.link_up) {
+                strcpy(info.status.ip, IPAddress);
+                ip4addr_ntoa_r(netif_ip_gw4(netif), info.status.gateway, IP4ADDR_STRLEN_MAX);
+                ip4addr_ntoa_r(netif_ip_netmask4(netif), info.status.mask, IP4ADDR_STRLEN_MAX);
+            }
 
-        if(network_status.link_up) {
-            ip4addr_ntoa_r(netif_ip_gw4(netif), info.status.gateway, IP4ADDR_STRLEN_MAX);
-            ip4addr_ntoa_r(netif_ip_netmask4(netif), info.status.mask, IP4ADDR_STRLEN_MAX);
+            strcpy(info.mac, networking_mac_to_string(netif->hwaddr));
         }
 
-        strcpy(info.mac, networking_mac_to_string(netif->hwaddr));
-    }
-
 #if MQTT_ENABLE
-    networking_make_mqtt_clientid(info.mac, info.mqtt_client_id);
+        networking_make_mqtt_clientid(info.mac, info.mqtt_client_id);
 #endif
 
-    return &info;
+        return &info;
+    }
+
+    return NULL;
 }
 
 static void report_options (bool newopt)
@@ -134,30 +134,33 @@ static void report_options (bool newopt)
 #endif
     } else {
 
-        network_info_t *network = get_info(NULL);
+        network_info_t *network;
 
-        hal.stream.write("[MAC:");
-        hal.stream.write(network->mac);
-        hal.stream.write("]" ASCII_EOL);
+        if((network = get_info(if_name))) {
 
-        hal.stream.write("[IP:");
-        hal.stream.write(network->status.ip);
-        hal.stream.write("]" ASCII_EOL);
-
-        if(active_stream == StreamType_Telnet || active_stream == StreamType_WebSocket) {
-            hal.stream.write("[NETCON:");
-            hal.stream.write(active_stream == StreamType_Telnet ? "Telnet" : "Websocket");
+            hal.stream.write("[MAC:");
+            hal.stream.write(network->mac);
             hal.stream.write("]" ASCII_EOL);
-        }
+
+            hal.stream.write("[IP:");
+            hal.stream.write(network->status.ip);
+            hal.stream.write("]" ASCII_EOL);
+
+            if(active_stream == StreamType_Telnet || active_stream == StreamType_WebSocket) {
+                hal.stream.write("[NETCON:");
+                hal.stream.write(active_stream == StreamType_Telnet ? "Telnet" : "Websocket");
+                hal.stream.write("]" ASCII_EOL);
+            }
 
 #if MQTT_ENABLE
-        char *client_id;
-        if(*(client_id = get_info(NULL)->mqtt_client_id)) {
-            hal.stream.write("[MQTT CLIENTID:");
-            hal.stream.write(client_id);
-            hal.stream.write(mqtt_connected ? "]" ASCII_EOL : " (offline)]" ASCII_EOL);
-        }
+            char *client_id;
+            if(*(client_id = get_info(NULL)->mqtt_client_id)) {
+                hal.stream.write("[MQTT CLIENTID:");
+                hal.stream.write(client_id);
+                hal.stream.write(mqtt_connected ? "]" ASCII_EOL : " (offline)]" ASCII_EOL);
+            }
 #endif
+        }
     }
 }
 
@@ -169,20 +172,6 @@ static void status_event_out (void *data)
 static void status_event_publish (network_flags_t changed)
 {
     task_add_immediate(status_event_out, (void *)((network_status_t){ .changed = changed, .flags = network_status }).value);
-}
-
-static void link_status_callback (struct netif *netif)
-{
-    bool isLinkUp = netif_is_link_up(netif);
-
-    if(isLinkUp != network_status.link_up) {
-        if(!(network_status.link_up = isLinkUp))
-            network_status.ip_aquired = Off;
-        status_event_publish((network_flags_t){ .link_up = On, .ip_aquired = !isLinkUp });
-#if TELNET_ENABLE
-        telnetd_notify_link_status(network_status.link_up);
-#endif
-    }
 }
 
 #if MDNS_ENABLE
@@ -236,7 +225,7 @@ static void netif_status_callback (struct netif *netif)
   #endif
   #if SSDP_ENABLE
         if(network.services.ssdp && !services.ssdp)
-            services.ssdp = ssdp_init(network.http_port);
+            services.ssdp = ssdp_init(get_info(if_name));
   #endif
     }
 #endif
@@ -273,7 +262,7 @@ static void netif_status_callback (struct netif *netif)
 
 #if MQTT_ENABLE
     if(!mqtt_connected)
-        mqtt_connect(&network.mqtt, get_info(NULL)->mqtt_client_id);
+        mqtt_connect(get_info(if_name), &network.mqtt);
 #endif
 
 #if MODBUS_ENABLE & MODBUS_TCP_ENABLED
@@ -283,6 +272,26 @@ static void netif_status_callback (struct netif *netif)
     if(!network_status.ip_aquired) {
         network_status.ip_aquired = On;
         status_event_publish((network_flags_t){ .ip_aquired = On });
+    }
+}
+
+static void link_status_callback (struct netif *netif)
+{
+    bool isLinkUp = netif_is_link_up(netif);
+
+    if(isLinkUp != network_status.link_up) {
+
+        if(!(network_status.link_up = isLinkUp))
+            network_status.ip_aquired = Off;
+
+        status_event_publish((network_flags_t){ .link_up = On, .ip_aquired = !isLinkUp });
+
+        if(network_status.link_up && network.ip_mode == IpMode_Static)
+            netif_status_callback(netif);
+
+#if TELNET_ENABLE
+        telnetd_notify_link_status(network_status.link_up);
+#endif
     }
 }
 
@@ -358,40 +367,40 @@ bool enet_start (void)
             netif_add(&ethif, NULL, NULL, NULL, NULL, &ethernetif_init, &ethernet_input);
 
         netif_set_default(&ethif);
+        netif_set_link_callback(netif_default, link_status_callback);
+        netif_set_status_callback(netif_default, netif_status_callback);
+
         netif_set_up(&ethif);
         netif_index_to_name(1, if_name);
+#if LWIP_NETIF_HOSTNAME
+        netif_set_hostname(netif_default, network.hostname);
+#endif
 
         network_status.interface_up = On;
         status_event_publish((network_flags_t){ .interface_up = On });
 
-        netif_set_link_callback(netif_default, link_status_callback);
-        netif_set_status_callback(netif_default, netif_status_callback);
+        if(netif_is_link_up(netif_default))
+            link_status_callback(netif_default);
 
-        link_status_callback(netif_default);
-        netif_status_callback(netif_default);
-
-    #if LWIP_NETIF_HOSTNAME
-        netif_set_hostname(netif_default, network.hostname);
-    #endif
         if(network.ip_mode == IpMode_DHCP)
             dhcp_start(netif_default);
 
 #if MDNS_ENABLE || SSDP_ENABLE || LWIP_IGMP
 
-    if(network.services.mdns || network.services.ssdp) {
+        if(network.services.mdns || network.services.ssdp) {
 
-        ETH_MACFilterConfigTypeDef filters;
+            ETH_MACFilterConfigTypeDef filters;
 
-        HAL_ETH_GetMACFilterConfig(&heth, &filters);
+            HAL_ETH_GetMACFilterConfig(&heth, &filters);
 
-        // TODO: add filters for SSDP and mDNS
-        filters.PassAllMulticast = On;
-    //    filters.PromiscuousMode = On;
+            // TODO: add filters for SSDP and mDNS
+            filters.PassAllMulticast = On;
+        //    filters.PromiscuousMode = On;
 
-        HAL_ETH_SetMACFilterConfig(&heth, &filters);
+            HAL_ETH_SetMACFilterConfig(&heth, &filters);
 
-        netif_default->flags |= NETIF_FLAG_IGMP;
-    }
+            netif_default->flags |= NETIF_FLAG_IGMP;
+        }
 
 #endif
     }

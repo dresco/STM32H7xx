@@ -28,10 +28,19 @@
 #define BOARD_NAME "grblHAL reference map"
 
 
-#define SERIAL_PORT    32   // GPIOD: TX = 8, RX = 9
-#define SERIAL1_PORT    1   // GPIOA: TX = 9, RX = 10
-#define I2C_PORT        1   // GPIOB: SCL = 8, SDA = 9
-#define SPI_PORT        3   // GPIOC: SCK = 10, MISO - 11, MOSI - 12
+#define SERIAL_PORT            32   // GPIOD: TX = 8, RX = 9
+#if USB_SERIAL_CDC
+#define SERIAL1_PORT           11   // GPIOB: TX = 6, RX = 7
+#define COPROC_STREAM           1
+#else
+#define SERIAL1_PORT            1   // GPIOA: TX = 9, RX = 10
+#endif
+#define I2C_PORT                1   // GPIOB: SCL = 8, SDA = 9
+#ifdef SDCARD_SDIO
+#define SPI_PORT                2   // GOPIB: SCK = 13, MISO - 14, MOSI - 15
+#else
+#define SPI_PORT                3   // GPIOC: SCK = 10, MISO - 11, MOSI - 12
+#endif
 #define IS_NUCLEO_BOB
 
 #define ETH_PINOUT      1   // PA1, PA2, PA7, PB13, PC1, PC4, PC5, PG11, PG13
@@ -203,6 +212,13 @@
 #define COOLANT_MIST_PIN        AUXOUTPUT7_PIN
 #endif
 
+#if ESP_AT_ENABLE && !(DRIVER_SPINDLE1_ENABLE & SPINDLE_ENA)
+#define COPROC_RESET_PORT       AUXOUTPUT1_PORT
+#define COPROC_RESET_PIN        AUXOUTPUT1_PIN
+#define COPROC_BOOT0_PORT       AUXOUTPUT2_PORT
+#define COPROC_BOOT0_PIN        AUXOUTPUT2_PIN
+#endif
+
 // Define user-control CONTROLs (cycle start, reset, feed hold) input pins.
 #define RESET_PORT              GPIOA
 #define RESET_PIN               3
@@ -258,6 +274,17 @@
 #elif MOTOR_FAULT_ENABLE
 #define MOTOR_FAULT_PORT        AUXINPUT1_PORT
 #define MOTOR_FAULT_PIN         AUXINPUT1_PIN
+#endif
+
+#if ETHERNET_ENABLE && defined(_WIZCHIP_)
+#undef SPI_ENABLE
+#define SPI_ENABLE              1
+#define SPI_CS_PORT             GPIOA // CS_JOG_SW
+#define SPI_CS_PIN              4
+#define SPI_IRQ_PORT            GPIOB // RXD_INT
+#define SPI_IRQ_PIN             12
+#define SPI_RST_PORT            GPIOB // TXD_INT
+#define SPI_RST_PIN             3
 #endif
 
 #if MPG_ENABLE == 1
