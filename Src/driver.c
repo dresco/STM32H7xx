@@ -33,7 +33,7 @@
 
 #define AUX_DEVICES // until all drivers are converted?
 #ifndef AUX_CONTROLS
-#define AUX_CONTROLS (AUX_CONTROL_SPINDLE|AUX_CONTROL_COOLANT)
+#define AUX_CONTROLS (AUX_CONTROL_SPINDLE|AUX_CONTROL_COOLANT|COPROC_PASSTHRU)
 #endif
 
 #include "grbl/protocol.h"
@@ -366,15 +366,24 @@ static output_signal_t outputpin[] = {
 #ifdef AUXOUTPUT7_PORT
     { .id = Output_Aux7,               .port = AUXOUTPUT7_PORT,        .pin = AUXOUTPUT7_PIN,        .group = PinGroup_AuxOutput },
 #endif
+#ifdef AUXOUTPUT8_PORT
+    { .id = Output_Aux8,               .port = AUXOUTPUT8_PORT,        .pin = AUXOUTPUT8_PIN,        .group = PinGroup_AuxOutput },
+#endif
+#ifdef AUXOUTPUT9_PORT
+    { .id = Output_Aux9,               .port = AUXOUTPUT9_PORT,        .pin = AUXOUTPUT9_PIN,        .group = PinGroup_AuxOutput },
+#endif
+#ifdef AUXOUTPUT10_PORT
+    { .id = Output_Aux10,              .port = AUXOUTPUT10_PORT,       .pin = AUXOUTPUT10_PIN,       .group = PinGroup_AuxOutput },
+#endif
 #ifdef AUXOUTPUT0_ANALOG_PORT
-    { .id = Output_Analog_Aux0,     .port = AUXOUTPUT0_ANALOG_PORT, .pin = AUXOUTPUT0_ANALOG_PIN,   .group = PinGroup_AuxOutputAnalog },
+    { .id = Output_Analog_Aux0,     .port = AUXOUTPUT0_ANALOG_PORT, .pin = AUXOUTPUT0_ANALOG_PIN,    .group = PinGroup_AuxOutputAnalog },
 #elif defined(AUXOUTPUT0_PWM_PORT)
-    { .id = Output_Analog_Aux0,     .port = AUXOUTPUT0_PWM_PORT,    .pin = AUXOUTPUT0_PWM_PIN,      .group = PinGroup_AuxOutputAnalog, .mode = { PINMODE_PWM } },
+    { .id = Output_Analog_Aux0,     .port = AUXOUTPUT0_PWM_PORT,    .pin = AUXOUTPUT0_PWM_PIN,       .group = PinGroup_AuxOutputAnalog, .mode = { PINMODE_PWM } },
 #endif
 #ifdef AUXOUTPUT1_ANALOG_PORT
-    { .id = Output_Analog_Aux1,     .port = AUXOUTPUT1_ANALOG_PORT, .pin = AUXOUTPUT1_ANALOG_PIN,   .group = PinGroup_AuxOutputAnalog },
+    { .id = Output_Analog_Aux1,     .port = AUXOUTPUT1_ANALOG_PORT, .pin = AUXOUTPUT1_ANALOG_PIN,    .group = PinGroup_AuxOutputAnalog },
 #elif defined(AUXOUTPUT1_PWM_PORT)
-    { .id = Output_Analog_Aux1,     .port = AUXOUTPUT1_PWM_PORT,    .pin = AUXOUTPUT1_PWM_PIN,      .group = PinGroup_AuxOutputAnalog, .mode = { PINMODE_PWM } }
+    { .id = Output_Analog_Aux1,     .port = AUXOUTPUT1_PWM_PORT,    .pin = AUXOUTPUT1_PWM_PIN,       .group = PinGroup_AuxOutputAnalog, .mode = { PINMODE_PWM } }
 #endif
 };
 
@@ -2484,7 +2493,21 @@ static void onReportOptions (bool newopt)
         report_plugin("Bootloader Entry", "0.02");
 }
 
+#if ESP_AT_ENABLE
+
+#include "grbl/stream_passthru.h"
+
+void stream_passthru_enter (void)
+{
+    __disable_irq();
+    _bootflag = 0xFEEDC0DE;
+    _bootflag = _bootflag; // Read back data to flush ECC before system reset
+    NVIC_SystemReset();
+}
+
 #endif
+
+#endif //USB_SERIAL_CDC
 
 uint32_t get_free_mem (void)
 {
@@ -3203,20 +3226,6 @@ void EXTI15_10_IRQHandler(void)
             aux_pin_irq(ifg & aux_irq);
 #endif
     }
-}
-
-#endif
-
-#if USB_SERIAL_CDC && ESP_AT_ENABLE
-
-#include "grbl/stream_passthru.h"
-
-void stream_passthru_enter (void)
-{
-    __disable_irq();
-    _bootflag = 0xFEEDC0DE;
-    _bootflag = _bootflag; // Read back data to flush ECC before system reset
-    NVIC_SystemReset();
 }
 
 #endif

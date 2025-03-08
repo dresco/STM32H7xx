@@ -112,6 +112,10 @@
 #define AUXOUTPUT3_PIN              3
 #define AUXOUTPUT4_PORT             GPIOB                       // Coolant mist - HEAT1
 #define AUXOUTPUT4_PIN              4
+#define AUXOUTPUT5_PORT             GPIOB                       // ESP32 IO0
+#define AUXOUTPUT5_PIN              10
+#define AUXOUTPUT6_PORT             GPIOC                       // ESP32 RST
+#define AUXOUTPUT6_PIN              14
 
 // Define driver spindle pins.
 #if DRIVER_SPINDLE_ENABLE & SPINDLE_ENA
@@ -135,6 +139,13 @@
 #if COOLANT_ENABLE & COOLANT_MIST
 #define COOLANT_MIST_PORT           AUXOUTPUT4_PORT
 #define COOLANT_MIST_PIN            AUXOUTPUT4_PIN
+#endif
+
+#if ESP_AT_ENABLE
+#define COPROC_RESET_PORT           AUXOUTPUT6_PORT
+#define COPROC_RESET_PIN            AUXOUTPUT6_PIN
+#define COPROC_BOOT0_PORT           AUXOUTPUT5_PORT
+#define COPROC_BOOT0_PIN            AUXOUTPUT5_PIN
 #endif
 
 // Define user-control controls (cycle start, reset, feed hold) input pins.
