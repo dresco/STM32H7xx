@@ -5,7 +5,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2021-2023 Terje Io
+  Copyright (c) 2021-2025 Terje Io
 
   grblHAL is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -39,9 +39,7 @@ uint16_t MCP3221_read (void)
 
 bool MCP3221_init (void)
 {
-    i2c_init();
-
-    return i2c_probe(MCP3221_ENABLE);
+    return i2c_start().ok && i2c_probe(MCP3221_ENABLE);
 }
 
 #endif

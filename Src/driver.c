@@ -2536,7 +2536,7 @@ bool driver_init (void)
 #else
     hal.info = "STM32H743";
 #endif
-    hal.driver_version = "250201";
+    hal.driver_version = "250228";
     hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
@@ -2634,10 +2634,6 @@ bool driver_init (void)
 #else
     if(!stream_connect_instance(SERIAL_STREAM, BAUD_RATE))
         while(true); // Cannot boot if no communication channel is available!
-#endif
-
-#if I2C_ENABLE
-    i2c_init();
 #endif
 
 #if EEPROM_ENABLE
