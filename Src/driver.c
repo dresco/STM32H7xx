@@ -33,7 +33,7 @@
 
 #define AUX_DEVICES // until all drivers are converted?
 #ifndef AUX_CONTROLS
-#define AUX_CONTROLS (AUX_CONTROL_SPINDLE|AUX_CONTROL_COOLANT)
+#define AUX_CONTROLS (AUX_CONTROL_SPINDLE|AUX_CONTROL_COOLANT|COPROC_PASSTHRU)
 #endif
 
 #include "grbl/protocol.h"
@@ -366,15 +366,24 @@ static output_signal_t outputpin[] = {
 #ifdef AUXOUTPUT7_PORT
     { .id = Output_Aux7,               .port = AUXOUTPUT7_PORT,        .pin = AUXOUTPUT7_PIN,        .group = PinGroup_AuxOutput },
 #endif
+#ifdef AUXOUTPUT8_PORT
+    { .id = Output_Aux8,               .port = AUXOUTPUT8_PORT,        .pin = AUXOUTPUT8_PIN,        .group = PinGroup_AuxOutput },
+#endif
+#ifdef AUXOUTPUT9_PORT
+    { .id = Output_Aux9,               .port = AUXOUTPUT9_PORT,        .pin = AUXOUTPUT9_PIN,        .group = PinGroup_AuxOutput },
+#endif
+#ifdef AUXOUTPUT10_PORT
+    { .id = Output_Aux10,              .port = AUXOUTPUT10_PORT,       .pin = AUXOUTPUT10_PIN,       .group = PinGroup_AuxOutput },
+#endif
 #ifdef AUXOUTPUT0_ANALOG_PORT
-    { .id = Output_Analog_Aux0,     .port = AUXOUTPUT0_ANALOG_PORT, .pin = AUXOUTPUT0_ANALOG_PIN,   .group = PinGroup_AuxOutputAnalog },
+    { .id = Output_Analog_Aux0,     .port = AUXOUTPUT0_ANALOG_PORT, .pin = AUXOUTPUT0_ANALOG_PIN,    .group = PinGroup_AuxOutputAnalog },
 #elif defined(AUXOUTPUT0_PWM_PORT)
-    { .id = Output_Analog_Aux0,     .port = AUXOUTPUT0_PWM_PORT,    .pin = AUXOUTPUT0_PWM_PIN,      .group = PinGroup_AuxOutputAnalog, .mode = { PINMODE_PWM } },
+    { .id = Output_Analog_Aux0,     .port = AUXOUTPUT0_PWM_PORT,    .pin = AUXOUTPUT0_PWM_PIN,       .group = PinGroup_AuxOutputAnalog, .mode = { PINMODE_PWM } },
 #endif
 #ifdef AUXOUTPUT1_ANALOG_PORT
-    { .id = Output_Analog_Aux1,     .port = AUXOUTPUT1_ANALOG_PORT, .pin = AUXOUTPUT1_ANALOG_PIN,   .group = PinGroup_AuxOutputAnalog },
+    { .id = Output_Analog_Aux1,     .port = AUXOUTPUT1_ANALOG_PORT, .pin = AUXOUTPUT1_ANALOG_PIN,    .group = PinGroup_AuxOutputAnalog },
 #elif defined(AUXOUTPUT1_PWM_PORT)
-    { .id = Output_Analog_Aux1,     .port = AUXOUTPUT1_PWM_PORT,    .pin = AUXOUTPUT1_PWM_PIN,      .group = PinGroup_AuxOutputAnalog, .mode = { PINMODE_PWM } }
+    { .id = Output_Analog_Aux1,     .port = AUXOUTPUT1_PWM_PORT,    .pin = AUXOUTPUT1_PWM_PIN,       .group = PinGroup_AuxOutputAnalog, .mode = { PINMODE_PWM } }
 #endif
 };
 
@@ -2451,8 +2460,6 @@ static bool get_rtc_time (struct tm *time)
 
 #if USB_SERIAL_CDC
 
-static on_report_options_ptr on_report_options;
-
 static status_code_t enter_dfu (sys_state_t state, char *args)
 {
     report_message("Entering DFU Bootloader", Message_Warning);
@@ -2467,24 +2474,27 @@ static status_code_t enter_dfu (sys_state_t state, char *args)
     return Status_OK;
 }
 
-const sys_command_t boot_command_list[] = {
-    {"DFU", enter_dfu, { .allow_blocking = On, .noargs = On }, { .str = "enter DFU bootloader" } }
-};
-
-static sys_commands_t boot_commands = {
-    .n_commands = sizeof(boot_command_list) / sizeof(sys_command_t),
-    .commands = boot_command_list
-};
-
 static void onReportOptions (bool newopt)
 {
-    on_report_options(newopt);
-
     if(!newopt)
         report_plugin("Bootloader Entry", "0.02");
 }
 
+#if ESP_AT_ENABLE
+
+#include "grbl/stream_passthru.h"
+
+void stream_passthru_enter (void)
+{
+    __disable_irq();
+    _bootflag = 0xFEEDC0DE;
+    _bootflag = _bootflag; // Read back data to flush ECC before system reset
+    NVIC_SystemReset();
+}
+
 #endif
+
+#endif // USB_SERIAL_CDC
 
 uint32_t get_free_mem (void)
 {
@@ -2771,7 +2781,16 @@ bool driver_init (void)
 
 #if USB_SERIAL_CDC
     // register $DFU bootloader command
-    on_report_options = grbl.on_report_options;
+
+    static const sys_command_t boot_command_list[] = {
+        {"DFU", enter_dfu, { .allow_blocking = On, .noargs = On }, { .str = "enter DFU bootloader" } }
+    };
+
+    static sys_commands_t boot_commands = {
+        .n_commands = sizeof(boot_command_list) / sizeof(sys_command_t),
+        .commands = boot_command_list
+    };
+
     grbl.on_report_options = onReportOptions;
     system_register_commands(&boot_commands);
 #endif
@@ -2809,7 +2828,7 @@ bool driver_init (void)
         HAL_NVIC_EnableIRQ(OTG_HS_IRQn);
     }
 
-    stream_passthru_init(0, 115200, enterpt);
+    stream_passthru_init(COPROC_STREAM, 115200, enterpt);
 
 #endif
 
@@ -3207,20 +3226,6 @@ void EXTI15_10_IRQHandler(void)
             aux_pin_irq(ifg & aux_irq);
 #endif
     }
-}
-
-#endif
-
-#if USB_SERIAL_CDC && ESP_AT_ENABLE
-
-#include "grbl/stream_passthru.h"
-
-void stream_passthru_enter (void)
-{
-    __disable_irq();
-    _bootflag = 0xFEEDC0DE;
-    _bootflag = _bootflag; // Read back data to flush ECC before system reset
-    NVIC_SystemReset();
 }
 
 #endif
