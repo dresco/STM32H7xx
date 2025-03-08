@@ -153,6 +153,30 @@ static input_signal_t inputpin[] = {
 #ifdef V_LIMIT_PIN
     { .id = Input_LimitV,         .port = V_LIMIT_PORT,       .pin = V_LIMIT_PIN,         .group = PinGroup_Limit },
 #endif
+#ifdef X_LIMIT_PIN_MAX
+    { .id = Input_LimitX_Max,     .port = X_LIMIT_PORT_MAX,   .pin = X_LIMIT_PIN_MAX,     .group = PinGroup_LimitMax },
+#endif
+#ifdef Y_LIMIT_PIN_MAX
+    { .id = Input_LimitY_Max,     .port = Y_LIMIT_PORT_MAX,   .pin = Y_LIMIT_PIN_MAX,     .group = PinGroup_LimitMax },
+#endif
+#ifdef Z_LIMIT_PIN_MAX
+    { .id = Input_LimitZ_Max,     .port = Z_LIMIT_PORT_MAX,   .pin = Z_LIMIT_PIN_MAX,     .group = PinGroup_LimitMax },
+#endif
+#ifdef A_LIMIT_PIN_MAX
+    { .id = Input_LimitA_Max,     .port = A_LIMIT_PORT_MAX,   .pin = A_LIMIT_PIN_MAX,     .group = PinGroup_LimitMax },
+#endif
+#ifdef B_LIMIT_PIN_MAX
+    { .id = Input_LimitB_Max,     .port = B_LIMIT_PORT_MAX,   .pin = B_LIMIT_PIN_MAX,     .group = PinGroup_LimitMax },
+#endif
+#ifdef C_LIMIT_PIN_MAX
+    { .id = Input_LimitC_Max,     .port = C_LIMIT_PORT_MAX,   .pin = C_LIMIT_PIN_MAX,     .group = PinGroup_LimitMax },
+#endif
+#ifdef U_LIMIT_PIN_MAX
+    { .id = Input_LimitU_Max,     .port = U_LIMIT_PORT_MAX,   .pin = U_LIMIT_PIN_MAX,     .group = PinGroup_LimitMax },
+#endif
+#ifdef V_LIMIT_PIN_MAX
+    { .id = Input_LimitV_Max,     .port = V_LIMIT_PORT_MAX,   .pin = V_LIMIT_PIN_MAX,     .group = PinGroup_LimitMax },
+#endif
 #if SPINDLE_SYNC_ENABLE
     { .id = Input_SpindleIndex,   .port = SPINDLE_INDEX_PORT, .pin = SPINDLE_INDEX_PIN,   .group = PinGroup_SpindleIndex },
 #endif
@@ -1393,8 +1417,23 @@ inline static limit_signals_t limitsGetState()
 #ifdef Z_LIMIT_PIN_MAX
     signals.max.z = DIGITAL_IN(Z_LIMIT_PORT_MAX, Z_LIMIT_BIT_MAX);
 #endif
+#ifdef A_LIMIT_PIN_MAX
+    signals.max.a = DIGITAL_IN(A_LIMIT_PORT_MAX, A_LIMIT_BIT_MAX);
+#endif
+#ifdef B_LIMIT_PIN_MAX
+    signals.max.b = DIGITAL_IN(B_LIMIT_PORT_MAX, B_LIMIT_BIT_MAX);
+#endif
+#ifdef C_LIMIT_PIN_MAX
+    signals.max.c = DIGITAL_IN(C_LIMIT_PORT_MAX, C_LIMIT_BIT_MAX);
+#endif
+#ifdef U_LIMIT_PIN_MAX
+    signals.max.u = DIGITAL_IN(U_LIMIT_PORT_MAX, U_LIMIT_BIT_MAX);
+#endif
+#ifdef V_LIMIT_PIN_MAX
+    signals.max.v = DIGITAL_IN(V_LIMIT_PORT_MAX, V_LIMIT_BIT_MAX);
+#endif
 
-    if (settings.limits.invert.mask) {
+    if(settings.limits.invert.mask) {
         signals.min.value ^= settings.limits.invert.mask;
 #ifdef DUAL_LIMIT_SWITCHES
         signals.min2.mask ^= settings.limits.invert.mask;
