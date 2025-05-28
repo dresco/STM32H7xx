@@ -47,70 +47,70 @@
 // Motor-4: M3-axis
 
 // Define step pulse output pins.
-#define X_STEP_PORT                 GPIOA
+#define X_STEP_PORT                 GPIOA // X-OUT STEP
 #define X_STEP_PIN                  0
-#define Y_STEP_PORT                 GPIOC
+#define Y_STEP_PORT                 GPIOC // Y-OUT STEP
 #define Y_STEP_PIN                  13
-#define Z_STEP_PORT                 GPIOB
+#define Z_STEP_PORT                 GPIOB // Z-OUT STEP
 #define Z_STEP_PIN                  8
 #define STEP_OUTMODE                GPIO_SINGLE
 
 // Define step direction output pins.
-#define X_DIRECTION_PORT            GPIOA
+#define X_DIRECTION_PORT            GPIOA // X-OUT DIR
 #define X_DIRECTION_PIN             1
-#define Y_DIRECTION_PORT            GPIOE
+#define Y_DIRECTION_PORT            GPIOE // Y-OUT DIR
 #define Y_DIRECTION_PIN             6
-#define Z_DIRECTION_PORT            GPIOB
+#define Z_DIRECTION_PORT            GPIOB // Z-OUT DIR
 #define Z_DIRECTION_PIN             9
 #define DIRECTION_OUTMODE           GPIO_SINGLE
 
 // Define stepper driver enable/disable output pin.
-#define X_ENABLE_PORT               GPIOC
+#define X_ENABLE_PORT               GPIOC // X-OUT EN
 #define X_ENABLE_PIN                0
-#define Y_ENABLE_PORT               GPIOC
+#define Y_ENABLE_PORT               GPIOC // Y-OUT EN
 #define Y_ENABLE_PIN                2
-#define Z_ENABLE_PORT               GPIOE
+#define Z_ENABLE_PORT               GPIOE // Z-OUT EN
 #define Z_ENABLE_PIN                5
 
 // Define homing/hard limit switch input pins.
 #define X_LIMIT_PORT                GPIOD
-#define X_LIMIT_PIN                 11      // MIN1
+#define X_LIMIT_PIN                 11      // X-MIN
 #define Y_LIMIT_PORT                GPIOA
-#define Y_LIMIT_PIN                 8       // MIN2
+#define Y_LIMIT_PIN                 8       // Y-MIN
 #define Z_LIMIT_PORT                GPIOC
-#define Z_LIMIT_PIN                 7       // MIN3
+#define Z_LIMIT_PIN                 7       // Z-MIN
 #define LIMIT_INMODE                GPIO_SINGLE
 
 // Define ganged axis or A axis step pulse and step direction output pins.
 #if N_ABC_MOTORS > 0
 #define M3_AVAILABLE                        // Motor-4
-#define M3_STEP_PORT                GPIOD
+#define M3_STEP_PORT                GPIOD   // A-OUT Step
 #define M3_STEP_PIN                 3
-#define M3_DIRECTION_PORT           GPIOD
+#define M3_DIRECTION_PORT           GPIOD   // A-OUT Dir
 #define M3_DIRECTION_PIN            4
 #define M3_LIMIT_PORT               GPIOD
-#define M3_LIMIT_PIN                15      // MIN4
+#define M3_LIMIT_PIN                15      // A-MIN
 #define M3_ENABLE_PORT              GPIOE
-#define M3_ENABLE_PIN               1       // EN for M3 motor
+#define M3_ENABLE_PIN               1       // A-OUT En
 #endif
 
-#define AUXOUTPUT0_PORT             GPIOA   //
+#define AUXOUTPUT0_PORT             GPIOA   // AUX0
 #define AUXOUTPUT0_PIN              4
-#define AUXOUTPUT1_PORT             GPIOA   //
+#define AUXOUTPUT1_PORT             GPIOA   // AUX1
 #define AUXOUTPUT1_PIN              5
-#define AUXOUTPUT2_PORT             GPIOA   //
+#define AUXOUTPUT2_PORT             GPIOA   // AUX2
 #define AUXOUTPUT2_PIN              6
 
-#define AUXOUTPUT3_PORT             GPIOC   // Spindle enable
+#define AUXOUTPUT3_PORT             GPIOC   // SPIN EN
 #define AUXOUTPUT3_PIN              5
-#define AUXOUTPUT4_PORT             GPIOB   // Spindle PWM
+#define AUXOUTPUT4_PORT             GPIOB   // SPIN SPD
 #define AUXOUTPUT4_PIN              1
-#define AUXOUTPUT5_PORT             GPIOB   // Spindle dir
+#define AUXOUTPUT5_PORT             GPIOB   // SPIN DIR
 #define AUXOUTPUT5_PIN              0
 
-#define AUXOUTPUT6_PORT             GPIOC   // Coolant flood
+#define AUXOUTPUT6_PORT             GPIOC   // Cool
 #define AUXOUTPUT6_PIN              4
-#define AUXOUTPUT7_PORT             GPIOA   // Coolant mist
+#define AUXOUTPUT7_PORT             GPIOA   // Mist
 #define AUXOUTPUT7_PIN              7
 
 #define AUXOUTPUT8_PORT             GPIOE   // ESP32 IO0
@@ -150,21 +150,27 @@
 
 // Define user-control controls (cycle start, reset, feed hold) input pins.
 #define RESET_PORT                  GPIOC
-#define RESET_PIN                   6       // PS-ON
+#define RESET_PIN                   6       // X-MAX
 #define FEED_HOLD_PORT              GPIOD
-#define FEED_HOLD_PIN               14      // IND-PROBE
+#define FEED_HOLD_PIN               14      // Y-MAX
 #define CYCLE_START_PORT            GPIOD
-#define CYCLE_START_PIN             12      // FWS
+#define CYCLE_START_PIN             12      // Z-MAX
 
-#define AUXINPUT0_PORT              GPIOD
-#define AUXINPUT0_PIN               13      // PWR-DET
+#define AUXINPUT0_PORT              GPIOE
+#define AUXINPUT0_PIN               7      // Tool
 
 #define AUXINPUT1_PORT              GPIOE
-#define AUXINPUT1_PIN               15      // Z probe
+#define AUXINPUT1_PIN               15      // Probe
+
+#define AUXINPUT2_PORT              GPIOB
+#define AUXINPUT2_PIN               7      // IO-IN
+
+#define AUXINPUT3_PORT              GPIOD
+#define AUXINPUT3_PIN               13      // A-MAX
 
 #if SAFETY_DOOR_ENABLE
-#define SAFETY_DOOR_PORT            AUXINPUT0_PORT
-#define SAFETY_DOOR_PIN             AUXINPUT0_PIN
+#define SAFETY_DOOR_PORT            AUXINPUT3_PORT
+#define SAFETY_DOOR_PIN             AUXINPUT3_PIN
 #endif
 
 #if PROBE_ENABLE
@@ -193,22 +199,22 @@
 
 #endif // TRINAMIC_SOFT_SPI
 
-#define MOTOR_CSX_PORT              GPIOC
+#define MOTOR_CSX_PORT              GPIOC // X-CS
 #define MOTOR_CSX_PIN               15
-#define MOTOR_CSY_PORT              GPIOC
+#define MOTOR_CSY_PORT              GPIOC // Y-CS
 #define MOTOR_CSY_PIN               14
-#define MOTOR_CSZ_PORT              GPIOE
+#define MOTOR_CSZ_PORT              GPIOE // Z-CS
 #define MOTOR_CSZ_PIN               2
 
 #ifdef  M3_AVAILABLE
-#define MOTOR_CSM3_PORT             GPIOE
+#define MOTOR_CSM3_PORT             GPIOE // A-CS
 #define MOTOR_CSM3_PIN              4
 #endif
 
 #endif // TRINAMIC_SPI_ENABLE
 
 #define CAN_PORT                    GPIOD
-#define CAN_RX_PIN                  0
-#define CAN_TX_PIN                  1
+#define CAN_RX_PIN                  0 // CAN-L
+#define CAN_TX_PIN                  1 // CAN-H
 
 // EOF
