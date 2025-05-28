@@ -3,7 +3,7 @@
 
   Part of grblHAL driver for STM32H7xx
 
-  Copyright (c) 2018-2023 Terje Io
+  Copyright (c) 2018-2025 Terje Io
 
   grblHAL is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -85,6 +85,8 @@
 
 static uint8_t keycode = 0;
 static keycode_callback_ptr keypad_callback = NULL;
+static volatile bool await_rx = false;
+
 static I2C_HandleTypeDef i2c_port = {
     .Instance = I2CPORT,
 #if I2C_KHZ == 100
@@ -170,7 +172,7 @@ void I2C_IRQERR_Handler (void)
 
 static inline __attribute__((always_inline)) bool wait_ready (void)
 {
-    while(i2c_port.State != HAL_I2C_STATE_READY) {
+    while(await_rx && i2c_port.State != HAL_I2C_STATE_READY && __HAL_I2C_GET_FLAG(&i2c_port, I2C_FLAG_BUSY) != RESET) {
         if(!hal.stream_blocking_callback())
             return false;
     }
@@ -181,7 +183,7 @@ static inline __attribute__((always_inline)) bool wait_ready (void)
 bool i2c_probe (i2c_address_t i2cAddr)
 {
     return wait_ready() && HAL_I2C_IsDeviceReady(&i2c_port, i2cAddr << 1, 4, 10) == HAL_OK;
-    }
+}
 
 bool i2c_send (i2c_address_t i2cAddr, uint8_t *buf, size_t size, bool block)
 {
@@ -191,17 +193,17 @@ bool i2c_send (i2c_address_t i2cAddr, uint8_t *buf, size_t size, bool block)
     bool ok = HAL_I2C_Master_Transmit_IT(&i2c_port, i2cAddr << 1, buf, size) == HAL_OK;
 
     return ok && (!block || wait_ready());
-    }
+}
 
 bool i2c_receive (i2c_address_t i2cAddr, uint8_t *buf, size_t size, bool block)
 {
     if(!wait_ready())
-            return false;
+        return false;
 
-    bool ok = HAL_I2C_Master_Receive_IT(&i2c_port, i2cAddr << 1, buf, size) == HAL_OK;
+    await_rx = HAL_I2C_Master_Receive_IT(&i2c_port, i2cAddr << 1, buf, size) == HAL_OK;
 
-    return ok && (!block || wait_ready());
-    }
+    return await_rx && (!block || wait_ready());
+}
 
 bool i2c_transfer (i2c_transfer_t *i2c, bool read)
 {
@@ -220,18 +222,18 @@ bool i2c_transfer (i2c_transfer_t *i2c, bool read)
 
 bool i2c_get_keycode (i2c_address_t i2cAddr, keycode_callback_ptr callback)
 {
-    bool ok;
-
-    if((ok = wait_ready() && HAL_I2C_Master_Receive_IT(&i2c_port, i2cAddr << 1, &keycode, 1) == HAL_OK)) {
-    keycode = 0;
-    keypad_callback = callback;
+    if((await_rx = wait_ready() && HAL_I2C_Master_Receive_IT(&i2c_port, i2cAddr << 1, &keycode, 1) == HAL_OK)) {
+        keycode = 0;
+        keypad_callback = callback;
     }
 
-    return ok;
+    return await_rx;
 }
 
-void HAL_I2C_MasterRxCpltCallback(I2C_HandleTypeDef *hi2c)
+void HAL_I2C_MasterRxCpltCallback (I2C_HandleTypeDef *hi2c)
 {
+    await_rx = false;
+
     if(keypad_callback && keycode != 0) {
         keypad_callback(keycode);
         keypad_callback = NULL;

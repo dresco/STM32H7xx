@@ -342,9 +342,9 @@ void spi_init (void)
         HAL_DMA_Init(&spi_dma_tx);
         __HAL_LINKDMA(&spi_port, hdmatx, spi_dma_tx);
 
-        HAL_NVIC_SetPriority(DMA_RX_IRQ, 1, 1);
+        HAL_NVIC_SetPriority(DMA_RX_IRQ, 1, 0);
         HAL_NVIC_EnableIRQ(DMA_RX_IRQ);
-        HAL_NVIC_SetPriority(DMA_TX_IRQ, 1, 1);
+        HAL_NVIC_SetPriority(DMA_TX_IRQ, 1, 0);
         HAL_NVIC_EnableIRQ(DMA_TX_IRQ);
 #endif
 

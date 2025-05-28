@@ -200,6 +200,18 @@ SECTIONS
     . = ALIGN(4);
   } >DTCMRAM
 
+_siitcmram = LOADADDR(.itcmram);
+  /* ITCMRAM section */
+  .itcmram :
+  {
+    . = ALIGN(4);
+    _sitcmram = .; /* define a global symbols at itcmram start */
+    *(.itcmram)
+    *(.itcmram*)
+    . = ALIGN(4);
+    _eitcmram = .; /* define a global symbols at itcmram end */
+  } >ITCMRAM AT> FLASH
+
   /* Remove information from the standard libraries */
   /DISCARD/ :
   {

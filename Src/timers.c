@@ -4,7 +4,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2024 Terje Io
+  Copyright (c) 2024-2025 Terje Io
 
   grblHAL is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -371,7 +371,7 @@ hal_timer_t timerClaim (timer_cap_t cap, uint32_t timebase)
             timers[idx].timer->SR &= ~(TIM_SR_UIF|TIM_SR_CC1IF|TIM_SR_CC2IF);
             timers[idx].timer->CNT = 0;
 
-            HAL_NVIC_SetPriority(timers[idx].irq, 0, 1);
+            HAL_NVIC_SetPriority(timers[idx].irq, 0, 2);
             NVIC_EnableIRQ(timers[idx].irq);
             break;
         }
@@ -474,7 +474,7 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM1_IDX
 
-void TIM1_UP_TIM10_IRQHandler (void)
+ISR_CODE void TIM1_UP_TIM10_IRQHandler (void)
 {
     _irq_handler(TIM1, &timers[TIM1_IDX].cfg);
 }
@@ -490,7 +490,7 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM2_IDX
 
-void TIM2_IRQHandler (void)
+ISR_CODE void TIM2_IRQHandler (void)
 {
     _irq_handler(TIM2, &timers[TIM2_IDX].cfg);
 }
@@ -506,7 +506,7 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM3_IDX
 
-void TIM3_IRQHandler (void)
+ISR_CODE void TIM3_IRQHandler (void)
 {
     _irq_handler(TIM3, &timers[TIM3_IDX].cfg);
 }
@@ -522,7 +522,7 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM4_IDX
 
-void TIM4_IRQHandler (void)
+ISR_CODE void TIM4_IRQHandler (void)
 {
     _irq_handler(TIM4, &timers[TIM4_IDX].cfg);
 }
@@ -538,7 +538,7 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM5_IDX
 
-void TIM5_IRQHandler (void)
+ISR_CODE void TIM5_IRQHandler (void)
 {
     _irq_handler(TIM5, &timers[TIM5_IDX].cfg);
 }
@@ -554,7 +554,7 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM6_IDX
 
-void TIM6_DAC_IRQHandler (void)
+ISR_CODE void TIM6_DAC_IRQHandler (void)
 {
     _irq_handler(TIM6, &timers[TIM6_IDX].cfg);
 }
@@ -570,7 +570,7 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM7_IDX
 
-void TIM7_IRQHandler (void)
+ISR_CODE void TIM7_IRQHandler (void)
 {
     _irq_handler(TIM7, &timers[TIM7_IDX].cfg);
 }
@@ -586,7 +586,7 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM8_IDX
 
-void TIM8_IRQHandler (void)
+ISR_CODE void TIM8_IRQHandler (void)
 {
     _irq_handler(TIM8, &timers[TIM8_IDX].cfg);
 }
@@ -618,7 +618,7 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM10_IDX
 
-void TIM10_IRQHandler (void)
+ISR_CODE void TIM10_IRQHandler (void)
 {
     _irq_handler(TIM10, &timers[TIM10_IDX].cfg);
 }
@@ -634,7 +634,7 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM11_IDX
 
-void TIM11_IRQHandler (void)
+ISR_CODE void TIM11_IRQHandler (void)
 {
     _irq_handler(TIM11, &timers[TIM11_IDX].cfg);
 }
@@ -650,7 +650,7 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM12_IDX
 
-void TIM12_IRQHandler (void)
+ISR_CODE void TIM12_IRQHandler (void)
 {
     _irq_handler(TIM12, &timers[TIM12_IDX].cfg);
 }
@@ -666,7 +666,7 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM13_IDX
 
-void TIM13_IRQHandler (void)
+ISR_CODE void TIM13_IRQHandler (void)
 {
     _irq_handler(TIM13, &timers[TIM13_IDX].cfg);
 }
@@ -682,7 +682,7 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM14_IDX
 
-void TIM14_IRQHandler (void)
+ISR_CODE void TIM14_IRQHandler (void)
 {
     _irq_handler(TIM14, &timers[TIM14_IDX].cfg);
 }
@@ -698,12 +698,28 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM15_IDX
 
-void TIM15_IRQHandler (void)
+ISR_CODE void TIM15_IRQHandler (void)
 {
     _irq_handler(TIM15, &timers[TIM15_IDX].cfg);
 }
 
 #endif // TIM15
+
+#ifdef TIM16
+
+enum {
+  TIM16_TIDX = LAST_TIDX,
+  TIM16_IDX
+};
+#undef LAST_TIDX
+#define LAST_TIDX TIM16_IDX
+
+ISR_CODE void TIM16_IRQHandler (void)
+{
+    _irq_handler(TIM16, &timers[TIM16_IDX].cfg);
+}
+
+#endif // TIM16
 
 #ifdef TIM17
 
@@ -714,7 +730,7 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM17_IDX
 
-void TIM17_IRQHandler (void)
+ISR_CODE void TIM17_IRQHandler (void)
 {
     _irq_handler(TIM17, &timers[TIM17_IDX].cfg);
 }

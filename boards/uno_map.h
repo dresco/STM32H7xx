@@ -176,17 +176,28 @@ Z-Limit      D12
 #endif
 #endif
 
-// Define user-control CONTROLs (cycle start, reset, feed hold) input pins.
-#define RESET_PORT              GPIOA // A0
-#define RESET_PIN               3
-#define FEED_HOLD_PORT          GPIOC // A1
-#define FEED_HOLD_PIN           0
-#define CYCLE_START_PORT        GPIOF // A5
-#define CYCLE_START_PIN         10
-#define CONTROL_INMODE          GPIO_SINGLE
-
-#define AUXINPUT0_PORT          GPIOC // A2
+#define AUXINPUT0_PORT          GPIOC // A2 - probe
 #define AUXINPUT0_PIN           3
+#define AUXINPUT1_PORT          GPIOA // A0 - reset/EStop
+#define AUXINPUT1_PIN           3
+#define AUXINPUT2_PORT          GPIOC // A1 - feed hold
+#define AUXINPUT2_PIN           0
+#define AUXINPUT3_PORT          GPIOF // A5 - cycle start
+#define AUXINPUT3_PIN           10
+
+// Define user-control controls (cycle start, reset, feed hold) input pins.
+#if CONTROL_ENABLE & CONTROL_HALT
+#define RESET_PORT              AUXINPUT1_PORT
+#define RESET_PIN               AUXINPUT1_PIN
+#endif
+#if CONTROL_ENABLE & CONTROL_FEED_HOLD
+#define FEED_HOLD_PORT          AUXINPUT2_PORT
+#define FEED_HOLD_PIN           AUXINPUT2_PIN
+#endif
+#if CONTROL_ENABLE & CONTROL_CYCLE_START
+#define CYCLE_START_PORT        AUXINPUT3_PORT
+#define CYCLE_START_PIN         AUXINPUT3_PIN
+#endif
 
 #if PROBE_ENABLE
 #define PROBE_PORT              AUXINPUT0_PORT

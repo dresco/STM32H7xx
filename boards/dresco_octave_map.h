@@ -183,17 +183,8 @@
 #define COOLANT_MIST_PIN            AUXOUTPUT7_PIN
 #endif
 
-// Define user-control controls (cycle start, reset, feed hold) input pins.
-#define RESET_PORT                  GPIOD
-#define RESET_PIN                   13
-#define FEED_HOLD_PORT              GPIOG
-#define FEED_HOLD_PIN               2
-#define CYCLE_START_PORT            GPIOE
-#define CYCLE_START_PIN             1
-#define CONTROL_INMODE              GPIO_SINGLE
-
 // Define auxiliary input pins.
-#define AUXINPUT0_PORT              GPIOD
+#define AUXINPUT0_PORT              GPIOD       // Safety door
 #define AUXINPUT0_PIN               11
 #define AUXINPUT1_PORT              GPIOB
 #define AUXINPUT1_PIN               12
@@ -201,10 +192,30 @@
 #define AUXINPUT2_PIN               13
 #define AUXINPUT3_PORT              GPIOD
 #define AUXINPUT3_PIN               10
-#define AUXINPUT4_PORT              GPIOD
+#define AUXINPUT4_PORT              GPIOD       // Probe
 #define AUXINPUT4_PIN               12
-#define AUXINPUT5_PORT              GPIOF
+#define AUXINPUT5_PORT              GPIOF       // Motor fault
 #define AUXINPUT5_PIN               0
+#define AUXINPUT6_PORT              GPIOD       // Reset
+#define AUXINPUT6_PIN               13
+#define AUXINPUT7_PORT              GPIOG       // Feed hold
+#define AUXINPUT7_PIN               2
+#define AUXINPUT8_PORT              GPIOE       // Cycle start
+#define AUXINPUT8_PIN               1
+
+// Define user-control controls (cycle start, reset, feed hold) input pins.
+#if CONTROL_ENABLE & CONTROL_HALT
+#define RESET_PORT                  AUXINPUT6_PORT
+#define RESET_PIN                   AUXINPUT6_PIN
+#endif
+#if CONTROL_ENABLE & CONTROL_FEED_HOLD
+#define FEED_HOLD_PORT              AUXINPUT7_PORT
+#define FEED_HOLD_PIN               AUXINPUT7_PIN
+#endif
+#if CONTROL_ENABLE & CONTROL_CYCLE_START
+#define CYCLE_START_PORT            AUXINPUT8_PORT
+#define CYCLE_START_PIN             AUXINPUT8_PIN
+#endif
 
 #if SAFETY_DOOR_ENABLE
 #define SAFETY_DOOR_PORT            AUXINPUT0_PORT

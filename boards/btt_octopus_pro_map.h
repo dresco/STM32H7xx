@@ -214,33 +214,40 @@
 #define COOLANT_MIST_PIN            AUXOUTPUT7_PIN
 #endif
 
-// Define user-control controls (cycle start, reset, feed hold) input pins.
-#define RESET_PORT                  GPIOF   //TB
-#define RESET_PIN                   3
-
-#define FEED_HOLD_PORT              GPIOF   //T0
-#define FEED_HOLD_PIN               4
-
-#define CYCLE_START_PORT            GPIOF   //T1
-#define CYCLE_START_PIN             5
-
-#define AUXINPUT0_PORT              GPIOC   // PWR-DET
+#define AUXINPUT0_PORT              GPIOC   // Safety door - PWR-DET
 #define AUXINPUT0_PIN               0
-
-#define AUXINPUT1_PORT              GPIOB   // Z probe "left"
+#define AUXINPUT1_PORT              GPIOB   // Probe - Z probe "left"
 #define AUXINPUT1_PIN               6
-
 #define AUXINPUT2_PORT              GPIOB   // Z probe "right"
 #define AUXINPUT2_PIN               7
-
 #define AUXINPUT3_PORT              GPIOB   //Button on PCB
 #define AUXINPUT3_PIN               2
+#define AUXINPUT4_PORT              GPIOF   // Reset - TB
+#define AUXINPUT4_PIN               3
+#define AUXINPUT5_PORT              GPIOF   // Feed hold - T0
+#define AUXINPUT5_PIN               4
+#define AUXINPUT6_PORT              GPIOF   // Cycle start - T1
+#define AUXINPUT6_PIN               5
 
 #define AUXINTPUT0_ANALOG_PORT      GPIOF   //T2
 #define AUXINTPUT0_ANALOG_PIN       6
 
 #define AUXINTPUT1_ANALOG_PORT      GPIOF   //T3
 #define AUXINTPUT1_ANALOG_PIN       7
+
+// Define user-control controls (cycle start, reset, feed hold) input pins.
+#if CONTROL_ENABLE & CONTROL_HALT
+#define RESET_PORT                  AUXINPUT4_PORT
+#define RESET_PIN                   AUXINPUT4_PIN
+#endif
+#if CONTROL_ENABLE & CONTROL_FEED_HOLD
+#define FEED_HOLD_PORT              AUXINPUT5_PORT
+#define FEED_HOLD_PIN               AUXINPUT5_PIN
+#endif
+#if CONTROL_ENABLE & CONTROL_CYCLE_START
+#define CYCLE_START_PORT            AUXINPUT6_PORT
+#define CYCLE_START_PIN             AUXINPUT6_PIN
+#endif
 
 #if SAFETY_DOOR_ENABLE
 #define SAFETY_DOOR_PORT            AUXINPUT0_PORT
@@ -251,8 +258,6 @@
 #define PROBE_PORT                  AUXINPUT1_PORT
 #define PROBE_PIN                   AUXINPUT1_PIN
 #endif
-
-#define CONTROL_INMODE              GPIO_SINGLE
 
 //Pins not used
 // DC Probe pin? Connected to an EL357C on GPIOC5 conflicts with T1/cycle start but this may be preferred as it is optocoupled. Only one?

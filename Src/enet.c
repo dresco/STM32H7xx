@@ -52,7 +52,6 @@ static network_services_t services = {0}, allowed_services;
 static nvs_address_t nvs_address;
 static network_settings_t ethernet, network;
 static on_report_options_ptr on_report_options;
-static on_execute_realtime_ptr on_execute_realtime;
 static on_stream_changed_ptr on_stream_changed;
 static char netservices[NETWORK_SERVICES_LEN] = "";
 static network_flags_t network_status = {};
@@ -277,57 +276,66 @@ static void netif_status_callback (struct netif *netif)
 
 static void link_status_callback (struct netif *netif)
 {
+    static bool dhcp_running = false;
+
     bool isLinkUp = netif_is_link_up(netif);
 
     if(isLinkUp != network_status.link_up) {
 
-        if(!(network_status.link_up = isLinkUp))
-            network_status.ip_aquired = Off;
+        network_flags_t changed = { .link_up = On };
 
-        status_event_publish((network_flags_t){ .link_up = On, .ip_aquired = !isLinkUp });
+        if((network_status.link_up = isLinkUp)) {
+            if(network.ip_mode == IpMode_DHCP && !dhcp_running)
+                dhcp_running = dhcp_start(netif_default) == ERR_OK;
+        } else if(network.ip_mode == IpMode_DHCP && network_status.ip_aquired) {
+            changed.ip_aquired = On;
+            network_status.ip_aquired = Off;
+        }
+
+        status_event_publish(changed);
 
         if(network_status.link_up && network.ip_mode == IpMode_Static)
             netif_status_callback(netif);
-
-#if TELNET_ENABLE
-        telnetd_notify_link_status(network_status.link_up);
-#endif
     }
 }
 
-static void enet_poll (sys_state_t state)
+static void link_check (void *data)
 {
-    static uint32_t last_ms0, last_link_check;
+    ethernet_link_check_state(netif_default);
 
-    on_execute_realtime(state);
+    task_add_delayed(link_check, NULL, LINK_CHECK_INTERVAL);
+}
 
-    uint32_t ms = hal.get_elapsed_ticks();
-
-    if(ms - last_link_check >= 100) {
-        last_link_check = ms;
-        ethernet_link_check_state(netif_default);
-    }
+static void enet_poll (void *data)
+{
+    static uint32_t ms = 0;
 
     sys_check_timeouts();
     ethernetif_input(netif_default);
 
-    if(network_status.link_up && ms - last_ms0 > 3) {
-        last_ms0 = ms;
+    if(network_status.link_up) switch(++ms) {
 #if TELNET_ENABLE
-        if(services.telnet)
-            telnetd_poll();
-#endif
-#if FTP_ENABLE
-        if(services.ftp)
-            ftpd_poll();
+        case 1:
+            if(services.telnet)
+                telnetd_poll();
+            break;
 #endif
 #if WEBSOCKET_ENABLE
-        if(services.websocket)
-            websocketd_poll();
+        case 2:
+            if(services.websocket)
+                websocketd_poll();
+            break;
+#endif
+        case 3:
+            ms = 0;
+#if FTP_ENABLE
+            if(services.ftp)
+                ftpd_poll();
 #endif
 #if MODBUS_ENABLE & MODBUS_TCP_ENABLED
-        modbus_tcp_client_poll();
+            modbus_tcp_client_poll();
 #endif
+            break;
     }
 }
 
@@ -338,8 +346,6 @@ bool enet_start (void)
     if(nvs_address != 0) {
 
         *IPAddress = '\0';
-        on_execute_realtime = grbl.on_execute_realtime;
-        grbl.on_execute_realtime = enet_poll;
 
         memcpy(&network, &ethernet, sizeof(network_settings_t));
 #ifdef HAS_MAC_SETTING
@@ -370,7 +376,6 @@ bool enet_start (void)
         netif_set_link_callback(netif_default, link_status_callback);
         netif_set_status_callback(netif_default, netif_status_callback);
 
-        netif_set_up(&ethif);
         netif_index_to_name(1, if_name);
 #if LWIP_NETIF_HOSTNAME
         netif_set_hostname(netif_default, network.hostname);
@@ -378,12 +383,6 @@ bool enet_start (void)
 
         network_status.interface_up = On;
         status_event_publish((network_flags_t){ .interface_up = On });
-
-        if(netif_is_link_up(netif_default))
-            link_status_callback(netif_default);
-
-        if(network.ip_mode == IpMode_DHCP)
-            dhcp_start(netif_default);
 
 #if MDNS_ENABLE || SSDP_ENABLE || LWIP_IGMP
 
@@ -403,6 +402,12 @@ bool enet_start (void)
         }
 
 #endif
+
+        if(netif_is_link_up(netif_default))
+            link_status_callback(netif_default);
+
+        task_add_systick(enet_poll, NULL);
+        task_add_delayed(link_check, NULL, LINK_CHECK_INTERVAL);
     }
 
 #if TCP_ECHOSERVER_ENABLE

@@ -219,25 +219,16 @@
 #define COPROC_BOOT0_PIN        AUXOUTPUT2_PIN
 #endif
 
-// Define user-control CONTROLs (cycle start, reset, feed hold) input pins.
-#define RESET_PORT              GPIOA
-#define RESET_PIN               3
-#define FEED_HOLD_PORT          GPIOC
-#define FEED_HOLD_PIN           0
-#define CYCLE_START_PORT        GPIOF
-#define CYCLE_START_PIN         4
-
-#define CONTROL_INMODE          GPIO_SINGLE
-
-// STM32H7xx - SD card using SDMMC interface instead of SPI
-//#if SDCARD_ENABLE
-//#define SD_CS_PORT              GPIOC
-//#define SD_CS_PIN               8
-//#endif
+/*
+#define AUXINPUT0_ANALOG_PORT   GPIOF
+#define AUXINPUT0_ANALOG_PIN    7
+#define AUXINPUT1_ANALOG_PORT   GPIOF
+#define AUXINPUT1_ANALOG_PIN    8
+*/
 
 #define AUXINPUT0_PORT          GPIOE
 #define AUXINPUT0_PIN           15
-#define AUXINPUT1_PORT          GPIOD
+#define AUXINPUT1_PORT          GPIOD // Safety door
 #define AUXINPUT1_PIN           1
 #define AUXINPUT2_PORT          GPIOF
 #define AUXINPUT2_PIN           2
@@ -245,8 +236,33 @@
 #define AUXINPUT3_PORT          GPIOB
 #define AUXINPUT3_PIN           10
 #endif
-#define AUXINPUT4_PORT          GPIOF
+#define AUXINPUT4_PORT          GPIOF // Probe
 #define AUXINPUT4_PIN           10
+#define AUXINPUT5_PORT          GPIOA // Reset/EStop
+#define AUXINPUT5_PIN           3
+#define AUXINPUT6_PORT          GPIOC // Feed hold
+#define AUXINPUT6_PIN           0
+#define AUXINPUT7_PORT          GPIOF // Cycle start
+#define AUXINPUT7_PIN           4
+
+// Define user-control controls (cycle start, reset, feed hold) input pins.
+#if CONTROL_ENABLE & CONTROL_HALT
+#define RESET_PORT              AUXINPUT5_PORT
+#define RESET_PIN               AUXINPUT5_PIN
+#endif
+#if CONTROL_ENABLE & CONTROL_FEED_HOLD
+#define FEED_HOLD_PORT          AUXINPUT6_PORT
+#define FEED_HOLD_PIN           AUXINPUT6_PIN
+#endif
+#if CONTROL_ENABLE & CONTROL_CYCLE_START
+#define CYCLE_START_PORT        AUXINPUT7_PORT
+#define CYCLE_START_PIN         AUXINPUT7_PIN
+#endif
+
+#if SAFETY_DOOR_ENABLE
+#define SAFETY_DOOR_PORT        AUXINPUT1_PORT
+#define SAFETY_DOOR_PIN         AUXINPUT1_PIN
+#endif
 
 #if PROBE_ENABLE
 #define PROBE_PORT              AUXINPUT4_PORT

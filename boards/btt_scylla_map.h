@@ -148,19 +148,32 @@
 #define COPROC_BOOT0_PIN            AUXOUTPUT8_PIN
 #endif
 
+#define AUXINPUT0_PORT              GPIOD   // Safety door - A-MAX
+#define AUXINPUT0_PIN               13
+#define AUXINPUT1_PORT              GPIOE   // Probe - Probe
+#define AUXINPUT1_PIN               15
+#define AUXINPUT2_PORT              GPIOE   // Toolsetter - Tool
+#define AUXINPUT2_PIN               7
+#define AUXINPUT3_PORT              GPIOC   // Reset - X-MAX
+#define AUXINPUT3_PIN               6
+#define AUXINPUT4_PORT              GPIOD   // Feed hold - Y-MAX
+#define AUXINPUT4_PIN               14
+#define AUXINPUT5_PORT              GPIOD   // Cycle start - Z-MAX
+#define AUXINPUT5_PIN               12
+
 // Define user-control controls (cycle start, reset, feed hold) input pins.
-#define RESET_PORT                  GPIOC
-#define RESET_PIN                   6       // PS-ON
-#define FEED_HOLD_PORT              GPIOD
-#define FEED_HOLD_PIN               14      // IND-PROBE
-#define CYCLE_START_PORT            GPIOD
-#define CYCLE_START_PIN             12      // FWS
-
-#define AUXINPUT0_PORT              GPIOD
-#define AUXINPUT0_PIN               13      // PWR-DET
-
-#define AUXINPUT1_PORT              GPIOE
-#define AUXINPUT1_PIN               15      // Z probe
+#if CONTROL_ENABLE & CONTROL_HALT
+#define RESET_PORT                  AUXINPUT3_PORT
+#define RESET_PIN                   AUXINPUT3_PIN
+#endif
+#if CONTROL_ENABLE & CONTROL_FEED_HOLD
+#define FEED_HOLD_PORT              AUXINPUT4_PORT
+#define FEED_HOLD_PIN               AUXINPUT4_PIN
+#endif
+#if CONTROL_ENABLE & CONTROL_CYCLE_START
+#define CYCLE_START_PORT            AUXINPUT5_PORT
+#define CYCLE_START_PIN             AUXINPUT5_PIN
+#endif
 
 #if SAFETY_DOOR_ENABLE
 #define SAFETY_DOOR_PORT            AUXINPUT0_PORT
@@ -172,7 +185,10 @@
 #define PROBE_PIN                   AUXINPUT1_PIN
 #endif
 
-#define CONTROL_INMODE              GPIO_SINGLE
+#if TOOLSETTER_ENABLE
+#define TOOLSETTER_PORT             AUXINPUT2_PORT
+#define TOOLSETTER_PIN              AUXINPUT2_PIN
+#endif
 
 #if TRINAMIC_SPI_ENABLE
 

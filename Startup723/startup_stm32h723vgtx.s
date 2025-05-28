@@ -79,6 +79,24 @@ LoopCopyDataInit:
   adds r4, r0, r3
   cmp r4, r1
   bcc CopyDataInit
+
+/* Copy code to ITCM RAM */
+  ldr r0, =_sitcmram
+  ldr r1, =_eitcmram
+  ldr r2, =_siitcmram
+  movs r3, #0
+  b LoopITCMInit
+
+CopyITCMInit:
+  ldr r4, [r2, r3]
+  str r4, [r0, r3]
+  adds r3, r3, #4
+
+LoopITCMInit:
+  adds r4, r0, r3
+  cmp r4, r1
+  bcc CopyITCMInit
+
 /* Zero fill the bss segment. */
   ldr r2, =_sbss
   ldr r4, =_ebss

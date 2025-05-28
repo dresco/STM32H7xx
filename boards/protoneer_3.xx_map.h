@@ -168,8 +168,32 @@ Z-Limit      A4
 #define CYCLE_START_PIN         3
 #define CONTROL_INMODE          GPIO_SINGLE
 
-#define AUXINPUT0_PORT          GPIOC // A2
+#if PROBE_ENABLE
+#define AUXINPUT0_PORT          GPIOC // A2 - probe
 #define AUXINPUT0_PIN           3
+#endif
+#define AUXINPUT1_PORT          GPIOA // A5 - reset/EStop
+#define AUXINPUT1_PIN           10
+#define AUXINPUT2_PORT          GPIOC // A1 - feed hold
+#define AUXINPUT2_PIN           0
+#if !PROBE_ENABLE
+#define AUXINPUT3_PORT          GPIOC // A2 - cycle start
+#define AUXINPUT3_PIN           3
+#endif
+
+// Define user-control controls (cycle start, reset, feed hold) input pins.
+#if CONTROL_ENABLE & CONTROL_HALT
+#define RESET_PORT              AUXINPUT1_PORT
+#define RESET_PIN               AUXINPUT1_PIN
+#endif
+#if CONTROL_ENABLE & CONTROL_FEED_HOLD
+#define FEED_HOLD_PORT          AUXINPUT2_PORT
+#define FEED_HOLD_PIN           AUXINPUT2_PIN
+#endif
+#if (CONTROL_ENABLE & CONTROL_CYCLE_START) && defined(AUXINPUT3_PORT)
+#define CYCLE_START_PORT        AUXINPUT3_PORT
+#define CYCLE_START_PIN         AUXINPUT3_PIN
+#endif
 
 #if PROBE_ENABLE
 #define PROBE_PORT              AUXINPUT0_PORT

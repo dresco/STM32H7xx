@@ -69,6 +69,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1052135300" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -211,6 +212,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1560536375" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -352,6 +354,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.604672498" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -483,6 +486,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.881169788" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -618,6 +622,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.790138467" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -749,6 +754,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1376327471" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -880,6 +886,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.46079983" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -1011,6 +1018,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.316982671" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -1151,6 +1159,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.616775981" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -1288,6 +1297,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.279213657" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -1419,6 +1429,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1022850406" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -1554,6 +1565,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1654138825" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -1687,6 +1699,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1855939853" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -1824,6 +1837,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.2042036982" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -1958,6 +1972,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1274244796" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -2095,6 +2110,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1877492448" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -2232,6 +2248,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.132670730" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -2380,6 +2397,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.10345775" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -2526,6 +2544,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_11_KEEPALIVE=1"/>
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.252486574" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -2667,6 +2686,7 @@
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
 									<listOptionValue builtIn="false" value="BOARD_BTT_SCYLLA"/>
 									<listOptionValue builtIn="false" value="ESP_AT_ENABLE=1"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1093082548" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -2799,6 +2819,7 @@
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
 									<listOptionValue builtIn="false" value="ESP_AT_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="BOARD_BTT_SCYLLA"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.422327333" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -2931,6 +2952,7 @@
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
 									<listOptionValue builtIn="false" value="ESP_AT_ENABLE=1"/>
 									<listOptionValue builtIn="false" value="BOARD_BTT_SCYLLA"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1320200044" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -3066,6 +3088,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
 									<listOptionValue builtIn="false" value="BOARD_BTT_OCTOPUS_PRO"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1970014099" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -3197,6 +3220,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
 									<listOptionValue builtIn="false" value="BOARD_BTT_OCTOPUS_PRO"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.838069454" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
@@ -3328,6 +3352,7 @@
 									<listOptionValue builtIn="false" value="LWIP_HTTPD_SUPPORT_POST=1"/>
 									<listOptionValue builtIn="false" value="HTTPD_LIMIT_SENDING_TO_2MSS=0"/>
 									<listOptionValue builtIn="false" value="BOARD_BTT_OCTOPUS_PRO"/>
+									<listOptionValue builtIn="false" value="ISR_CODE=__attribute__((section(&quot;.itcmram&quot;)))"/>
 								</option>
 								<option IS_BUILTIN_EMPTY="false" IS_VALUE_EMPTY="false" id="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths.1254935060" name="Include paths (-I)" superClass="com.st.stm32cube.ide.mcu.gnu.managedbuild.tool.c.compiler.option.includepaths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}}&quot;"/>
