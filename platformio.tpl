@@ -15,6 +15,7 @@ build_flags =
   -I FATFS/Target
   -I FATFS/App
   -I Middlewares/Third_Party/FatFs/src
+  '-D ISR_CODE=__attribute__((section(".itcmram")))'
   -Wl,-u,_printf_float
   -Wl,-u,_scanf_float
 lib_deps =
@@ -39,16 +40,16 @@ lib_deps =
 lib_extra_dirs =
   .
 
-# Build settings for USB serial support, include in board environments as needed
-[usb]
+# Build settings for H743 USB serial support, include in board environments as needed
+[usb_h743]
 build_flags =
   -I Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc
   -I Middlewares/ST/STM32_USB_Device_Library/Core/Inc
-  -I USB_DEVICE/Target
-  -I USB_DEVICE/App
+  -I USB_DEVICE_H743/Target
+  -I USB_DEVICE_H743/App
 lib_deps =
-  USB_DEVICE/App
-  USB_DEVICE/Target
+  USB_DEVICE_H743/App
+  USB_DEVICE_H743/Target
   Middlewares/ST/STM32_USB_Device_Library/Class
   Middlewares/ST/STM32_USB_Device_Library/Core
 lib_extra_dirs =
