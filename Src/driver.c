@@ -2826,10 +2826,6 @@ bool driver_init (void)
     }
 #endif
 
-#if ETHERNET_ENABLE
-    enet_init();
-#endif
-
 #if USB_SERIAL_CDC
     // register $DFU bootloader command
 
@@ -2843,7 +2839,12 @@ bool driver_init (void)
     };
 
     grbl.on_report_options = onReportOptions;
+
     system_register_commands(&boot_commands);
+#endif
+
+#if ETHERNET_ENABLE
+    enet_init();
 #endif
 
 #ifdef HAS_BOARD_INIT
