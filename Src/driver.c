@@ -1379,6 +1379,12 @@ static control_signals_t systemGetState (void)
     else
         signals.safety_door_ajar = DIGITAL_IN(SAFETY_DOOR_PORT, 1<<SAFETY_DOOR_PIN);;
 #endif
+#ifdef MOTOR_FAULT_PIN
+    signals.motor_fault = DIGITAL_IN(MOTOR_FAULT_PORT, 1<<MOTOR_FAULT_PIN);
+#endif
+#ifdef MOTOR_WARNING_PIN
+    signals.motor_warning = DIGITAL_IN(MOTOR_WARNING_PORT, 1<<MOTOR_WARNING_PIN);
+#endif
 
     if(settings.control_invert.mask)
         signals.value ^= settings.control_invert.mask;
