@@ -326,6 +326,9 @@
         "HSE_VALUE": 8000000,
         "RTC_ENABLE": 1,
         "NUCLEO_SLOW_SDMMC_CLOCK": ""
+      },
+      "pio_env" : {
+        "name": "usb_h743"
       }
     },
     {
@@ -351,6 +354,9 @@
         "HSE_VALUE": 8000000,
         "RTC_ENABLE": 1,
         "NUCLEO_SLOW_SDMMC_CLOCK": ""
+      },
+      "pio_env" : {
+        "name": "usb_h723"
       }
     },
     {

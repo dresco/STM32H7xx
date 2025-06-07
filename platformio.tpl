@@ -48,6 +48,7 @@ build_flags =
   -I USB_DEVICE_H743/Target
   -I USB_DEVICE_H743/App
 lib_deps =
+  Startup743
   USB_DEVICE_H743/App
   USB_DEVICE_H743/Target
   Middlewares/ST/STM32_USB_Device_Library/Class
@@ -63,6 +64,7 @@ build_flags =
   -I USB_DEVICE_H723/Target
   -I USB_DEVICE_H723/App
 lib_deps =
+  Startup723
   USB_DEVICE_H723/App
   USB_DEVICE_H723/Target
   Middlewares/ST/STM32_USB_Device_Library/Class
