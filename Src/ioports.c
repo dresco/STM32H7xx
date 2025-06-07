@@ -45,17 +45,17 @@ static void digital_out_pwm (struct xbar *output, float value)
         if(pwm_value == aux_out[output->id].pwm->data.off_value) {
             if(aux_out[output->id].pwm->data.always_on) {
                 *pwm->ccr = aux_out[output->id].pwm->data.off_value;
-                if(IS_TIMER_BDTR(pwm->timer)
+                if(IS_TIMER_BDTR(pwm->timer))
                     pwm->timer->BDTR |= TIM_BDTR_MOE;
                 *pwm->ccr = 0;
             } else {
-                if(IS_TIMER_BDTR(pwm->timer)
+                if(IS_TIMER_BDTR(pwm->timer))
                     pwm->timer->BDTR |= TIM_BDTR_MOE;
                 *pwm->ccr = 0;
             }
         } else {
             *pwm->ccr = pwm_value;
-            if(IS_TIMER_BDTR(pwm->timer)
+            if(IS_TIMER_BDTR(pwm->timer))
                 pwm->timer->BDTR |= TIM_BDTR_MOE;
         }
     }

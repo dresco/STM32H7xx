@@ -136,11 +136,11 @@ static void pwm_off (spindle_ptrs_t *spindle)
 {
     if(spindle->context.pwm->flags.always_on) {
         *spindle_timer.ccr = spindle->context.pwm->off_value;
-        if(IS_TIMER_BDTR(spindle_timer.timer)
+        if(IS_TIMER_BDTR(spindle_timer.timer))
             spindle_timer.timer->BDTR |= TIM_BDTR_MOE;
 //??        *spindle_timer.ccr = pwm_value;
     } else {
-        if(IS_TIMER_BDTR(spindle_timer.timer)
+        if(IS_TIMER_BDTR(spindle_timer.timer))
             spindle_timer.timer->BDTR &= ~TIM_BDTR_MOE;
         else
             *spindle_timer.ccr = 0;
@@ -165,7 +165,7 @@ static void spindleSetSpeed (spindle_ptrs_t *spindle, uint_fast16_t pwm_value)
             spindle_on(spindle);
 
         *spindle_timer.ccr = pwm_value;
-        if(IS_TIMER_BDTR(spindle_timer.timer)
+        if(IS_TIMER_BDTR(spindle_timer.timer))
             spindle_timer.timer->BDTR |= TIM_BDTR_MOE;
     }
 }
@@ -357,11 +357,11 @@ static void pwm1_off (spindle_ptrs_t *spindle)
 {
     if(spindle->context.pwm->flags.always_on) {
         *spindle1_timer.ccr = spindle->context.pwm->off_value;
-        if(IS_TIMER_BDTR(spindle1_timer.timer)
+        if(IS_TIMER_BDTR(spindle1_timer.timer))
             spindle1_timer.timer->BDTR |= TIM_BDTR_MOE;
 //??        *spindle_timer.ccr = pwm_value;
     } else {
-        if(IS_TIMER_BDTR(spindle1_timer.timer)
+        if(IS_TIMER_BDTR(spindle1_timer.timer))
             spindle1_timer.timer->BDTR &= ~TIM_BDTR_MOE;
         else
             *spindle1_timer.ccr = 0;
@@ -386,7 +386,7 @@ static void spindle1SetSpeed (spindle_ptrs_t *spindle, uint_fast16_t pwm_value)
             spindle1_on(spindle);
 
         *spindle1_timer.ccr = pwm_value;
-        if(IS_TIMER_BDTR(spindle1_timer.timer)
+        if(IS_TIMER_BDTR(spindle1_timer.timer))
             spindle1_timer.timer->BDTR |= TIM_BDTR_MOE;
     }
 }
