@@ -206,6 +206,12 @@
 #define TMC_UART_TIMER_BASE         timerBase(TMC_UART_TIMER_N)
 #endif
 
+#define IS_TIMER_BDTR(INSTANCE) (((INSTANCE) == TIM1) || \
+                                 ((INSTANCE) == TIM8) || \
+                                 ((INSTANCE) == TIM15) || \
+                                 ((INSTANCE) == TIM16) || \
+                                 ((INSTANCE) == TIM17))
+
 #define IS_TIMER_CLAIMED(INSTANCE) (((INSTANCE) == STEPPER_TIMER_BASE) || \
                                     ((INSTANCE) == RPM_TIMER_BASE) || \
                                     ((INSTANCE) == RPM_COUNTER_BASE) || \

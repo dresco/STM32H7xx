@@ -197,7 +197,7 @@ bool pwm_config (const pwm_signal_t *pwm, uint32_t prescaler, uint32_t period, b
     *pwm->ccmr |= pwm->ocm;
     *pwm->ccr = 0;
 
-    if(pwm->timer == TIM1)
+    if(IS_TIMER_BDTR(pwm->timer))
         pwm->timer->BDTR |= TIM_BDTR_OSSR|TIM_BDTR_OSSI;
 
     if(inverted) {
