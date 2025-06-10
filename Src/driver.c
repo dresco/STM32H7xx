@@ -1508,21 +1508,6 @@ static bool probe_add (probe_id_t probe_id, uint8_t port, pin_irq_mode_t irq_mod
 
 #endif // DRIVER_PROBES
 
-#if 0
-
-// Returns the probe connected and triggered pin states.
-static probe_state_t probeGetState (void)
-{
-    probe_state_t state = {0};
-
-    state.connected = probe.connected;
-    state.triggered = probe.is_probing && probe.irq_enabled ? probe.triggered : DIGITAL_IN(PROBE_PORT, 1 << PROBE_PIN) ^ probe.inverted;
-
-    return state;
-}
-
-#endif // PROBE_PIN
-
 #if MPG_ENABLE == 1
 
 static void mpg_select (void *data)
@@ -2610,7 +2595,7 @@ bool driver_init (void)
 #else
     hal.info = "STM32H743";
 #endif
-    hal.driver_version = "250604";
+    hal.driver_version = "250609";
     hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
@@ -2753,7 +2738,7 @@ bool driver_init (void)
 
             aux_inputs.n_pins++;
 
-            if(input->id < Input_Aux0) {
+            if(!(input->id >= Input_Aux0 && input->id <= Input_AuxMax)) {
                 input->id = Input_Aux0 + input->user_port;
                 aux_ctrl_remap_explicit(input->port, input->pin, input->user_port, input);
             }
