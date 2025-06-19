@@ -231,12 +231,12 @@ static const io_stream_t *serial2Init(uint32_t baud_rate);
 #define UART1_TX_PIN 6
 #define UART1_RX_PIN 7
 #define UART1_PORT GPIOC
-#define UART1_AF GPIO_AF8_USART6
+#define UART1_AF GPIO_AF7_USART6
 #elif SERIAL1_PORT == 61
 #define UART1_TX_PIN 14
 #define UART1_RX_PIN 9
 #define UART1_PORT GPIOG
-#define UART1_AF GPIO_AF8_USART6
+#define UART1_AF GPIO_AF7_USART6
 #else
 #error Code has to be added to support serial port 1
 #endif
