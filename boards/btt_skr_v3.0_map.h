@@ -30,10 +30,11 @@
 #define BOARD_NAME "BTT SKR-3"
 #define BOARD_URL "https://github.com/bigtreetech/SKR-3"
 
-#define SERIAL_PORT                 1   // TFT header, GPIOA: TX = 9, RX = 10
-#define SERIAL1_PORT                32  // ESP-32,     GPIOD: TX = 8, RX = 9
+#define SERIAL_PORT                 2   // TFT header, GPIOA: TX = 9, RX = 10
+#define SERIAL1_PORT                1  // ESP-32,     GPIOD: TX = 8, RX = 9
+// #define SERIAL1_PORT                32  // ESP-32,     GPIOD: TX = 8, RX = 9
 
-#define COPROC_STREAM               1   // Use SERIAL1_PORT definition
+// #define COPROC_STREAM               1   // Use SERIAL1_PORT definition
 
 // Define step pulse output pins.
 #define X_STEP_PORT                 GPIOD
