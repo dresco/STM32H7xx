@@ -54,6 +54,9 @@
 //#define SPINDLE_OFFSET          1 // Uncomment to enable settings for laser spindle XY-offset.
 // **********************
 //#define MODBUS_ENABLE           1 // Set to 1 for auto direction, 2 for direction signal on auxiliary output pin.
+#ifndef MODBUS_UART_CR1
+#define MODBUS_UART_CR1 (USART_CR1_PCE | USART_CR1_PEIE) // Default even parity with parity error interrupt
+#endif
 //#define WEBUI_ENABLE            3 // Enable ESP3D-WEBUI plugin along with networking and SD card plugins.
 //#define WEBUI_AUTH_ENABLE       1 // Enable ESP3D-WEBUI authentication.
 //#define WEBUI_INFLASH           1 // Store WebUI files in flash instead of on SD card.

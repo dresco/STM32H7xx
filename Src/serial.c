@@ -835,7 +835,7 @@ static bool serial1SuspendInput (bool suspend)
 
 static bool serial1SetBaudRate (uint32_t baud_rate)
 {
-    UART1->CR1 = USART_CR1_RE|USART_CR1_TE|USART_CR1_PCE|USART_CR1_PEIE; // 8E1 for Modbus
+    UART1->CR1 = USART_CR1_RE | USART_CR1_TE | MODBUS_UART_CR1; // 8E1 for Modbus
     UART1->CR3 = USART_CR3_OVRDIS;
     UART1->BRR = UART_DIV_SAMPLING16(UART1_CLK, baud_rate, UART_PRESCALER_DIV1);
     UART1->ICR = USART_ICR_PECF; // clear pending parity errors
