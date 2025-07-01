@@ -27,6 +27,7 @@
 
 #include "grbl/hal.h"
 #include "grbl/protocol.h"
+#include "modbus_log.h"
 
 #ifdef SERIAL_PORT
 static stream_rx_buffer_t rxbuf = {0};
@@ -786,6 +787,8 @@ static void serial1Write (const char *s, uint16_t length)
 {
     char *ptr = (char *)s;
 
+    modbus_log_tx((const uint8_t *)ptr, length);
+
     while(length--)
         serial1PutC(*ptr++);
 }
@@ -832,9 +835,10 @@ static bool serial1SuspendInput (bool suspend)
 
 static bool serial1SetBaudRate (uint32_t baud_rate)
 {
-    UART1->CR1 = USART_CR1_RE|USART_CR1_TE;
+    UART1->CR1 = USART_CR1_RE|USART_CR1_TE|USART_CR1_PCE|USART_CR1_PEIE; // 8E1 for Modbus
     UART1->CR3 = USART_CR3_OVRDIS;
     UART1->BRR = UART_DIV_SAMPLING16(UART1_CLK, baud_rate, UART_PRESCALER_DIV1);
+    UART1->ICR = USART_ICR_PECF; // clear pending parity errors
     UART1->CR1 |= (USART_CR1_UE|USART_CR1_RXNEIE);
 
     rxbuf1.tail = rxbuf1.head;
@@ -907,6 +911,8 @@ static const io_stream_t *serial1Init (uint32_t baud_rate)
 
     serial1SetBaudRate(baud_rate);
 
+    modbus_log_init();
+
     HAL_NVIC_SetPriority(UART1_IRQ, 1, 0);
     HAL_NVIC_EnableIRQ(UART1_IRQ);
 
@@ -915,6 +921,11 @@ static const io_stream_t *serial1Init (uint32_t baud_rate)
 
 void UART1_IRQHandler (void)
 {
+    if(UART1->ISR & USART_ISR_PE) {
+        (void)UART1->RDR;            // clear RDR and parity error flag
+        UART1->ICR = USART_ICR_PECF;
+        return;                      // ignore erroneous character
+    }
     if(UART1->ISR & USART_ISR_RXNE_RXFNE) {
         uint32_t data = UART1->RDR;
         if(!enqueue_realtime_command1((char)data)) {            // Check and strip realtime commands...
