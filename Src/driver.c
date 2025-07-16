@@ -73,10 +73,6 @@
 #include "enet.h"
 #endif
 
-#if OPENPNP_ENABLE
-#include "openpnp/openpnp.h"
-#endif
-
 #define DRIVER_IRQMASK (LIMIT_MASK|DEVICES_IRQ_MASK)
 
 #if DRIVER_IRQMASK != (LIMIT_MASK_SUM+DEVICES_IRQ_MASK_SUM)
@@ -2340,14 +2336,24 @@ static bool driver_setup (settings_t *settings)
      *************************/
 
     uint32_t i;
+    axes_signals_t st_enable = st_get_enable_out();
 
     // Switch on stepper driver power before enabling other output pins
     for(i = 0 ; i < sizeof(outputpin) / sizeof(output_signal_t); i++) {
         if(outputpin[i].group == PinGroup_StepperPower) {
+
             GPIO_Init.Pin = outputpin[i].bit = 1 << outputpin[i].pin;
             GPIO_Init.Mode = outputpin[i].mode.open_drain ? GPIO_MODE_OUTPUT_OD : GPIO_MODE_OUTPUT_PP;
+
+            if(outputpin[i].group == PinGroup_MotorChipSelect ||
+                outputpin[i].group == PinGroup_MotorUART ||
+                 outputpin[i].id == Output_SPICS ||
+                  outputpin[i].id == Output_FlashCS ||
+                   outputpin[i].id == Output_SdCardCS ||
+                    (outputpin[i].group == PinGroup_StepperEnable && (st_enable.mask & xbar_fn_to_axismask(outputpin[i].id).mask)))
+                outputpin[i].port->BSRR = GPIO_Init.Pin;
+
             HAL_GPIO_Init(outputpin[i].port, &GPIO_Init);
-            DIGITAL_OUT(outputpin[i].port, outputpin[i].bit, 1);
         }
     }
 
@@ -2595,7 +2601,7 @@ bool driver_init (void)
 #else
     hal.info = "STM32H743";
 #endif
-    hal.driver_version = "250706";
+    hal.driver_version = "250716";
     hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
