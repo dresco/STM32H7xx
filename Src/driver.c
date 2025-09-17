@@ -86,13 +86,21 @@
 #include "grbl/spindle_sync.h"
 
 #define RPM_TIMER_RESOLUTION 1
-#define RPM_TIMER_COUNT RPM_TIMER->CNT
 
 static spindle_data_t spindle_data;
 static spindle_encoder_t spindle_encoder = {
     .tics_per_irq = 4
 };
 static on_spindle_programmed_ptr on_spindle_programmed = NULL;
+
+#if RPM_TIMER_N != 2
+static volatile uint32_t rpm_timer_ovf = 0;
+#define RPM_TIMER_RESOLUTION 1
+#define RPM_TIMER_COUNT (RPM_TIMER->CNT | (rpm_timer_ovf << 16))
+#else
+#define RPM_TIMER_RESOLUTION 1
+#define RPM_TIMER_COUNT RPM_TIMER->CNT
+#endif
 
 #endif // SPINDLE_ENCODER_ENABLE
 
@@ -1707,7 +1715,7 @@ static spindle_data_t *spindleGetData (spindle_data_request_t request)
     memcpy(&encoder, &spindle_encoder.counter, sizeof(spindle_encoder_counter_t));
 
     pulse_length = spindle_encoder.timer.pulse_length / spindle_encoder.tics_per_irq;
-    rpm_timer_delta = RPM_TIMER->CNT - spindle_encoder.timer.last_pulse;
+    rpm_timer_delta = RPM_TIMER_COUNT - spindle_encoder.timer.last_pulse;
 
     __enable_irq();
 
@@ -1763,11 +1771,15 @@ static void spindleDataReset (void)
 //            alarm?
     }
 
+#if RPM_TIMER_N != 2
+    rpm_timer_ovf = 0;
+#endif
+
     RPM_TIMER->EGR |= TIM_EGR_UG; // Reload RPM timer
     RPM_COUNTER->CR1 &= ~TIM_CR1_CEN;
 
     spindle_encoder.timer.last_index =
-    spindle_encoder.timer.last_index = RPM_TIMER->CNT;
+    spindle_encoder.timer.last_index = RPM_TIMER_COUNT;
 
     spindle_encoder.timer.pulse_length =
     spindle_encoder.counter.last_count =
@@ -2408,8 +2420,19 @@ static bool driver_setup (settings_t *settings)
 #if SPINDLE_ENCODER_ENABLE
 
     RPM_TIMER_CLKEN();
+#if timerAPB2(RPM_TIMER_N)
+    RPM_TIMER->PSC = HAL_RCC_GetPCLK2Freq() * 2 / 1000000UL * RPM_TIMER_RESOLUTION - 1;
+#else
+    RPM_TIMER->PSC = HAL_RCC_GetPCLK1Freq() * 2 / 1000000UL * RPM_TIMER_RESOLUTION - 1;
+#endif
+#if RPM_TIMER_N == 2
     RPM_TIMER->CR1 = TIM_CR1_CKD_1;
-    RPM_TIMER->PSC = hal.f_step_timer / 1000000UL - 1;
+#else
+    RPM_TIMER->CR1 = TIM_CR1_CKD_1|TIM_CR1_URS;
+    RPM_TIMER->DIER |= TIM_DIER_UIE;
+    HAL_NVIC_EnableIRQ(RPM_TIMER_IRQn);
+    HAL_NVIC_SetPriority(RPM_TIMER_IRQn, 0, 0);
+#endif
     RPM_TIMER->CR1 |= TIM_CR1_CEN;
 
     RPM_COUNTER_CLKEN();
@@ -2601,7 +2624,7 @@ bool driver_init (void)
 #else
     hal.info = "STM32H743";
 #endif
-    hal.driver_version = "250716";
+    hal.driver_version = "250805";
     hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
@@ -2936,7 +2959,7 @@ ISR_CODE void RPM_COUNTER_IRQHandler (void)
     spindle_encoder.spin_lock = true;
 
     __disable_irq();
-    uint32_t tval = RPM_TIMER->CNT;
+    uint32_t tval = RPM_TIMER_COUNT;
     uint16_t cval = RPM_COUNTER->CNT;
     __enable_irq();
 
@@ -2950,6 +2973,17 @@ ISR_CODE void RPM_COUNTER_IRQHandler (void)
 
     spindle_encoder.spin_lock = false;
 }
+
+#if RPM_TIMER_N != 2
+
+ISR_CODE void RPM_TIMER_IRQHandler (void)
+{
+    RPM_TIMER->SR &= ~TIM_SR_UIF;
+
+    rpm_timer_ovf++;
+}
+
+#endif
 
 #endif // SPINDLE_ENCODER_ENABLE
 

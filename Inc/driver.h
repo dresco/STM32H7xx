@@ -77,6 +77,8 @@
 #define timercr2ois(c, n) TIM_CR2_OIS ## c ## n
 #define timerAF(t, f) timeraf(t, f)
 #define timeraf(t, f) GPIO_AF ## f ## _TIM ## t
+#define timerAPB2(t) (t == 1 || t == 8 || t == 15 || t == 16 || t == 17)
+
 #define usart(t) usartN(t)
 #define usartN(t) USART ## t
 #define usartINT(t) usartint(t)
