@@ -474,7 +474,7 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM1_IDX
 
-ISR_CODE void TIM1_UP_TIM10_IRQHandler (void)
+ISR_CODE void TIM1_UP_IRQHandler (void)
 {
     _irq_handler(TIM1, &timers[TIM1_IDX].cfg);
 }
@@ -586,7 +586,7 @@ enum {
 #undef LAST_TIDX
 #define LAST_TIDX TIM8_IDX
 
-ISR_CODE void TIM8_IRQHandler (void)
+ISR_CODE void TIM8_UP_TIM13_IRQHandler (void)
 {
     _irq_handler(TIM8, &timers[TIM8_IDX].cfg);
 }
