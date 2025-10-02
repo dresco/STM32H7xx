@@ -172,13 +172,13 @@ SECTIONS
    */
   .dma_buffers (NOLOAD) : {
 
-    /* 16KB for LwIP Rx Pool */
-    . = ABSOLUTE(0x24000000);
-    *(.Rx_PoolSection)
-
     /* 32KB for LwIP Tx Heap */
-    . = ABSOLUTE(0x24004000);
+    . = ABSOLUTE(0x24000000);
     *(.Tx_HeapSection)
+
+    /* 16KB for LwIP Rx Pool */
+    . = ABSOLUTE(0x24008000);
+    *(.Rx_PoolSection)
 
     /* 1KB for LwIP DMA Descriptors */
     . = ABSOLUTE(0x2400C000);
