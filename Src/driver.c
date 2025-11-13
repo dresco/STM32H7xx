@@ -360,6 +360,9 @@ static output_signal_t outputpin[] = {
 #ifdef SPI_RST_PORT
     { .id = Output_SPIRST,             .port = SPI_RST_PORT,           .pin = SPI_RST_PIN,           .group = PinGroup_SPI },
 #endif
+#if defined(MODBUS_RTU_STREAM) && defined(RS485_DIR_PORT)
+    { .id = Output_RS485_Direction,    .port = RS485_DIR_PORT,         .pin = RS485_DIR_PIN,         .group = PinGroup_UART + MODBUS_RTU_STREAM },
+#endif
 #ifdef AUXOUTPUT0_PORT
     { .id = Output_Aux0,               .port = AUXOUTPUT0_PORT,        .pin = AUXOUTPUT0_PIN,        .group = PinGroup_AuxOutput },
 #endif
@@ -2112,7 +2115,7 @@ static void enumeratePins (bool low_level, pin_info_ptr pin_info, void *data)
         pin.group = ppin->pin.group;
         pin.port = low_level ? ppin->pin.port : (void *)port2char(ppin->pin.port);
         pin.mode = ppin->pin.mode;
-        pin.description = ppin->pin.description;
+        pin.description = ppin->pin.description == NULL ? xbar_group_to_description(ppin->pin.group) : ppin->pin.description;
 
         pin_info(&pin, data);
 
@@ -2508,7 +2511,7 @@ bool driver_init (void)
 #else
     hal.info = "STM32H743";
 #endif
-    hal.driver_version = "251015";
+    hal.driver_version = "251023";
     hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
@@ -2614,6 +2617,7 @@ bool driver_init (void)
     i2c_eeprom_init();
 #elif FLASH_ENABLE
     hal.nvs.type = NVS_Flash;
+    hal.nvs.size_max = 1024 * 32,
     hal.nvs.memcpy_from_flash = memcpy_from_flash;
     hal.nvs.memcpy_to_flash = memcpy_to_flash;
 #else
