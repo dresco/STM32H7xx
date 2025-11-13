@@ -248,6 +248,11 @@
 
 // End configuration
 
+// Only SDMMC (SDIO) interface is currently supported..
+#if SDCARD_ENABLE
+#define SDCARD_SDIO 1
+#endif
+
 #include "grbl/driver_opts2.h"
 
 #ifndef I2C_PORT
@@ -264,10 +269,9 @@
 #error I2C strobe not supported!
 #endif
 
-// STM32H7xx - SD card using SDMMC interface instead of SPI
-//#if SDCARD_ENABLE && !defined(SD_CS_PORT)
-//#error SD card plugin not supported!
-//#endif
+#if SDCARD_ENABLE && !SDCARD_SDIO && !defined(SD_CS_PORT)
+#error SD card plugin not supported!
+#endif
 
 #ifndef L1_CACHE_ENABLE
 #define L1_CACHE_ENABLE 1
