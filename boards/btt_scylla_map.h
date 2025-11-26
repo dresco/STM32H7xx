@@ -33,6 +33,7 @@
 
 #define SERIAL_PORT                 2   // ESP-32,   GPIOA: TX = 2, RX = 3
 #define SERIAL1_PORT                1   // RS-485,   GPIOA: TX = 9, RX = 10
+#define SERIAL2_PORT                3   // Pi conn,  GPIOD: TX = 8, RX = 9
 #define I2C_PORT                    2   // I2C conn, GPIOB: SCL = 10, SDA = 11
 #define SPI_PORT                    2   // Pi conn,  GPIOB: SCK = 13, MISO = 14, MOSI = 15
 
@@ -94,11 +95,11 @@
 #define M3_ENABLE_PIN               1       // EN for M3 motor
 #endif
 
-#define AUXOUTPUT0_PORT             GPIOA   //
+#define AUXOUTPUT0_PORT             GPIOA   //AUX0
 #define AUXOUTPUT0_PIN              4
-#define AUXOUTPUT1_PORT             GPIOA   //
+#define AUXOUTPUT1_PORT             GPIOA   //AUX1
 #define AUXOUTPUT1_PIN              5
-#define AUXOUTPUT2_PORT             GPIOA   //
+#define AUXOUTPUT2_PORT             GPIOA   //AUX2
 #define AUXOUTPUT2_PIN              6
 
 #define AUXOUTPUT3_PORT             GPIOC   // Spindle enable
@@ -112,11 +113,13 @@
 #define AUXOUTPUT6_PIN              4
 #define AUXOUTPUT7_PORT             GPIOA   // Coolant mist
 #define AUXOUTPUT7_PIN              7
+#define AUXOUTPUT8_PORT             GPIOD   //Relay
+#define AUXOUTPUT8_PIN              5
 
-#define AUXOUTPUT8_PORT             GPIOE   // ESP32 IO0
-#define AUXOUTPUT8_PIN              9
-#define AUXOUTPUT9_PORT             GPIOE   // ESP32 RST
-#define AUXOUTPUT9_PIN              10
+#define AUXOUTPUT9_PORT             GPIOE   // ESP32 IO0
+#define AUXOUTPUT9_PIN              9
+#define AUXOUTPUT10_PORT             GPIOE   // ESP32 RST
+#define AUXOUTPUT10_PIN              10
 
 #if DRIVER_SPINDLE_ENABLE & SPINDLE_ENA
 #define SPINDLE_ENABLE_PORT         AUXOUTPUT3_PORT
@@ -142,14 +145,14 @@
 #endif
 
 #if ESP_AT_ENABLE
-#define COPROC_RESET_PORT           AUXOUTPUT9_PORT
-#define COPROC_RESET_PIN            AUXOUTPUT9_PIN
-#define COPROC_BOOT0_PORT           AUXOUTPUT8_PORT
-#define COPROC_BOOT0_PIN            AUXOUTPUT8_PIN
+#define COPROC_RESET_PORT           AUXOUTPUT10_PORT
+#define COPROC_RESET_PIN            AUXOUTPUT10_PIN
+#define COPROC_BOOT0_PORT           AUXOUTPUT9_PORT
+#define COPROC_BOOT0_PIN            AUXOUTPUT9_PIN
 #endif
 
-#define AUXINPUT0_PORT              GPIOD   // Safety door - A-MAX
-#define AUXINPUT0_PIN               13
+#define AUXINPUT0_PORT              GPIOB   // IO-IN
+#define AUXINPUT0_PIN               7
 #define AUXINPUT1_PORT              GPIOE   // Probe - Probe
 #define AUXINPUT1_PIN               15
 #define AUXINPUT2_PORT              GPIOE   // Toolsetter - Tool
@@ -160,6 +163,8 @@
 #define AUXINPUT4_PIN               14
 #define AUXINPUT5_PORT              GPIOD   // Cycle start - Z-MAX
 #define AUXINPUT5_PIN               12
+#define AUXINPUT6_PORT              GPIOD   // Safety door - A-MAX
+#define AUXINPUT6_PIN               13
 
 // Define user-control controls (cycle start, reset, feed hold) input pins.
 #if CONTROL_ENABLE & CONTROL_HALT
@@ -176,8 +181,8 @@
 #endif
 
 #if SAFETY_DOOR_ENABLE
-#define SAFETY_DOOR_PORT            AUXINPUT0_PORT
-#define SAFETY_DOOR_PIN             AUXINPUT0_PIN
+#define SAFETY_DOOR_PORT            AUXINPUT6_PORT
+#define SAFETY_DOOR_PIN             AUXINPUT6_PIN
 #endif
 
 #if PROBE_ENABLE
@@ -222,6 +227,14 @@
 #endif
 
 #endif // TRINAMIC_SPI_ENABLE
+
+#if SDCARD_ENABLE
+#define SDCARD_SDIO                 1
+#endif
+
+#if RGB_LED_ENABLE
+#define NEOPIXEL_SPI                3        //GPIOD: 6
+#endif
 
 #define CAN_PORT                    GPIOD
 #define CAN_RX_PIN                  0
