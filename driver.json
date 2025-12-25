@@ -418,9 +418,9 @@
 
     {
       "name": "BTT Manta 8P V2.0 H723",
-      "symbol": "BOARD_BTT_OCTOPUS_MAX",
-      "URL": "https://github.com/bigtreetech/Octopus-Max-EZ",
-      "MAP": "boards/btt_octopus_max_map.h",
+      "symbol": "BOARD_BTT_MANTA_M8P",
+      "URL": "https://github.com/bigtreetech/Manta-M8P",
+      "MAP": "boards/btt_manta_m8p_v2_map.h",
       "caps": {
         "axes": 6,
         "eeprom": -32,
@@ -442,9 +442,9 @@
     },
     {
       "name": "BTT Manta 8P V2.0 H723 (bootloader)",
-      "symbol": "BOARD_BTT_OCTOPUS_MAX",
-      "URL": "https://github.com/bigtreetech/Octopus-Max-EZ",
-      "MAP": "boards/btt_octopus_max_map.h",
+      "symbol": "BOARD_BTT_MANTA_M8P",
+      "URL": "https://github.com/bigtreetech/Manta-M8P",
+      "MAP": "boards/btt_manta_m8p_v2_map.h",
       "caps": {
         "axes": 6,
         "eeprom": -32,
