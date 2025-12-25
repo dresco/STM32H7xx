@@ -414,6 +414,56 @@
       "pio_env" : {
         "name": "usb_h723"
       }
+    },
+
+    {
+      "name": "BTT Manta 8P V2.0 H723",
+      "symbol": "BOARD_BTT_OCTOPUS_MAX",
+      "URL": "https://github.com/bigtreetech/Octopus-Max-EZ",
+      "MAP": "boards/btt_octopus_max_map.h",
+      "caps": {
+        "axes": 6,
+        "eeprom": -32,
+        "fram": 0,
+        "safety_door": 1,
+        "serial_ports": 1,
+        "trinamic_spi_cs": 1,
+        "trinamic_uart_addr": 1,
+        "pio_board": "generic_stm32h723ze",
+        "ldscript": "STM32H723ZETX_FLASH.ld"
+      },
+      "symbols" : {
+        "STM32H723xx": "",
+        "HSE_VALUE": 25000000
+      },
+      "pio_env" : {
+        "name": "usb_h723"
+      }
+    },
+    {
+      "name": "BTT Manta 8P V2.0 H723 (bootloader)",
+      "symbol": "BOARD_BTT_OCTOPUS_MAX",
+      "URL": "https://github.com/bigtreetech/Octopus-Max-EZ",
+      "MAP": "boards/btt_octopus_max_map.h",
+      "caps": {
+        "axes": 6,
+        "eeprom": -32,
+        "fram": 0,
+        "safety_door": 1,
+        "serial_ports": 1,
+        "trinamic_spi_cs": 1,
+        "trinamic_uart_addr": 1,
+        "pio_board": "generic_stm32h723ze",
+        "ldscript": "STM32H723ZETX_FLASH_BL.ld"
+      },
+      "symbols" : {
+        "STM32H723xx": "",
+        "HSE_VALUE": 25000000
+      },
+      "pio_env" : {
+        "name": "usb_h723"
+      }
     }
+
   ]
 }
