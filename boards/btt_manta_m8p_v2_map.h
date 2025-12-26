@@ -53,97 +53,104 @@
 
 //#define I2C_PORT                    3       // GPIOx:
 
-#define SPI_PORT                    3       // GPIOC: SCK = 10, MISO - 11, MOSI - 12
+#define SPI_PORT                    3       // GPIOC: SCK = 10, MISO - 11, MOSI - 12 PA15 CS 
 
 // Motor Reference:
-// Motor-1: STEP:PE6  DIR:PE5  ENABLE:PC14 LIMIT:PF4  *AXIS:X
-// Motor-2: STEP:PE2  DIR:PE1  ENABLE:PE4  LIMIT:PF3  *AXIS:Y
-// Motor-3: STEP:PB8  DIR:PB7  ENABLE:PE0  LIMIT:PF2
-// Motor-4: STEP:PB4  DIR:PB3  ENABLE:PB6  LIMIT:PF1
-// Motor-5: STEP:PG13 DIR:PG12 ENABLE:PG15 LIMIT:PF0  *AXIS:Z
-// Motor-6: STEP:PG9  DIR:PD7  ENABLE:PG11 LIMIT:PC15 *AXIS:M3
-// Motor-7: STEP:PD4  DIR:PD3  ENABLE:PD6  LIMIT:
-// Motor-8: STEP:PC7  DIR:PC8  ENABLE:PD2  LIMIT:
+// Motor-1:  DIR:PE5   STEP:PE6  ENABLE:PC14 LIMIT:PF4  *AXIS:X
+// Motor-2:  DIR:PE1   STEP:PE2  ENABLE:PE4  LIMIT:PF3  *AXIS:Y
+// Motor-3:  DIR:PB7   STEP:PB8  ENABLE:PE0  LIMIT:PF2  *AXIS:Z
+// Motor-4:  DIR:PB3   STEP:PB4  ENABLE:PB6  LIMIT:PF1  *AXIS:M4
+// Motor-5:  DIR:PG12  STEP:PG13 ENABLE:PG15 LIMIT:PF0  *AXIS:M5
+// Motor-6:  DIR:PD7   STEP:PG9  ENABLE:PG11 LIMIT:PC15 *AXIS:M6
+// Motor-7:  DIR:PD3   STEP:PD4  ENABLE:PD6  LIMIT:
+// Motor-8:  DIR:PC8   STEP:PC7  ENABLE:PD2  LIMIT:
+
+
+
 
 // Note: Motor-3 and Motor-4 limit switches clash with opto-isolated control inputs
 //       Motor-7 and Motor-8 do not have associated limit switch inputs
 
 
-// Define step pulse output pins.
-#define X_STEP_PORT                 GPIOE
-#define X_STEP_PIN                  6
-#define Y_STEP_PORT                 GPIOE
-#define Y_STEP_PIN                  2
-#define Z_STEP_PORT                 GPIOG
-#define Z_STEP_PIN                  13
-#define STEP_OUTMODE                GPIO_SINGLE
 
-// Define step direction output pins.
+
+// Define step direction output pins. Motor-1 .. Motor-3
 #define X_DIRECTION_PORT            GPIOE
-#define X_DIRECTION_PIN             5
+#define X_DIRECTION_PIN             5 // PE5 Motor-1
 #define Y_DIRECTION_PORT            GPIOE
-#define Y_DIRECTION_PIN             1
-#define Z_DIRECTION_PORT            GPIOG
-#define Z_DIRECTION_PIN             12
+#define Y_DIRECTION_PIN             1 // PE1 Motor-2
+#define Z_DIRECTION_PORT            GPIOB
+#define Z_DIRECTION_PIN             7 // PB7 Motor-3
 #define DIRECTION_OUTMODE           GPIO_SINGLE
 
-// Define stepper driver enable/disable output pin.
-#define X_ENABLE_PORT               GPIOC
-#define X_ENABLE_PIN                14
-#define Y_ENABLE_PORT               GPIOE
-#define Y_ENABLE_PIN                4
-#define Z_ENABLE_PORT               GPIOG
-#define Z_ENABLE_PIN                15
 
-// Define homing/hard limit switch input pins.
+// Define step pulse output pins. Motor-1 .. Motor-3
+#define X_STEP_PORT                 GPIOE
+#define X_STEP_PIN                  6  // PE6 Motor-1
+#define Y_STEP_PORT                 GPIOE
+#define Y_STEP_PIN                  2 // PE2 Motor-2
+#define Z_STEP_PORT                 GPIOB
+#define Z_STEP_PIN                  8 // PB8 Motor-3
+#define STEP_OUTMODE                GPIO_SINGLE
+
+
+// Define stepper driver enable/disable output pin. Motor-1 .. Motor-3
+#define X_ENABLE_PORT               GPIOC
+#define X_ENABLE_PIN                14 // PC14 Motor-1
+#define Y_ENABLE_PORT               GPIOE
+#define Y_ENABLE_PIN                4  // PE4 Motor-2
+#define Z_ENABLE_PORT               GPIOE
+#define Z_ENABLE_PIN                0 // PE0 Motor-3
+
+// Define homing/hard limit switch input pins. M1-Stop, M2-Stop, M3-Stop, M4-Stop
 #define X_LIMIT_PORT                GPIOF
-#define X_LIMIT_PIN                 4
+#define X_LIMIT_PIN                 4 // PF4 M1-Stop
 #define Y_LIMIT_PORT                GPIOF
-#define Y_LIMIT_PIN                 3
+#define Y_LIMIT_PIN                 3 // PF3 M2-Stop
 #define Z_LIMIT_PORT                GPIOF
-#define Z_LIMIT_PIN                 0
+#define Z_LIMIT_PIN                 2 // PF2 M3-Stop
 #define LIMIT_INMODE                GPIO_SINGLE
 
 
 // Define M3 step, direction, enable, and limit pins.
 #if N_ABC_MOTORS > 0
-#define M3_AVAILABLE                // Motor-6
-#define M3_STEP_PORT                GPIOG
-#define M3_STEP_PIN                 9
-#define M3_DIRECTION_PORT           GPIOD
-#define M3_DIRECTION_PIN            7
-#define M3_LIMIT_PORT               GPIOC
-#define M3_LIMIT_PIN                15
-#define M3_ENABLE_PORT              GPIOG
-#define M3_ENABLE_PIN               11
+#define M3_AVAILABLE                // Motor-4
+#define M3_DIRECTION_PORT           GPIOB
+#define M3_DIRECTION_PIN            3 // PB3 Motor-4
+#define M3_STEP_PORT                GPIOB
+#define M3_STEP_PIN                 4 // PB4 Motor-4
+#define M3_ENABLE_PORT              GPIOB
+#define M3_ENABLE_PIN               6 // PB6 Motor-4
+#define M3_LIMIT_PORT               GPIOF
+#define M3_LIMIT_PIN                1 // PF1 M4-Stop
 #endif
 
-// todo:
+
 // Define ganged axis or B axis step pulse and step direction output pins.
-// #if N_ABC_MOTORS > 1
-// #define M4_AVAILABLE                        // Motor-5
-// #define M4_STEP_PORT                GPIOB
-// #define M4_STEP_PIN                 5
-// #define M4_DIRECTION_PORT           GPIOB
-// #define M4_DIRECTION_PIN            4
-// #define M4_LIMIT_PORT               GPIOF
-// #define M4_LIMIT_PIN                1       // MIN5
-// #define M4_ENABLE_PORT              GPIOB
-// #define M4_ENABLE_PIN               6       // EN for M4
-// #endif
+#if N_ABC_MOTORS > 1
+#define M4_AVAILABLE                        // Motor-5
+#define M4_DIRECTION_PORT           GPIOG
+#define M4_DIRECTION_PIN            12 // PG12 Motor-5
+#define M4_STEP_PORT                GPIOG
+#define M4_STEP_PIN                 13 // PG13 Motor-5
+#define M4_ENABLE_PORT              GPIOG
+#define M4_ENABLE_PIN               15  // PG15 Motor-5
+#define M4_LIMIT_PORT               GPIOF
+#define M4_LIMIT_PIN                0 // PF0 M5-Stop
+#endif
 
 // Define ganged axis or C axis step pulse and step direction output pins.
-//#if N_ABC_MOTORS > 2
-//#define M5_AVAILABLE                        // Motor-6
-//#define M5_STEP_PORT                GPIOG
-//#define M5_STEP_PIN                 15
-//#define M5_DIRECTION_PORT           GPIOB
-//#define M5_DIRECTION_PIN            3
-//#define M5_LIMIT_PORT               GPIOC
-//#define M5_LIMIT_PIN                15      // MIN6
-//#define M5_ENABLE_PORT              GPIOD
-//#define M5_ENABLE_PIN               5       // EN for M5 motor
-//#endif
+#if N_ABC_MOTORS > 2                        
+#define M5_AVAILABLE                        // Motor-6
+#define M5_DIRECTION_PORT           GPIOD
+#define M5_DIRECTION_PIN            7 // PD7 Motor-6
+#define M5_STEP_PORT                GPIOG
+#define M5_STEP_PIN                 9 // PG9 Motor-6
+#define M5_ENABLE_PORT              GPIOG
+#define M5_ENABLE_PIN               11       // PG11 Motor-6
+#define M5_LIMIT_PORT               GPIOC
+#define M5_LIMIT_PIN                15      // PC15 M6-Stop
+#endif
 
 #define AUXOUTPUT0_PORT             GPIOF   // FAN0
 #define AUXOUTPUT0_PIN              7
@@ -220,16 +227,26 @@
 
 #if TRINAMIC_UART_ENABLE
 
-#define MOTOR_UARTX_PORT            GPIOC   // Motor-1
-#define MOTOR_UARTX_PIN             13
-#define MOTOR_UARTY_PORT            GPIOE   // Motor-2
-#define MOTOR_UARTY_PIN             3
-#define MOTOR_UARTZ_PORT            GPIOG   // Motor-5
-#define MOTOR_UARTZ_PIN             14
+#define MOTOR_UARTX_PORT            GPIOC   
+#define MOTOR_UARTX_PIN             13 // PC13 Motor-1
+#define MOTOR_UARTY_PORT            GPIOE    
+#define MOTOR_UARTY_PIN             3 // PE3 Motor-2
+#define MOTOR_UARTZ_PORT            GPIOB    
+#define MOTOR_UARTZ_PIN             9 // PB9 Motor-3
 
 #ifdef  M3_AVAILABLE
-#define MOTOR_UARTM3_PORT           GPIOG   // Motor-6
-#define MOTOR_UARTM3_PIN            10
+#define MOTOR_UARTM3_PORT           GPIOB    
+#define MOTOR_UARTM3_PIN            5 // PB5 Motor-4
+#endif
+
+#ifdef  M4_AVAILABLE
+#define MOTOR_UARTM4_PORT           GPIOG    
+#define MOTOR_UARTM4_PIN            14 // PG14 Motor-5
+#endif
+
+#ifdef  M5_AVAILABLE
+#define MOTOR_UARTM5_PORT           GPIOG    
+#define MOTOR_UARTM5_PIN            10 // PG10 Motor-6
 #endif
 
 #elif TRINAMIC_SPI_ENABLE
@@ -244,17 +261,29 @@
 #define TRINAMIC_MISO_PORT          GPIOG
 #define TRINAMIC_MISO_PIN           7
 
-#define MOTOR_CSX_PORT              GPIOC   // Motor-1
-#define MOTOR_CSX_PIN               13
-#define MOTOR_CSY_PORT              GPIOE   // Motor-2
-#define MOTOR_CSY_PIN               3
-#define MOTOR_CSZ_PORT              GPIOG   // Motor-5
-#define MOTOR_CSZ_PIN               14
+#define MOTOR_CSX_PORT              GPIOC   
+#define MOTOR_CSX_PIN               13 // PC13 Motor-1
+#define MOTOR_CSY_PORT              GPIOE    
+#define MOTOR_CSY_PIN               3 // PE3 Motor-2
+#define MOTOR_CSZ_PORT              GPIOB    
+#define MOTOR_CSZ_PIN               9 // PB9 Motor-3
+
 
 #ifdef  M3_AVAILABLE
-#define MOTOR_CSM3_PORT             GPIOG   // Motor-6
-#define MOTOR_CSM3_PIN              10
+#define MOTOR_CSM3_PORT             GPIOB    
+#define MOTOR_CSM3_PIN              5 // PB5 Motor-4
 #endif
+
+#ifdef  M4_AVAILABLE
+#define MOTOR_CSM4_PORT             GPIOG   
+#define MOTOR_CSM4_PIN              14 // PG14 Motor-5
+#endif
+
+#ifdef  M5_AVAILABLE
+#define MOTOR_CSM5_PORT             GPIOG   
+#define MOTOR_CSM5_PIN              10 // PG10 Motor-6
+#endif
+
 
 #endif
 
