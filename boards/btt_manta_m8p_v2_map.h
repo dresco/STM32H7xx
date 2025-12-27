@@ -53,7 +53,7 @@
 
 //#define I2C_PORT                    3       // GPIOx:
 
-#define SPI_PORT                    3       // GPIOC: SCK = 10, MISO - 11, MOSI - 12 PA15 CS 
+#define SPI_PORT                    16       // GPIOG: SCK = 8, MISO = 7, MOSI = 6
 
 // Motor Reference:
 // Motor-1:  DIR:PE5   STEP:PE6  ENABLE:PC14 LIMIT:PF4  *AXIS:X
