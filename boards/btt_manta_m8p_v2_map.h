@@ -53,7 +53,8 @@
 
 //#define I2C_PORT                    3       // GPIOx:
 
-#define SPI_PORT                    16       // GPIOG: SCK = 8, MISO = 7, MOSI = 6
+
+#define SPI_PORT        3   // GPIOC: SCK = 10, MISO - 11, MOSI - 12
 
 // Motor Reference:
 // Motor-1:  DIR:PE5   STEP:PE6  ENABLE:PC14 LIMIT:PF4  *AXIS:X
@@ -260,6 +261,37 @@
 #define TRINAMIC_SCK_PIN            8
 #define TRINAMIC_MISO_PORT          GPIOG
 #define TRINAMIC_MISO_PIN           7
+
+
+// ## Motor1
+// #[tmc2130 stepper_x]
+// #cs_pin: PC13
+// #spi_software_mosi_pin: PG6
+// #spi_software_miso_pin: PG7
+// #spi_software_sclk_pin: PG8
+// ##diag1_pin: PF4
+// #run_current: 0.800
+// #stealthchop_threshold: 999999
+
+// ## Motor2
+// #[tmc2130 stepper_y]
+// #cs_pin: PE3
+// #spi_software_mosi_pin: PG6
+// #spi_software_miso_pin: PG7
+// #spi_software_sclk_pin: PG8
+// ##diag1_pin: PF3
+// #run_current: 0.800
+// #stealthchop_threshold: 999999
+
+// ## Motor3
+// #[tmc2130 stepper_z]
+// #cs_pin: PB9
+// #spi_software_mosi_pin: PG6
+// #spi_software_miso_pin: PG7
+// #spi_software_sclk_pin: PG8
+// ##diag1_pin: PF2
+// #run_current: 0.650
+// #stealthchop_threshold: 999999
 
 #define MOTOR_CSX_PORT              GPIOC   
 #define MOTOR_CSX_PIN               13 // PC13 Motor-1
