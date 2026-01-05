@@ -2511,7 +2511,7 @@ bool driver_init (void)
 #else
     hal.info = "STM32H743";
 #endif
-    hal.driver_version = "251023";
+    hal.driver_version = "251126";
     hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
@@ -2607,7 +2607,21 @@ bool driver_init (void)
     serialRegisterStreams();
 
 #if USB_SERIAL_CDC
+
+    static const sys_command_t boot_command_list[] = {
+        {"DFU", enter_dfu, { .allow_blocking = On, .noargs = On }, { .str = "enter DFU bootloader" } }
+    };
+
+    static sys_commands_t boot_commands = {
+        .n_commands = sizeof(boot_command_list) / sizeof(sys_command_t),
+        .commands = boot_command_list
+    };
+
+    grbl.on_report_options = onReportOptions;
+
     stream_connect(usbInit());
+    system_register_commands(&boot_commands);
+
 #else
     if(!stream_connect_instance(SERIAL_STREAM, BAUD_RATE))
         while(true); // Cannot boot if no communication channel is available!
@@ -2726,23 +2740,6 @@ bool driver_init (void)
         hal.stepper.output_step = stepperOutputStep;
         hal.stepper.claim_motor = stepperClaimMotor;
     }
-#endif
-
-#if USB_SERIAL_CDC
-    // register $DFU bootloader command
-
-    static const sys_command_t boot_command_list[] = {
-        {"DFU", enter_dfu, { .allow_blocking = On, .noargs = On }, { .str = "enter DFU bootloader" } }
-    };
-
-    static sys_commands_t boot_commands = {
-        .n_commands = sizeof(boot_command_list) / sizeof(sys_command_t),
-        .commands = boot_command_list
-    };
-
-    grbl.on_report_options = onReportOptions;
-
-    system_register_commands(&boot_commands);
 #endif
 
 #if ETHERNET_ENABLE
