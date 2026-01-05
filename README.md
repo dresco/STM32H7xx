@@ -20,8 +20,6 @@ Builds for the above boards are supported through the upstream [web app](http://
 
 Local builds are supported from both STMCubeIDE and PlatformIO. Board specific settings have been included in the IDE configurations where possible - to avoid the need for code changes when building for different boards. (Please see the upstream Wiki-page [compiling grblHAL](https://github.com/grblHAL/core/wiki/Compiling-GrblHAL) for further instructions for how to import the project, configure the driver and compile).
 
-Note that the PlatformIO builds are currently using a custom download url for the **framework-stm32cubeh7** library files. This will be removed once v1.10 is available in the upstream PlatformIO package registry.
-
 ### GitHub CI builds
 
 PlatformIO builds for a number of configurations are run automatically as a GitHub Action on each push to the master branch. For convenience, the resulting firmwares are archived in the artifacts for each run, and can be found under the Actions tab on the GitHub repo (these files remain available for 90 days).
