@@ -214,7 +214,7 @@ void if_init(uint8_t motors, axes_signals_t enabled)
     };
 
     static const periph_pin_t sck = {
-        .function = Output_SCK,
+        .function = Output_SPICLK,
         .group = PinGroup_SPI,
         .port = TRINAMIC_SCK_PORT,
         .pin = TRINAMIC_SCK_PIN,
