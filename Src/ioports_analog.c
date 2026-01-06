@@ -83,8 +83,10 @@ static io_ports_data_t analog;
 static input_signal_t *aux_in_analog;
 static output_signal_t *aux_out_analog;
 static ADC_ChannelConfTypeDef adc_config = {
-    .Rank = 1,
-    .SamplingTime = ADC_SAMPLETIME_1CYCLE_5
+    .Rank = ADC_REGULAR_RANK_1,
+    .SamplingTime = ADC_SAMPLETIME_2CYCLES_5,
+    .SingleDiff = ADC_SINGLE_ENDED,
+    .OffsetNumber = ADC_OFFSET_NONE,
 };
 
 #if AUX_ANALOG_OUT
@@ -323,6 +325,13 @@ void ioports_init_analog (pin_group_pins_t *aux_inputs, pin_group_pins_t *aux_ou
 
                             adc_config.Channel = aux_inputs->pins.inputs[i].channel = adc_map[j].ch;
 
+#if defined(STM32H723xx)
+                            if(adc_map[j].alt == 3)
+                                adc_config.SamplingTime = ADC3_SAMPLETIME_2CYCLES_5;
+                            else
+                                adc_config.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+#endif
+
                             adc->Instance = adc_map[j].adc;
                             adc->Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
                             adc->Init.Resolution = ADC_RESOLUTION_12B;
@@ -335,8 +344,11 @@ void ioports_init_analog (pin_group_pins_t *aux_inputs, pin_group_pins_t *aux_ou
                             adc->Init.NbrOfConversion = 1;
                             //adc->Init.DMAContinuousRequests = DISABLE;    // Valid for ADC3 only on H7 parts
                             adc->Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-                            if(HAL_ADC_Init(adc) == HAL_OK && HAL_ADC_ConfigChannel(adc, &adc_config) == HAL_OK)
+                            if(HAL_ADC_Init(adc) == HAL_OK &&
+                               HAL_ADC_ConfigChannel(adc, &adc_config) == HAL_OK &&
+                               HAL_ADCEx_Calibration_Start(adc, ADC_CALIB_OFFSET_LINEARITY, ADC_SINGLE_ENDED) == HAL_OK) {
                                 aux_inputs->pins.inputs[i].adc = adc;
+                            }
                             else
                                 analog.in.n_ports--;
                         }
