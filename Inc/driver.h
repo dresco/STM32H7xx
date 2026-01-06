@@ -239,7 +239,7 @@
 // Time from step out to step reset.
 // Adjust for correct step pulse time
 #ifndef STEP_PULSE_TOFF_LATENCY
-#define STEP_PULSE_TOFF_LATENCY 0.65f
+#define STEP_PULSE_TOFF_LATENCY 0.35f
 #endif
 // Only used when step injection is enabled (stepper spindle and plasma THC)
 #ifndef STEP_PULSE_LATENCY
