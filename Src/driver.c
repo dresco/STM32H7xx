@@ -2514,7 +2514,7 @@ bool driver_init (void)
 #else
     hal.info = "STM32H743";
 #endif
-    hal.driver_version = "251126";
+    hal.driver_version = "260109";
     hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
