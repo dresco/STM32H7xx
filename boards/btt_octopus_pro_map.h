@@ -229,11 +229,11 @@
 #define AUXINPUT6_PORT              GPIOF   // Cycle start - T1
 #define AUXINPUT6_PIN               5
 
-#define AUXINTPUT0_ANALOG_PORT      GPIOF   //T2
-#define AUXINTPUT0_ANALOG_PIN       6
+#define AUXINPUT0_ANALOG_PORT       GPIOF   //T2
+#define AUXINPUT0_ANALOG_PIN        6
 
-#define AUXINTPUT1_ANALOG_PORT      GPIOF   //T3
-#define AUXINTPUT1_ANALOG_PIN       7
+#define AUXINPUT1_ANALOG_PORT       GPIOF   //T3
+#define AUXINPUT1_ANALOG_PIN        7
 
 // Define user-control controls (cycle start, reset, feed hold) input pins.
 #if CONTROL_ENABLE & CONTROL_HALT
