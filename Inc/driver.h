@@ -175,9 +175,10 @@
 #define STEPPER_TIMER_IRQn          timerINT(STEPPER_TIMER_N)
 #define STEPPER_TIMER_IRQHandler    timerHANDLER(STEPPER_TIMER_N)
 
-#if defined(AUXOUTPUT0_PWM_PORT) || defined(AUXOUTPUT1_PWM_PORT) ||\
-     defined(AUXOUTPUT0_ANALOG_PORT) || defined( AUXOUTPUT1_ANALOG_PORT) ||\
-      defined(MCP3221_ENABLE)
+#if defined(AUXOUTPUT0_PWM_PORT) || defined(AUXOUTPUT1_PWM_PORT) || defined(AUXOUTPUT2_PWM_PORT) ||\
+     defined(AUXOUTPUT0_ANALOG_PORT) || defined(AUXOUTPUT1_ANALOG_PORT) || defined(AUXOUTPUT2_ANALOG_PORT) ||\
+      defined(AUXINPUT0_ANALOG_PORT) || defined(AUXINPUT1_ANALOG_PORT) || defined(AUXINPUT2_ANALOG_PORT) ||\
+       defined(MCP3221_ENABLE)
 #define AUX_ANALOG 1
 #else
 #define AUX_ANALOG 0
