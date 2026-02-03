@@ -2793,12 +2793,8 @@ bool driver_init (void)
     if(aux_inputs.n_pins || aux_outputs.n_pins)
         ioports_init(&aux_inputs, &aux_outputs);
 
-#if AUX_ANALOG
-  #ifndef MCP3221_ENABLE
     if(aux_analog_in.n_pins || aux_analog_out.n_pins)
-  #endif
         ioports_init_analog(&aux_analog_in, &aux_analog_out);
-#endif
 
     io_expanders_init();
     aux_ctrl_claim_ports(aux_claim_explicit, NULL);

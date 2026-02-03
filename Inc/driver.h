@@ -4,7 +4,7 @@
 
   Part of grblHAL
 
-  Copyright (c) 2021-2025 Terje Io
+  Copyright (c) 2021-2026 Terje Io
 
   grblHAL is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -175,15 +175,6 @@
 #define STEPPER_TIMER_IRQn          timerINT(STEPPER_TIMER_N)
 #define STEPPER_TIMER_IRQHandler    timerHANDLER(STEPPER_TIMER_N)
 
-#if defined(AUXOUTPUT0_PWM_PORT) || defined(AUXOUTPUT1_PWM_PORT) || defined(AUXOUTPUT2_PWM_PORT) ||\
-     defined(AUXOUTPUT0_ANALOG_PORT) || defined(AUXOUTPUT1_ANALOG_PORT) || defined(AUXOUTPUT2_ANALOG_PORT) ||\
-      defined(AUXINPUT0_ANALOG_PORT) || defined(AUXINPUT1_ANALOG_PORT) || defined(AUXINPUT2_ANALOG_PORT) ||\
-       defined(MCP3221_ENABLE)
-#define AUX_ANALOG 1
-#else
-#define AUX_ANALOG 0
-#endif
-
 #if SPINDLE_ENCODER_ENABLE
 
 #define RPM_COUNTER_N               3
@@ -348,9 +339,7 @@ bool driver_init (void);
 void Driver_IncTick (void);
 void gpio_irq_enable (const input_signal_t *input, pin_irq_mode_t irq_mode);
 void ioports_init(pin_group_pins_t *aux_inputs, pin_group_pins_t *aux_outputs);
-#if AUX_ANALOG
 void ioports_init_analog (pin_group_pins_t *aux_inputs, pin_group_pins_t *aux_outputs);
-#endif
 void ioports_event (input_signal_t *input);
 const pwm_signal_t *get_pwm_timer (GPIO_TypeDef *port, uint8_t pin);
 

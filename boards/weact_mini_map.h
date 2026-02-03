@@ -84,6 +84,11 @@
 #define AUXOUTPUT4_PORT             GPIOD                       // Coolant mist
 #define AUXOUTPUT4_PIN              15
 
+/*
+#define AUXOUTPUT0_ANALOG_PORT      GPIOA
+#define AUXOUTPUT0_ANALOG_PIN       4
+*/
+
 // Define driver spindle pins.
 #if DRIVER_SPINDLE_ENABLE & SPINDLE_ENA
 #define SPINDLE_ENABLE_PORT         AUXOUTPUT2_PORT
