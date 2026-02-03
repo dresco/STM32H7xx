@@ -14,6 +14,12 @@ jobs:
         with:
           submodules: 'true'
 
+      - name: Check out panel plugin
+        uses: actions/checkout@v3
+        with:
+          repository: dresco/Plugin_panel
+          path: ./panel
+
       - uses: actions/cache@v3
         with:
           path: |
