@@ -261,11 +261,6 @@
 #define CYCLE_START_PIN         AUXINPUT7_PIN
 #endif
 
-#if SAFETY_DOOR_ENABLE
-#define SAFETY_DOOR_PORT        AUXINPUT1_PORT
-#define SAFETY_DOOR_PIN         AUXINPUT1_PIN
-#endif
-
 #if PROBE_ENABLE
 #define PROBE_PORT              AUXINPUT4_PORT
 #define PROBE_PIN               AUXINPUT4_PIN
