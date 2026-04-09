@@ -48,8 +48,8 @@
 
 #include "timers.h"
 
-#define DIGITAL_OUT(port, bit, on) { port->BSRR = (on) ? (bit) : ((bit) << 16); }
-#define DIGITAL_IN(port, bit) (!!(port->IDR & (bit)))
+#define DIGITAL_OUT(port, bit, on) { (port)->BSRR = (on) ? (bit) : ((bit) << 16); }
+#define DIGITAL_IN(port, bit) (!!((port)->IDR & (bit)))
 
 #define timer(t) timerN(t)
 #define timerN(t) TIM ## t
@@ -207,12 +207,10 @@
                                  ((INSTANCE) == TIM17))
 
 #define IS_TIMER_CLAIMED(INSTANCE) (((INSTANCE) == STEPPER_TIMER_BASE) || \
-                                    ((INSTANCE) == RPM_TIMER_BASE) || \
-                                    ((INSTANCE) == RPM_COUNTER_BASE) || \
                                     ((INSTANCE) == TMC_UART_TIMER_BASE))
 
 // Adjust these values to get more accurate step pulse timings when required, e.g if using high step rates.
-// The default values below are calibrated for 5 microsecond pulses on a F446 @ 180 MHz.
+// The default values below are calibrated for 5 microsecond pulses on a H723 @ 480 MHz.
 // NOTE: step output mode, number of axes and compiler optimization setting may all affect these values.
 
 // Minimum pulse off time.

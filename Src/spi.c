@@ -1,9 +1,9 @@
 /*
-  spi.c - SPI support for Trinamic & networking (WizNet) plugins
+  spi.c - SPI support for SD card, Trinamic & networking (WizNet) plugins
 
   Part of grblHAL driver for STM32H7xx
 
-  Copyright (c) 2020-2024 Terje Io
+  Copyright (c) 2020-2026 Terje Io
   Copyright (c) 2022-2024 Jon Escombe
 
   grblHAL is free software: you can redistribute it and/or modify
@@ -23,6 +23,8 @@
 #include "main.h"
 #include "driver.h"
 #include "cache.h"
+
+#if SPI_ENABLE
 
 #ifndef SPI_DMA_THRESHOLD
 #define SPI_DMA_THRESHOLD 32
@@ -141,7 +143,7 @@ static DMA_HandleTypeDef spi_dma_rx = {
 static uint8_t scratch_buffer[align_up(SPI_SCRATCH_BUFFER_SIZE, __SCB_DCACHE_LINE_SIZE)] __ALIGNED(__SCB_DCACHE_LINE_SIZE);
 #endif
 
-void spi_init (void)
+spi_cap_t spi_start (spi_slave_t *device)
 {
     static bool init = false;
 
@@ -359,22 +361,8 @@ void spi_init (void)
 
         init = true;
     }
-}
 
-// set the SPI speed to the max setting
-void spi_set_max_speed (void)
-{
-    __HAL_SPI_DISABLE(&spi_port);
-    MODIFY_REG(spi_port.Instance->CFG1, SPI_CFG1_MBR, SPI_BAUDRATEPRESCALER_2); // should be able to go to 24Mhz...
-    __HAL_SPI_ENABLE(&spi_port);
-}
-
-uint32_t spi_set_speed (uint32_t prescaler)
-{
-    __HAL_SPI_DISABLE(&spi_port);
-    MODIFY_REG(spi_port.Instance->CFG1, SPI_CFG1_MBR, prescaler);
-    __HAL_SPI_ENABLE(&spi_port);
-    return prescaler;
+    return (spi_cap_t){ .started = On };
 }
 
 uint8_t spi_get_byte (void)
@@ -394,7 +382,7 @@ uint8_t spi_put_byte (uint8_t tx_byte)
     return rx_byte;
 }
 
-void spi_write (uint8_t *data, uint16_t len)
+bool spi_write (uint8_t *data, uint16_t len)
 {
     bool use_dma = false;
 
@@ -424,9 +412,11 @@ void spi_write (uint8_t *data, uint16_t len)
         tx_count_poll++;
         HAL_SPI_Transmit(&spi_port, data, len, 1000);
     }
+
+    return true;
 }
 
-void spi_read (uint8_t *data, uint16_t len)
+bool spi_read (uint8_t *data, uint16_t len)
 {
     bool use_dma = false;
     bool use_scratch_buffer = false;
@@ -493,7 +483,29 @@ void spi_read (uint8_t *data, uint16_t len)
         rx_count_poll++;
         HAL_SPI_Receive(&spi_port, data, len, 1000);
     }
+
+    return true;
 }
+
+bool spi_select (spi_slave_t *device)
+{
+    if((spi_port.Instance->CR1 & SPI_BAUDRATEPRESCALER_256) != device->f_clock) {
+        spi_port.Instance->CR1 &= ~SPI_BAUDRATEPRESCALER_256;
+        spi_port.Instance->CR1 |= device->f_clock;
+    }
+
+    DIGITAL_OUT((GPIO_TypeDef *)device->cs_port, (1UL << device->cs_pin), 0);
+
+    return true;
+}
+
+bool spi_deselect (spi_slave_t *device)
+{
+    DIGITAL_OUT((GPIO_TypeDef *)device->cs_port, (1UL << device->cs_pin), 1);
+
+    return true;
+}
+
 
 void DMA_RX_IRQ_HANDLER(void)
 {
@@ -509,3 +521,5 @@ void SPI_IRQ_HANDLER(void)
 {
     HAL_SPI_IRQHandler(&spi_port);
 }
+
+#endif // SPI_ENABLE
