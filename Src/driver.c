@@ -2736,9 +2736,8 @@ bool driver_init (void)
 #endif
 
 #if TRINAMIC_SPI_ENABLE
-  extern void if_init (uint8_t motors, axes_signals_t enabled);
-  trinamic_driver_if_t driver_if = {.on_drivers_init = if_init};
-  trinamic_if_init(&driver_if);
+    extern void tmc_spi_init (void);
+    tmc_spi_init();
 #elif TRINAMIC_UART_ENABLE
     extern void tmc_uart_init (void);
     tmc_uart_init();

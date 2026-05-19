@@ -211,7 +211,7 @@
 
 #else // Hardware SPI implementation
 
-#define SPI_PORT                    12      // GPIOB: SCK = 3, MISO = 4 MOSI = 5
+#define TRINAMIC_SPI_PORT           12      // GPIOB: SCK = 3, MISO = 4 MOSI = 5
 
 #endif // TRINAMIC_SOFT_SPI
 
