@@ -239,7 +239,7 @@ void OTG_FS_IRQHandler(void)
 /**
   * @brief This function handles SDMMC1 global interrupt.
   */
-#if SDCARD_ENABLE
+#if SDCARD_ENABLE & SDCARD_SDIO
 void SDMMC1_IRQHandler(void)
 {
   /* USER CODE BEGIN SDMMC1_IRQn 0 */

@@ -196,6 +196,10 @@
 #define TOOLSETTER_PIN              AUXINPUT2_PIN
 #endif
 
+#if SDCARD_ENABLE
+#define SDCARD_SDIO                 1
+#endif
+
 #if TRINAMIC_SPI_ENABLE
 
 #define TRINAMIC_R_SENSE            50

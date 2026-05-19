@@ -27,6 +27,11 @@
 
 #define BOARD_NAME "grblHAL reference map"
 
+#if SDCARD_ENABLE
+// #define SD_CS_PORT              GPIOC
+// #define SD_CS_PIN               8
+#define SDCARD_SDIO             1
+#endif
 
 #define SERIAL_PORT            32   // GPIOD: TX = 8, RX = 9
 #if USB_SERIAL_CDC

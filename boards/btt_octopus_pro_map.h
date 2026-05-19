@@ -259,6 +259,10 @@
 #define PROBE_PIN                   AUXINPUT1_PIN
 #endif
 
+#if SDCARD_ENABLE
+#define SDCARD_SDIO                 1
+#endif
+
 //Pins not used
 // DC Probe pin? Connected to an EL357C on GPIOC5 conflicts with T1/cycle start but this may be preferred as it is optocoupled. Only one?
 // PS-ON is not used due to conflict with limit switches. Can be used as an analog in.

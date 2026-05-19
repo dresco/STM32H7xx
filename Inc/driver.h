@@ -238,11 +238,6 @@
 
 // End configuration
 
-// Only SDMMC (SDIO) interface is currently supported..
-#if SDCARD_ENABLE
-#define SDCARD_SDIO 1
-#endif
-
 #include "grbl/driver_opts2.h"
 
 #ifndef I2C_PORT

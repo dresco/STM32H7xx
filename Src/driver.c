@@ -46,6 +46,9 @@
 #include "sdcard/sdcard.h"
 #include "ff.h"
 #include "diskio.h"
+#endif
+
+#if SDCARD_SDIO
 #include "sdmmc.h"
 #endif
 
@@ -2196,6 +2199,49 @@ void setPeriphPinDescription (const pin_function_t function, const pin_group_t g
     } while(ppin);
 }
 
+#if SDCARD_SDIO
+
+#include "FATFS/App/fatfs.h"
+#include "FATFS/App/fatfs.h"
+
+static bool bus_ok = false;
+
+static bool sdcard_unmount (FATFS **fs)
+{
+    bool ok;
+
+    if((ok = f_unmount(SDPath) == FR_OK))
+        FATFS_UnLinkDriver(SDPath);
+
+    return ok;
+}
+
+static char *sdcard_mount (FATFS **fs)
+{
+    static FATFS *fs_sdio = NULL;
+
+    MX_FATFS_Init();
+
+    if(!bus_ok)
+        bus_ok = BSP_SD_Init() == MSD_OK;
+
+    if(!bus_ok)
+        return NULL;
+
+    if(fs) {
+        if(fs_sdio == NULL)
+            fs_sdio = malloc(sizeof(FATFS));
+
+        if(fs_sdio && f_mount(fs_sdio, SDPath, 1) == FR_OK)
+            *fs = fs_sdio;
+        else
+           *fs = NULL;
+    }
+
+    return SDPath;
+}
+
+#endif // SDCARD_SDIO
 
 #if ETHERNET_ENABLE
 
@@ -2317,9 +2363,19 @@ static bool driver_setup (settings_t *settings)
     HAL_NVIC_SetPriority(STEPPER_TIMER_IRQn, 0, 0);
     NVIC_EnableIRQ(STEPPER_TIMER_IRQn);
 
-#if SDCARD_ENABLE
+#if SDCARD_SDIO
+
+    sdcard_events_t *card = sdcard_init();
+    card->on_mount = sdcard_mount;
+    card->on_unmount = sdcard_unmount;
 
     sdmmc_init();
+    sdcard_mount(NULL);
+
+#elif SDCARD_ENABLE
+
+    DIGITAL_OUT(SD_CS_PORT, 1 << SD_CS_PIN, 1);
+
     sdcard_init();
 
 #endif

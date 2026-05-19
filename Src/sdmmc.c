@@ -25,7 +25,7 @@
 
 #include "driver.h"
 
-#if SDCARD_ENABLE
+#if SDCARD_ENABLE & SDCARD_SDIO
 
 #include "sdmmc.h"
 
@@ -33,20 +33,16 @@ SD_HandleTypeDef hsd1;
 
 void sdmmc_init()
 {
-	// SDMMC1 init
-    //
-    // Start simple.. polling with clock division to prevent underrun
-    //
-	hsd1.Instance = SDMMC1;
-	hsd1.Init.ClockEdge = SDMMC_CLOCK_EDGE_RISING;
-	hsd1.Init.ClockPowerSave = SDMMC_CLOCK_POWER_SAVE_DISABLE;
-	hsd1.Init.BusWide = SDMMC_BUS_WIDE_4B;
-	hsd1.Init.HardwareFlowControl = SDMMC_HARDWARE_FLOW_CONTROL_DISABLE;
-	hsd1.Init.ClockDiv = 0;
+    // SDMMC1 init
+    hsd1.Instance = SDMMC1;
+    hsd1.Init.ClockEdge = SDMMC_CLOCK_EDGE_RISING;
+    hsd1.Init.ClockPowerSave = SDMMC_CLOCK_POWER_SAVE_DISABLE;
+    hsd1.Init.BusWide = SDMMC_BUS_WIDE_4B;
+    hsd1.Init.HardwareFlowControl = SDMMC_HARDWARE_FLOW_CONTROL_DISABLE;
+    hsd1.Init.ClockDiv = 0;
 
-	// FatFS init
-	MX_FATFS_Init();
-
+    // FatFS init
+    MX_FATFS_Init();
 }
 
 #endif

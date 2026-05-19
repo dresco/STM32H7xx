@@ -184,6 +184,10 @@
 #define PROBE_PIN                   AUXINPUT1_PIN
 #endif
 
+#if SDCARD_ENABLE
+#define SDCARD_SDIO                 1
+#endif
+
 #if TRINAMIC_UART_ENABLE
 
 #define MOTOR_UARTX_PORT            GPIOD

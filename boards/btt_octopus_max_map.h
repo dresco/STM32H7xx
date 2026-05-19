@@ -187,6 +187,12 @@
 #define PROBE_PIN                   AUXINPUT1_PIN
 #endif
 
+#if SDCARD_ENABLE                   // Wired to SPI4, shared with Trinamic drivers
+#define SDCARD_SDIO                 0
+#define SD_CS_PORT                  GPIOB
+#define SD_CS_PIN                   12
+#endif
+
 #if TRINAMIC_UART_ENABLE
 
 #define MOTOR_UARTX_PORT            GPIOG
@@ -213,13 +219,7 @@
 
 #elif TRINAMIC_SPI_ENABLE
 
-// The BTT Octopus MAX uses hardware SPI4 for Trinamic drivers
-#define TRINAMIC_MOSI_PORT          GPIOE
-#define TRINAMIC_MOSI_PIN           14
-#define TRINAMIC_SCK_PORT           GPIOE
-#define TRINAMIC_SCK_PIN            12
-#define TRINAMIC_MISO_PORT          GPIOE
-#define TRINAMIC_MISO_PIN           13
+// The BTT Octopus MAX uses hardware SPI4 for Trinamic drivers (shared with SD Card)
 
 #define MOTOR_CSX_PORT              GPIOG
 #define MOTOR_CSX_PIN               14

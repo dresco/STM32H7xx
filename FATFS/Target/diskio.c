@@ -10,6 +10,10 @@
 /* storage control modules to the FatFs module with a defined API.       */
 /*-----------------------------------------------------------------------*/
 
+#include "driver.h"
+
+#if SDCARD_SDIO
+
 /* Includes ------------------------------------------------------------------*/
 #include "ff.h"
 #include "diskio.h"
@@ -121,3 +125,5 @@ DRESULT disk_ioctl (
 }
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
+
+#endif

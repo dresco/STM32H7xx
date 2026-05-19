@@ -246,4 +246,8 @@
 #define CAN_RX_PIN                  0
 #define CAN_TX_PIN                  1
 
+#if SDCARD_ENABLE
+#define SDCARD_SDIO                 1
+#endif
+
 // EOF
