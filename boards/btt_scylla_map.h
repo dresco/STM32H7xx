@@ -33,7 +33,7 @@
 
 #define SERIAL_PORT                 2   // ESP-32,   GPIOA: TX = 2, RX = 3
 #define SERIAL1_PORT                1   // RS-485,   GPIOA: TX = 9, RX = 10
-#define SERIAL2_PORT                3   // Pi conn,  GPIOD: TX = 8, RX = 9
+#define SERIAL2_PORT                32  // Pi conn,  GPIOD: TX = 8, RX = 9
 #define I2C_PORT                    2   // I2C conn, GPIOB: SCL = 10, SDA = 11
 #define SPI_PORT                    2   // Pi conn,  GPIOB: SCK = 13, MISO = 14, MOSI = 15
 
