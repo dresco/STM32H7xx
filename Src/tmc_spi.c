@@ -453,7 +453,7 @@ static void spi_init (void)
 
 #endif // TRINAMIC_SPI_PORT
 
-#if TRINAMIC_SPI_ENABLE
+#ifndef TRINAMIC_SPI_PORT
 static spi_slave_t dev = {
     .f_clock = SPI_BAUDRATEPRESCALER_32
 };
