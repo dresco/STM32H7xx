@@ -33,6 +33,7 @@ lib_deps =
   plugins
   sdcard
   spindle
+  embroidery
   webui
   FATFS/App
   FATFS/Target
