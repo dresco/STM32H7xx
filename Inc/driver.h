@@ -135,6 +135,8 @@
   #include "boards/btt_octopus_pro_map.h"
 #elif defined(BOARD_BTT_SCYLLA)
   #include "boards/btt_scylla_map.h"
+#elif defined(BOARD_BTT_MANTA_M8P)
+  #include "boards/btt_manta_m8p_v2_map.h"
 #elif defined(BOARD_WEACT_MINI)
   #include "boards/weact_mini_map.h"
 #elif defined(BOARD_REFERENCE)
