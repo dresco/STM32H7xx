@@ -417,8 +417,8 @@ void neopixel_init (void)
         hal.rgb0.flags = (rgb_properties_t){ .is_strip = On };
         hal.rgb0.cap = (rgb_color_t){ .R = 255, .G = 255, .B = 255 };
 
-        settings_changed = hal.settings_changed;
-        hal.settings_changed = onSettingsChanged;
+        settings_changed = grbl.on_settings_changed;
+        grbl.on_settings_changed = onSettingsChanged;
 
         init = true;
     }

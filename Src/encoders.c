@@ -478,8 +478,8 @@ static bool encoder_add (uint32_t id)
 
         if(sp_encoder.settings_changed == NULL && timer_get_cap(encoder->timer).comp3) {
 
-            sp_encoder.settings_changed = hal.settings_changed;
-            hal.settings_changed = spindle_encoder_cfg;
+            sp_encoder.settings_changed = grbl.on_settings_changed;
+            grbl.on_settings_changed = spindle_encoder_cfg;
 
             sp_encoder.cr1 = &encoder->timer->CR1;
             sp_encoder.cnt = &encoder->timer->CNT;
@@ -586,8 +586,8 @@ void driver_encoders_init (void)
 
             hal.periph_port.register_pin(&ssp);
 
-            sp_encoder.settings_changed = hal.settings_changed;
-            hal.settings_changed = spindle_encoder_cfg;
+            sp_encoder.settings_changed = grbl.on_settings_changed;
+            grbl.on_settings_changed = spindle_encoder_cfg;
 
             break;
         }

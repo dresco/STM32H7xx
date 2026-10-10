@@ -152,20 +152,31 @@
 #define COPROC_BOOT0_PIN            AUXOUTPUT8_PIN
 #endif
 
-#define AUXINPUT0_PORT              GPIOD   // Safety door - A-MAX
+#define AUXINPUT0_PORT              GPIOD   // Separate Reset - A-MAX
 #define AUXINPUT0_PIN               13
 #define AUXINPUT1_PORT              GPIOE   // Probe - Probe
 #define AUXINPUT1_PIN               15
 #define AUXINPUT2_PORT              GPIOE   // Toolsetter - Tool
 #define AUXINPUT2_PIN               7
-#define AUXINPUT3_PORT              GPIOC   // Reset - X-MAX
+#define AUXINPUT3_PORT              GPIOC   // E-Stop / HALT - X-MAX
 #define AUXINPUT3_PIN               6
 #define AUXINPUT4_PORT              GPIOD   // Feed hold - Y-MAX
 #define AUXINPUT4_PIN               14
 #define AUXINPUT5_PORT              GPIOD   // Cycle start - Z-MAX
 #define AUXINPUT5_PIN               12
-#define AUXINPUT6_PORT              GPIOB   // IO-IN
+#define AUXINPUT6_PORT              GPIOB   // IO-IN - general purpose
 #define AUXINPUT6_PIN               7
+
+// Project-specific independent Reset input.
+//
+// grblHAL's traditional RESET_PIN is used as the HALT input. When ESTOP_ENABLE
+// is enabled, Core maps that HALT input to Emergency Stop. On Scylla this keeps
+// X-MAX / PC6 as the E-Stop input.
+//
+// A-MAX / PD13 is reserved here for a second, independent operator Reset input.
+// Src/driver.c must explicitly register this pin as Input_Reset.
+#define SEPARATE_RESET_PORT         AUXINPUT0_PORT
+#define SEPARATE_RESET_PIN          AUXINPUT0_PIN
 
 // Define user-control controls (cycle start, reset, feed hold) input pins.
 #if CONTROL_ENABLE & CONTROL_HALT
@@ -182,8 +193,7 @@
 #endif
 
 #if SAFETY_DOOR_ENABLE
-#define SAFETY_DOOR_PORT            AUXINPUT0_PORT
-#define SAFETY_DOOR_PIN             AUXINPUT0_PIN
+#error "BTT Scylla fork: A-MAX/PD13 is reserved for the separate Reset input. Assign another input before enabling Safety Door."
 #endif
 
 #if PROBE_ENABLE

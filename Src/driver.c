@@ -81,6 +81,10 @@
 #include "enet.h"
 #endif
 
+#if defined(SEPARATE_RESET_PIN) && !ESTOP_ENABLE
+#error "SEPARATE_RESET_PIN requires ESTOP_ENABLE=1 so RESET_PIN can remain the dedicated E-Stop/HALT input."
+#endif
+
 #if (LIMIT_MASK|CONTROL_MASK|DEVICES_IRQ_MASK) != (LIMIT_MASK_SUM+CONTROL_MASK_SUM+DEVICES_IRQ_MASK_SUM)
 #error Interrupt enabled input pins must have unique pin numbers!
 #endif
@@ -428,6 +432,11 @@ static bool IOInitDone = false;
 static pin_group_pins_t limit_inputs = {0};
 static delay_t delay = { .ms = 1, .callback = NULL }; // NOTE: initial ms set to 1 for "resetting" systick timer on startup
 static input_signal_t *pin_irq[16] = {0};
+
+#ifdef SEPARATE_RESET_PIN
+static uint8_t separate_reset_port = IOPORT_UNASSIGNED;
+static input_signal_t *separate_reset_input = NULL;
+#endif
 static struct {
     // t_* parameters are timer ticks
     uint32_t t_min_period;
@@ -504,7 +513,7 @@ static void driver_delay (uint32_t ms, delay_callback_ptr callback)
     if((delay.ms = ms) > 0) {
         if(!(delay.callback = callback)) {
             while(delay.ms)
-                grbl.on_execute_delay(state_get());
+                task_execute(true);
         }
     } else {
         delay.callback = NULL;
@@ -1425,7 +1434,9 @@ static control_signals_t systemGetState (void)
 {
     control_signals_t signals = { settings.control_invert.mask };
 
-#if defined(RESET_PIN) && !ESTOP_ENABLE
+#ifdef SEPARATE_RESET_PIN
+    signals.reset = DIGITAL_IN(SEPARATE_RESET_PORT, 1<<SEPARATE_RESET_PIN);
+#elif defined(RESET_PIN) && !ESTOP_ENABLE
     signals.reset = DIGITAL_IN(RESET_PORT, 1<<RESET_PIN);
 #endif
 #if defined(RESET_PIN) && ESTOP_ENABLE
@@ -1455,6 +1466,26 @@ static control_signals_t systemGetState (void)
 
     return aux_ctrl_scan_status(signals);
 }
+
+#ifdef SEPARATE_RESET_PIN
+
+// Interrupt callback for the Scylla fork's independent operator Reset input.
+// The pin itself is claimed from the auxiliary-input pool at driver init.
+// Only the active edge is registered, so reaching this callback means a
+// deliberate Reset event. Include the current control state so an active
+// E-Stop remains visible to Core while Reset is being processed.
+static void separate_reset_irq_handler (uint8_t port, bool state)
+{
+    (void)port;
+    (void)state;
+
+    control_signals_t signals = systemGetState();
+
+    signals.reset = On;
+    hal.control.interrupt_callback(signals);
+}
+
+#endif // SEPARATE_RESET_PIN
 
 #if DRIVER_PROBES
 
@@ -2020,6 +2051,13 @@ void settings_changed (settings_t *settings, settings_changed_flags_t changed)
                     break;
 #endif
 
+#ifdef SEPARATE_RESET_PIN
+                case Input_Reset:
+                    input->mode.pull_mode = (settings->control_disable_pullup.mask & SIGNALS_RESET_BIT) ? PullMode_None : PullMode_Up;
+                    input->mode.irq_mode = (settings->control_invert.mask & SIGNALS_RESET_BIT) ? IRQ_Mode_Falling : IRQ_Mode_Rising;
+                    break;
+#endif
+
                 case Input_SPIIRQ:
                     input->mode.pull_mode = true;
                     input->mode.irq_mode = IRQ_Mode_Falling;
@@ -2107,6 +2145,13 @@ void settings_changed (settings_t *settings, settings_changed_flags_t changed)
 
         hal.limits.enable(settings->limits.flags.hard_enabled, (axes_signals_t){0});
         aux_ctrl_irq_enable(settings, aux_irq_handler);
+
+#ifdef SEPARATE_RESET_PIN
+        if(separate_reset_port != IOPORT_UNASSIGNED) {
+            pin_irq_mode_t irq_mode = (settings->control_invert.mask & SIGNALS_RESET_BIT) ? IRQ_Mode_Falling : IRQ_Mode_Rising;
+            hal.port.register_interrupt_handler(separate_reset_port, irq_mode, separate_reset_irq_handler);
+        }
+#endif
     }
 }
 
@@ -2390,7 +2435,7 @@ static bool driver_setup (settings_t *settings)
 
     IOInitDone = settings->version.id == 23;
 
-    hal.settings_changed(settings, (settings_changed_flags_t){0});
+    grbl.on_settings_changed(settings, (settings_changed_flags_t){0});
 
 #if ETHERNET_ENABLE
     enet_start();
@@ -2573,7 +2618,7 @@ bool driver_init (void)
     hal.timer.start = timerStart;
     hal.timer.stop = timerStop;
 
-    hal.settings_changed = settings_changed;
+    grbl.on_settings_changed = settings_changed;
 
     cycles2us_factor = 0xFFFFFFFFU / hal.f_mcu;
 
@@ -2689,7 +2734,6 @@ bool driver_init (void)
     hal.coolant_cap.bits = COOLANT_ENABLE;
     hal.driver_cap.software_debounce = On;
     hal.driver_cap.step_pulse_delay = On;
-    hal.driver_cap.amass_level = 3;
     hal.driver_cap.control_pull_up = On;
     hal.driver_cap.limits_pull_up = On;
 
@@ -2704,6 +2748,14 @@ bool driver_init (void)
         input = &inputpin[i];
         input->mode.input = input->cap.input = On;
         input->bit = 1 << input->pin;
+
+#ifdef SEPARATE_RESET_PIN
+        if(input->group == PinGroup_AuxInput &&
+            input->port == SEPARATE_RESET_PORT &&
+            input->pin == SEPARATE_RESET_PIN)
+            separate_reset_input = input;
+#endif
+
         if(input->group == PinGroup_AuxInput) {
             if(aux_inputs.pins.inputs == NULL)
                 aux_inputs.pins.inputs = input;
@@ -2760,6 +2812,24 @@ bool driver_init (void)
 
     if(aux_analog_in.n_pins || aux_analog_out.n_pins)
         ioports_init_analog(&aux_analog_in, &aux_analog_out);
+
+#ifdef SEPARATE_RESET_PIN
+    if(separate_reset_input) {
+
+        control_signals_t reset_cap = { .reset = On };
+        xbar_t *reset_pin;
+
+        separate_reset_port = separate_reset_input->user_port;
+
+        if((reset_pin = ioport_claim(Port_Digital, Port_Input, &separate_reset_port, "Reset (A-MAX / PD13)"))) {
+            if(ioport_set_function(reset_pin, Input_Reset, &reset_cap)) {
+                reset_pin->function = Input_Reset;
+                separate_reset_input->mode.debounce = separate_reset_input->cap.debounce && hal.driver_cap.software_debounce;
+            } else
+                separate_reset_port = IOPORT_UNASSIGNED;
+        }
+    }
+#endif
 
     io_expanders_init();
     aux_ctrl_claim_ports(aux_claim_explicit, NULL);

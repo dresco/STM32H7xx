@@ -684,8 +684,8 @@ void driver_spindles_init (void)
 
 #endif // DRIVER_SPINDLE1_ENABLE
 
-    settings_changed = hal.settings_changed;
-    hal.settings_changed = settingsChanged;
+    settings_changed = grbl.on_settings_changed;
+    grbl.on_settings_changed = settingsChanged;
 
 #if PPI_ENABLE
 
