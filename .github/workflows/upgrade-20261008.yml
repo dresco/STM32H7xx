@@ -43,7 +43,7 @@ jobs:
           pin_submodule plugins    265711922037cab6b6e47a9560ef11da3a6e5f83
           pin_submodule webui      3712523bc98f0bce343b56e03bdf881cc7fd4aa0
 
-      - name: Adapt STM32H7xx delay handler to the 20261004+ task API
+      - name: Adapt STM32H7xx driver to 20261004+ core APIs
         shell: bash
         run: |
           set -euo pipefail
@@ -52,17 +52,29 @@ jobs:
 
           path = Path("Src/driver.c")
           text = path.read_text(encoding="utf-8")
-          old = "                grbl.on_execute_delay(state_get());"
-          new = "                task_execute(true);"
 
-          count = text.count(old)
-          if count != 1:
-              raise SystemExit(f"Expected exactly one old delay-handler call, found {count}")
+          old_delay = "                grbl.on_execute_delay(state_get());"
+          new_delay = "                task_execute(true);"
+          old_amass = "    hal.driver_cap.amass_level = 3;\n"
 
-          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          delay_count = text.count(old_delay)
+          amass_count = text.count(old_amass)
+
+          if delay_count != 1:
+              raise SystemExit(f"Expected exactly one old delay-handler call, found {delay_count}")
+          if amass_count != 1:
+              raise SystemExit(f"Expected exactly one obsolete amass_level assignment, found {amass_count}")
+
+          text = text.replace(old_delay, new_delay, 1)
+          text = text.replace(old_amass, "", 1)
+          path.write_text(text, encoding="utf-8")
           PY
 
           grep -n -A6 -B4 "static void driver_delay" Src/driver.c
+          if grep -n "driver_cap.amass_level" Src/driver.c; then
+            echo "Obsolete driver_cap.amass_level still present"
+            exit 1
+          fi
 
       - name: Validate intended source changes
         shell: bash
