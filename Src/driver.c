@@ -513,7 +513,7 @@ static void driver_delay (uint32_t ms, delay_callback_ptr callback)
     if((delay.ms = ms) > 0) {
         if(!(delay.callback = callback)) {
             while(delay.ms)
-                grbl.on_execute_delay(state_get());
+                task_execute(true);
         }
     } else {
         delay.callback = NULL;
@@ -2734,7 +2734,6 @@ bool driver_init (void)
     hal.coolant_cap.bits = COOLANT_ENABLE;
     hal.driver_cap.software_debounce = On;
     hal.driver_cap.step_pulse_delay = On;
-    hal.driver_cap.amass_level = 3;
     hal.driver_cap.control_pull_up = On;
     hal.driver_cap.limits_pull_up = On;
 
