@@ -1,0 +1,159 @@
+name: Upgrade Scylla to grblHAL 20261008
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - scylla-grblhal-20261008
+    paths:
+      - .github/workflows/upgrade-20261008.yml
+
+permissions:
+  contents: write
+
+jobs:
+  upgrade-build-verify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository with submodules
+        uses: actions/checkout@v4
+        with:
+          ref: scylla-grblhal-20261008
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Pin grblHAL core and plugins to 20261008-compatible revisions
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          pin_submodule() {
+            local path="$1"
+            local sha="$2"
+            echo "Updating ${path} -> ${sha}"
+            git -C "$path" fetch origin
+            git -C "$path" checkout --detach "$sha"
+          }
+
+          pin_submodule grbl       ca26fc98f1b2171251c946ab91d5912b733efa78
+          pin_submodule networking 0b665ee0c0be5161d5044bdf2dcdf59ad62509f8
+          pin_submodule sdcard     d0fe753d622e79a60e54e729ba83f7207276114c
+          pin_submodule spindle    8a3ae47f5a218834da9c742424c3dd22c5629fdb
+          pin_submodule plugins    265711922037cab6b6e47a9560ef11da3a6e5f83
+          pin_submodule webui      3712523bc98f0bce343b56e03bdf881cc7fd4aa0
+
+      - name: Adapt STM32H7xx delay handler to the 20261004+ task API
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("Src/driver.c")
+          text = path.read_text(encoding="utf-8")
+          old = "                grbl.on_execute_delay(state_get());"
+          new = "                task_execute(true);"
+
+          count = text.count(old)
+          if count != 1:
+              raise SystemExit(f"Expected exactly one old delay-handler call, found {count}")
+
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+
+          grep -n -A6 -B4 "static void driver_delay" Src/driver.c
+
+      - name: Validate intended source changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          git status --short
+          git diff --check
+          git diff -- Src/driver.c
+          git diff --submodule=short -- grbl networking sdcard spindle plugins webui
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: Cache PlatformIO
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/pip
+            ~/.platformio/.cache
+          key: ${{ runner.os }}-platformio-${{ hashFiles('platformio.ini') }}
+          restore-keys: |
+            ${{ runner.os }}-platformio-
+
+      - name: Install PlatformIO
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          pip install platformio
+
+      - name: Build USB + MODVFD firmware
+        shell: bash
+        run: pio run -e btt_scylla_h723_tmc5160
+
+      - name: Build USB + ESP-AT + MODVFD firmware
+        shell: bash
+        run: pio run -e btt_scylla_h723_tmc5160_wifi_full
+
+      - name: Verify firmware outputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          ls -lh .pio/build/btt_scylla_h723_tmc5160/firmware.*
+          ls -lh .pio/build/btt_scylla_h723_tmc5160_wifi_full/firmware.*
+
+      - name: Commit upgrade only after successful builds
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add Src/driver.c grbl networking sdcard spindle plugins webui
+          git diff --cached --check
+
+          if git diff --cached --quiet; then
+            echo "Upgrade already applied; nothing to commit."
+          else
+            git commit -m "Upgrade grblHAL core and plugins to build 20261008"
+            git push origin HEAD:scylla-grblhal-20261008
+          fi
+
+      - name: Generate checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          for env in btt_scylla_h723_tmc5160 btt_scylla_h723_tmc5160_wifi_full; do
+            cd "$GITHUB_WORKSPACE/.pio/build/$env"
+            sha256sum firmware.bin firmware.hex firmware.elf > SHA256SUMS.txt
+            cat SHA256SUMS.txt
+          done
+
+      - name: Upload USB + MODVFD firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: scylla-20261008-usb-modvfd
+          path: |
+            .pio/build/btt_scylla_h723_tmc5160/firmware.bin
+            .pio/build/btt_scylla_h723_tmc5160/firmware.hex
+            .pio/build/btt_scylla_h723_tmc5160/firmware.elf
+            .pio/build/btt_scylla_h723_tmc5160/SHA256SUMS.txt
+          if-no-files-found: error
+
+      - name: Upload USB + ESP-AT + MODVFD firmware
+        uses: actions/upload-artifact@v4
+        with:
+          name: scylla-20261008-wifi-modvfd
+          path: |
+            .pio/build/btt_scylla_h723_tmc5160_wifi_full/firmware.bin
+            .pio/build/btt_scylla_h723_tmc5160_wifi_full/firmware.hex
+            .pio/build/btt_scylla_h723_tmc5160_wifi_full/firmware.elf
+            .pio/build/btt_scylla_h723_tmc5160_wifi_full/SHA256SUMS.txt
+          if-no-files-found: error
