@@ -25,7 +25,7 @@
 
 #include "driver.h"
 
-#if SDCARD_ENABLE & SDCARD_SDIO
+#if SDCARD_ENABLE && SDCARD_SDIO
 
 #include "sdmmc.h"
 
