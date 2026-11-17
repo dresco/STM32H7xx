@@ -504,7 +504,7 @@ static void driver_delay (uint32_t ms, delay_callback_ptr callback)
     if((delay.ms = ms) > 0) {
         if(!(delay.callback = callback)) {
             while(delay.ms)
-                grbl.on_execute_delay(state_get());
+                task_execute(false);
         }
     } else {
         delay.callback = NULL;
@@ -1656,16 +1656,15 @@ static spindle_data_t *spindleGetData (spindle_data_request_t request)
     uint32_t pulse_length, rpm_timer_delta;
     spindle_encoder_counter_t encoder;
 
-//    while(spindle_encoder.spin_lock);
-
-    __disable_irq();
+    uint32_t irq = __get_PRIMASK();
+    __set_PRIMASK(1);
 
     memcpy(&encoder, &spindle_encoder.counter, sizeof(spindle_encoder_counter_t));
 
     pulse_length = spindle_encoder.timer.pulse_length / spindle_encoder.tics_per_irq;
     rpm_timer_delta = RPM_TIMER_COUNT - spindle_encoder.timer.last_pulse;
 
-    __enable_irq();
+    __set_PRIMASK(irq);
 
     // If no spindle pulses during last 250 ms assume RPM is 0
     if((stopped = ((pulse_length == 0) || (rpm_timer_delta > spindle_encoder.maximum_tt)))) {
@@ -1788,30 +1787,57 @@ static coolant_state_t coolantGetState (void)
     return state;
 }
 
+static volatile uint32_t lock;
+
+static void disable_irq (void)
+{
+    if(!__get_PRIMASK() || lock) {
+        lock++;
+        __disable_irq();
+    }
+}
+
+static void enable_irq (void)
+{
+    if(lock && !--lock)
+        __enable_irq();
+}
+
 // Helper functions for setting/clearing/inverting individual bits atomically (uninterruptable)
 static void bitsSetAtomic (volatile uint_fast16_t *ptr, uint_fast16_t bits)
 {
-    __disable_irq();
+    uint32_t irq = __get_PRIMASK();
+    __set_PRIMASK(1);
+
     *ptr |= bits;
-    __enable_irq();
+
+    __set_PRIMASK(irq);
 }
 
 static uint_fast16_t bitsClearAtomic (volatile uint_fast16_t *ptr, uint_fast16_t bits)
 {
-    __disable_irq();
+    uint32_t irq = __get_PRIMASK();
+    __set_PRIMASK(1);
+
     uint_fast16_t prev = *ptr;
+
     *ptr &= ~bits;
-    __enable_irq();
+    __set_PRIMASK(irq);
+
     return prev;
 }
 
 static uint_fast16_t valueSetAtomic (volatile uint_fast16_t *ptr, uint_fast16_t value)
 {
-    __disable_irq();
+    uint32_t irq = __get_PRIMASK();
+    __set_PRIMASK(1);
+
     uint_fast16_t prev = *ptr;
+
     *ptr = value;
-    __enable_irq();
-    return prev;
+    __set_PRIMASK(irq);
+
+   return prev;
 }
 
 static uint64_t getElapsedMicros (void)
@@ -1855,7 +1881,7 @@ void gpio_irq_enable (const input_signal_t *input, pin_irq_mode_t irq_mode)
 }
 
 // Configures peripherals when settings are initialized or changed
-void settings_changed (settings_t *settings, settings_changed_flags_t changed)
+void on_settings_changed (settings_t *settings, settings_changed_flags_t changed)
 {
 
 #if USE_STEPDIR_MAP
@@ -2390,7 +2416,7 @@ static bool driver_setup (settings_t *settings)
 
     IOInitDone = settings->version.id == 23;
 
-    hal.settings_changed(settings, (settings_changed_flags_t){0});
+    grbl.on_settings_changed(settings, (settings_changed_flags_t){0});
 
 #if ETHERNET_ENABLE
     enet_start();
@@ -2551,7 +2577,7 @@ bool driver_init (void)
 #else
     hal.info = "STM32H743";
 #endif
-    hal.driver_version = "260517";
+    hal.driver_version = "261104";
     hal.driver_url = "https://github.com/dresco/STM32H7xx";
 #ifdef BOARD_NAME
     hal.board = BOARD_NAME;
@@ -2561,7 +2587,7 @@ bool driver_init (void)
 #endif
     hal.driver_setup = driver_setup;
     hal.f_mcu = HAL_RCC_GetHCLKFreq() / 1000000UL * (clock_cfg.AHBCLKDivider == 0 ? 1 : 2);
-    hal.f_step_timer = HAL_RCC_GetPCLK1Freq() * 2 / STEPPER_TIMER_DIV;
+    hal.f_step_timer = HAL_RCC_GetPCLK1Freq() * (LL_RCC_GetAPB1Prescaler() ? 2 : 1) / STEPPER_TIMER_DIV;
     hal.step_us_min = 1.5f;
 
     hal.rx_buffer_size = RX_BUFFER_SIZE;
@@ -2573,7 +2599,7 @@ bool driver_init (void)
     hal.timer.start = timerStart;
     hal.timer.stop = timerStop;
 
-    hal.settings_changed = settings_changed;
+    grbl.on_settings_changed = on_settings_changed;
 
     cycles2us_factor = 0xFFFFFFFFU / hal.f_mcu;
 
@@ -2597,8 +2623,8 @@ bool driver_init (void)
 
     hal.control.get_state = systemGetState;
 
-    hal.irq_enable = __enable_irq;
-    hal.irq_disable = __disable_irq;
+    hal.irq_enable = enable_irq;
+    hal.irq_disable = disable_irq;
 #if I2C_STROBE_ENABLE || defined(SPI_IRQ_PIN)
     hal.irq_claim = irq_claim;
 #endif
@@ -2689,9 +2715,7 @@ bool driver_init (void)
     hal.coolant_cap.bits = COOLANT_ENABLE;
     hal.driver_cap.software_debounce = On;
     hal.driver_cap.step_pulse_delay = On;
-    hal.driver_cap.amass_level = 3;
-    hal.driver_cap.control_pull_up = On;
-    hal.driver_cap.limits_pull_up = On;
+    hal.driver_cap.pullup_enabled = PULLUPS_ENABLE;
 
     static pin_group_pins_t aux_inputs = {0}, aux_outputs = {0}, aux_analog_in = {0}, aux_analog_out = {0};
 
@@ -2901,15 +2925,22 @@ void core_pin_debounce (void *pin)
     EXTI->IMR1 |= input->bit; // Reenable pin interrupt
 }
 
-static inline void core_pin_irq (uint32_t bit)
+static inline void core_pin_irq (uint32_t bits)
 {
+    uint32_t bit;
     input_signal_t *input;
 
-    if((input = pin_irq[__builtin_ffs(bit) - 1])) {
-        if(input->mode.debounce && task_add_delayed(core_pin_debounce, input, 40)) {
-            EXTI->IMR1 &= ~input->bit; // Disable pin interrupt
-        } else
-            core_pin_debounce(input);
+    while(bits) {
+
+        bit = bits & -bits; // isolate the lowest set bit
+        bits &= ~bit;
+
+        if((input = pin_irq[__builtin_ffs(bit) - 1])) {
+            if(input->mode.debounce && task_add_delayed(core_pin_debounce, input, 40)) {
+                EXTI->IMR1 &= ~input->bit; // Disable pin interrupt
+            } else
+                core_pin_debounce(input);
+        }
     }
 }
 
@@ -2929,19 +2960,26 @@ void aux_pin_debounce (void *pin)
     EXTI->IMR1 |= input->bit; // Reenable pin interrupt
 }
 
-static inline void aux_pin_irq (uint32_t bit)
+static inline void aux_pin_irq (uint32_t bits)
 {
+    uint32_t bit;
     input_signal_t *input;
 
-    if((input = pin_irq[__builtin_ffs(bit) - 1]) && input->group == PinGroup_AuxInput) {
-        if(input->mode.debounce && task_add_delayed(aux_pin_debounce, input, 40)) {
-            EXTI->IMR1 &= ~input->bit; // Disable pin interrupt
-#if SAFETY_DOOR_ENABLE
-            if(input->id == Input_SafetyDoor)
-                debounce.safety_door = input->mode.debounce;
-#endif
-        } else
-            ioports_event(input);
+    while(bits) {
+
+        bit = bits & -bits; // isolate the lowest set bit
+        bits &= ~bit;
+
+        if((input = pin_irq[__builtin_ffs(bit) - 1]) && input->group == PinGroup_AuxInput) {
+            if(input->mode.debounce && task_add_delayed(aux_pin_debounce, input, 40)) {
+                EXTI->IMR1 &= ~input->bit; // Disable pin interrupt
+    #if SAFETY_DOOR_ENABLE
+                if(input->id == Input_SafetyDoor)
+                    debounce.safety_door = input->mode.debounce;
+    #endif
+            } else
+                ioports_event(input);
+        }
     }
 }
 
@@ -3074,12 +3112,11 @@ void EXTI9_5_IRQHandler(void)
             spi_irq.callback(0, DIGITAL_IN(SPI_IRQ_PORT, SPI_IRQ_BIT) == 0);
 #endif
 #if SPINDLE_INDEX_BIT & 0x03E0
-        if(ifg & SPINDLE_INDEX_BIT)
-            spindle_encoder_index_event();
+        spindle_encoder_index_event();
 #endif
 #if (LIMIT_MASK|SD_DETECT_BIT) & 0x03E0
         if(ifg & (LIMIT_MASK|SD_DETECT_BIT))
-            core_pin_irq(ifg);
+            core_pin_irq(ifg & (LIMIT_MASK|SD_DETECT_BIT));
 #endif
 #if AUXINPUT_MASK & 0x03E0
         if(ifg & aux_irq)
@@ -3109,7 +3146,7 @@ void EXTI15_10_IRQHandler(void)
 #endif
 #if (LIMIT_MASK|SD_DETECT_BIT) & 0xFC00
         if(ifg & (LIMIT_MASK|SD_DETECT_BIT))
-            core_pin_irq(ifg);
+            core_pin_irq(ifg & (LIMIT_MASK|SD_DETECT_BIT));
 #endif
 #if AUXINPUT_MASK & 0xFC00
         if(ifg & aux_irq)

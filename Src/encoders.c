@@ -72,7 +72,7 @@ typedef struct {
     __IO uint32_t *cnt; // shortcut to timer CNT register
     __IO uint32_t *ccr; // shortcut to timer CCR3 register
     TIM_TypeDef *timer;
-    settings_changed_ptr settings_changed;
+    settings_changed_ptr on_settings_changed;
 } spindle_encoder_hw_t;
 
 static struct {
@@ -120,7 +120,8 @@ static spindle_data_t *spindleGetData (spindle_data_request_t request)
 
 //    while(spindle_encoder.spin_lock);
 
-    __disable_irq();
+    uint32_t irq = __get_PRIMASK();
+    __set_PRIMASK(1);
 
     if(spindle_data.ccw != !!(sp_encoder.timer->CR1 & TIM_CR1_DIR)) {
         if((spindle_data.ccw = !spindle_data.ccw) /*&& spindle_encoder.timer.pulse_length == 0*/)
@@ -136,7 +137,7 @@ static spindle_data_t *spindleGetData (spindle_data_request_t request)
 
     // if 16 bit RPM timer and TIMESTAMP < spindle_encoder.timer.last_pulse then what?
 
-    __enable_irq();
+    __set_PRIMASK(irq);
 
     // If no spindle pulses during last 250 ms assume RPM is 0
     if((stopped = ((pulse_length == 0) || (rpm_timer_delta > spindle_encoder.maximum_tt)))) {
@@ -232,7 +233,7 @@ static void spindle_encoder_cfg (settings_t *settings, settings_changed_flags_t 
 
     static bool event_claimed = false;
 
-    sp_encoder.settings_changed(settings, changed);
+    sp_encoder.on_settings_changed(settings, changed);
 
     if((hal.spindle_data.get = settings->spindle.ppr > 0 ? spindleGetData : NULL)) {
 
@@ -243,7 +244,7 @@ static void spindle_encoder_cfg (settings_t *settings, settings_changed_flags_t 
             spindle_ptrs_t *spindle;
 
             hal.spindle_data.reset = spindleDataReset;
-            if((spindle = spindle_get(0)))
+            if((spindle = spindle_get(-1)))
                 spindle->set_state(spindle, (spindle_state_t){0}, 0.0f);
 
             if(!event_claimed) {
@@ -290,10 +291,13 @@ ISR_CODE void spindle_encoder_irq (void *context)
 
     spindle_encoder_hw_t *qei = (spindle_encoder_hw_t *)context;
 
-    __disable_irq();
+    uint32_t irq = __get_PRIMASK();
+    __set_PRIMASK(1);
+
     uint32_t tval = TIMESTAMP;
     uint16_t cval = *qei->cnt;
-    __enable_irq();
+
+    __set_PRIMASK(irq);
 
     if(*qei->cr1 & TIM_CR1_DIR)
         *qei->ccr = (uint16_t)(*qei->ccr - spindle_encoder.tics_per_irq);
@@ -476,10 +480,10 @@ static bool encoder_add (uint32_t id)
 
 #if SPINDLE_ENCODER_ENABLE
 
-        if(sp_encoder.settings_changed == NULL && timer_get_cap(encoder->timer).comp3) {
+        if(sp_encoder.on_settings_changed == NULL && timer_get_cap(encoder->timer).comp3) {
 
-            sp_encoder.settings_changed = hal.settings_changed;
-            hal.settings_changed = spindle_encoder_cfg;
+            sp_encoder.on_settings_changed = grbl.on_settings_changed;
+            grbl.on_settings_changed = spindle_encoder_cfg;
 
             sp_encoder.cr1 = &encoder->timer->CR1;
             sp_encoder.cnt = &encoder->timer->CNT;
@@ -586,8 +590,8 @@ void driver_encoders_init (void)
 
             hal.periph_port.register_pin(&ssp);
 
-            sp_encoder.settings_changed = hal.settings_changed;
-            hal.settings_changed = spindle_encoder_cfg;
+            sp_encoder.on_settings_changed = grbl.on_settings_changed;
+            grbl.on_settings_changed = spindle_encoder_cfg;
 
             break;
         }
